@@ -29,7 +29,7 @@
             margin: 0;
             overflow: hidden;
             -webkit-tap-highlight-color: transparent;
-            background-image: url('bg.jpg');
+            background-image: url('bg.png');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -160,12 +160,11 @@
     </div>
 
     <div class="cat-bad-popup" id="cat-bad">
-        <img src="bad.jpg" alt="bad cat" onerror="this.style.display='none'">
-        <p>Ай-я-яй!</p>
+        <img src="bad.png" alt="bad cat" onerror="this.style.display='none'">
     </div>
 
     <div class="container" id="message-screen">
-        <img id="msg-image" src="good.jpg" alt="good cat" onerror="this.style.display='none'">
+        <img id="msg-image" src="good.png" alt="good cat" onerror="this.style.display='none'">
         <h2 id="msg-title">Заголовок</h2>
         <p id="msg-desc">Описание</p>
         <button class="action-btn" onclick="returnToPlay()">Продолжить</button>
@@ -303,7 +302,7 @@
 
         function startLevel() {
             if (currentLevel >= levelsData.length) {
-                showMessage("Победа!", "Ты прошел все 1000 слов! Настоящий поляк.", true, "Начать заново", resetProgress, true);
+                showMessage("Победа!", "Ты прошел все 1000 слов! Настоящий пшек.", true, "Начать заново", resetProgress, true);
                 return;
             }
 
