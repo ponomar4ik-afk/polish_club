@@ -3,19 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Polski Rodzaj</title>
+    <title>Polski Trener</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #0B0F19; /* Экстремально темный фон, почти черный */
-            --card-bg: #151A27;  /* Чуть светлее для карточки, чтобы создать глубину */
+            --bg-color: #0B0F19;
+            --card-bg: #151A27;
             --text-main: #FFFFFF;
             --text-muted: #64748B;
-            /* Акцентные "неоновые" цвета для фокуса */
-            --accent-ten: #3B82F6; /* Синий */
-            --accent-ta: #F43F5E;  /* Розово-красный */
-            --accent-to: #10B981;  /* Зеленый */
+            --accent: #3B82F6;
+            --correct: #10B981;
             --error: #EF4444;
+            --btn-bg: #1E293B;
         }
 
         body {
@@ -25,11 +24,38 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
             height: 100vh;
             margin: 0;
             overflow: hidden;
-            -webkit-tap-highlight-color: transparent; /* Убираем дефолтное мерцание при тапе */
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Вкладки */
+        .tabs {
+            display: flex;
+            width: 100%;
+            background: #0F172A;
+            border-bottom: 1px solid #1E293B;
+            margin-bottom: 40px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 16px 0;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: color 0.2s, border-bottom 0.2s;
+            border-bottom: 2px solid transparent;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .tab.active {
+            color: var(--text-main);
+            border-bottom: 2px solid var(--accent);
         }
 
         .container {
@@ -41,70 +67,88 @@
         .stats {
             font-size: 0.75rem;
             color: var(--text-muted);
-            margin-bottom: 24px;
+            margin-bottom: 16px;
             letter-spacing: 2px;
             font-weight: 600;
-            text-transform: uppercase;
         }
 
+        /* Карточка слова */
         .word-card {
             background: var(--card-bg);
-            padding: 48px 20px;
+            padding: 40px 20px;
             border-radius: 20px;
-            border: 1px solid #1E293B; /* Тонкий контур для резкости */
-            margin-bottom: 36px;
-            transition: transform 0.15s ease-out;
+            border: 1px solid #1E293B;
+            margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
         }
 
         .word-card h1 {
             margin: 0;
-            font-size: 2.8rem;
+            font-size: 2.5rem;
             font-weight: 700;
             letter-spacing: -0.02em;
+            cursor: pointer; /* Показываем, что слово кликабельно */
         }
 
-        .word-card p {
-            margin-top: 12px;
-            color: var(--text-muted);
-            font-size: 1.1rem;
-            font-weight: 400;
+        /* Иконка озвучки */
+        .speaker-icon {
+            margin-top: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.2s, transform 0.1s;
+            background: #1E293B;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
+        .speaker-icon:active {
+            transform: scale(0.9);
+            opacity: 1;
+        }
+
+        /* Кнопки ответов */
         .btn-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            display: flex;
+            flex-direction: column;
             gap: 12px;
         }
 
-        button {
-            border: none;
-            padding: 16px 0;
+        button.option-btn {
+            border: 1px solid #1E293B;
+            padding: 18px 20px;
             border-radius: 12px;
             font-size: 1.1rem;
-            font-weight: 700;
+            font-weight: 600;
             cursor: pointer;
+            background: var(--btn-bg);
             color: #FFFFFF;
-            transition: transform 0.1s ease, filter 0.2s;
+            transition: transform 0.1s ease, background 0.2s, border-color 0.2s;
+            width: 100%;
         }
 
-        button:active {
-            transform: scale(0.92);
-            filter: brightness(1.2);
+        button.option-btn:active {
+            transform: scale(0.96);
         }
 
-        .btn-ten { background-color: var(--accent-ten); }
-        .btn-ta { background-color: var(--accent-ta); }
-        .btn-to { background-color: var(--accent-to); }
-
-        /* Жесткие состояния ответа без лишней анимации */
         .correct { 
-            border-color: var(--accent-to) !important;
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+            background: rgba(16, 185, 129, 0.1) !important;
+            border-color: var(--correct) !important;
+            color: var(--correct) !important;
         }
         .wrong { 
             animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both;
+            background: rgba(239, 68, 68, 0.1) !important;
             border-color: var(--error) !important;
-            box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+            color: var(--error) !important;
         }
 
         @keyframes shake {
@@ -117,78 +161,156 @@
 </head>
 <body>
 
+    <div class="tabs">
+        <div class="tab active" id="tab-ru" onclick="setMode('ru')">Русские слова</div>
+        <div class="tab" id="tab-pl" onclick="setMode('pl')">Польские слова</div>
+    </div>
+
     <div class="container">
         <div class="stats" id="stats">WYNIK: 0 / 0</div>
         
         <div class="word-card" id="card">
-            <h1 id="word">Dom</h1>
-            <p id="translation">дом</p>
+            <h1 id="word" onclick="speakWord()">Dom</h1>
+            <div class="speaker-icon" onclick="speakWord()">🔊</div>
         </div>
 
-        <div class="btn-group">
-            <button class="btn-ten" onclick="check('ten')">TEN</button>
-            <button class="btn-ta" onclick="check('ta')">TA</button>
-            <button class="btn-to" onclick="check('to')">TO</button>
-        </div>
+        <div class="btn-group" id="options-container">
+            </div>
     </div>
 
     <script>
-        // Инициализация Telegram Mini App
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // Базовый словарь (можешь добавлять сюда новые слова)
-        const words = [
-            { w: "Słońce", t: "солнце", r: "to" },
-            { w: "Kobieta", t: "женщина", r: "ta" },
-            { w: "Mężczyzna", t: "мужчина", r: "ten" },
-            { w: "Okno", t: "окно", r: "to" },
-            { w: "Noc", t: "ночь", r: "ta" },
-            { w: "Dzień", t: "день", r: "ten" },
-            { w: "Naczynie", t: "посуда", r: "to" },
-            { w: "Rzecz", t: "вещь", r: "ta" },
-            { w: "Samochód", t: "машина", r: "ten" },
-            { w: "Książka", t: "книга", r: "ta" },
-            { w: "Dziecko", t: "ребенок", r: "to" },
-            { w: "Miłość", t: "любовь", r: "ta" }
+        // Наш словарь
+        const dictionary = [
+            { pl: "Słońce", ru: "Солнце" },
+            { pl: "Kobieta", ru: "Женщина" },
+            { pl: "Mężczyzna", ru: "Мужчина" },
+            { pl: "Okno", ru: "Окно" },
+            { pl: "Noc", ru: "Ночь" },
+            { pl: "Dzień", ru: "День" },
+            { pl: "Naczynie", ru: "Посуда" },
+            { pl: "Rzecz", ru: "Вещь" },
+            { pl: "Samochód", ru: "Машина" },
+            { pl: "Książka", ru: "Книга" },
+            { pl: "Dziecko", ru: "Ребенок" },
+            { pl: "Miłość", ru: "Любовь" },
+            { pl: "Dom", ru: "Дом" },
+            { pl: "Drzewo", ru: "Дерево" },
+            { pl: "Woda", ru: "Вода" }
         ];
 
+        let mode = 'ru'; // 'ru' - главное слово русское, 'pl' - главное слово польское
         let currentWord = {};
         let score = 0;
         let total = 0;
+        let isWaiting = false; // Блокировка нажатий после ответа
+
+        function setMode(newMode) {
+            mode = newMode;
+            document.getElementById('tab-ru').className = mode === 'ru' ? 'tab active' : 'tab';
+            document.getElementById('tab-pl').className = mode === 'pl' ? 'tab active' : 'tab';
+            nextWord();
+        }
+
+        // Функция перемешивания массива
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
 
         function nextWord() {
-            const card = document.getElementById('card');
-            // Сбрасываем классы правильного/неправильного ответа
-            card.className = 'word-card';
+            isWaiting = false;
             
-            // Выбираем случайное слово
-            currentWord = words[Math.floor(Math.random() * words.length)];
-            document.getElementById('word').innerText = currentWord.w;
-            document.getElementById('translation').innerText = currentWord.t;
+            // Выбираем правильное слово
+            currentWord = dictionary[Math.floor(Math.random() * dictionary.length)];
+            
+            // Настраиваем отображение в зависимости от режима
+            const mainWord = mode === 'ru' ? currentWord.ru : currentWord.pl;
+            const targetKey = mode === 'ru' ? 'pl' : 'ru'; // То, что должно быть на кнопках
+            
+            document.getElementById('word').innerText = mainWord;
+
+            // Генерируем 3 варианта ответа (1 правильный, 2 случайных неправильных)
+            let wrongOptions = dictionary.filter(w => w[targetKey] !== currentWord[targetKey]);
+            wrongOptions = shuffle(wrongOptions).slice(0, 2);
+            
+            let allOptions = [
+                currentWord[targetKey], 
+                wrongOptions[0][targetKey], 
+                wrongOptions[1][targetKey]
+            ];
+            allOptions = shuffle(allOptions);
+
+            // Отрисовываем кнопки
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            
+            allOptions.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(btn, opt, currentWord[targetKey]);
+                container.appendChild(btn);
+            });
         }
 
-        function check(gender) {
+        function checkAnswer(btnElement, selectedOption, correctOption) {
+            if (isWaiting) return;
+            isWaiting = true;
             total++;
-            const card = document.getElementById('card');
-            
-            if (gender === currentWord.r) {
-                score++;
-                card.classList.add('correct');
-                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-            } else {
-                card.classList.add('wrong');
-                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+
+            // Если выбрали режим "Русские слова", то по клику на правильный польский ответ
+            // логично его озвучить для закрепления.
+            if (mode === 'ru' && selectedOption === correctOption) {
+                speakText(selectedOption, 'pl-PL');
             }
 
-            // Обновляем статистику (Wynik - это "счет/результат" по-польски)
+            if (selectedOption === correctOption) {
+                score++;
+                btnElement.classList.add('correct');
+                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            } else {
+                btnElement.classList.add('wrong');
+                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+                
+                // Подсвечиваем правильный ответ
+                const buttons = document.querySelectorAll('.option-btn');
+                buttons.forEach(b => {
+                    if (b.innerText === correctOption) b.classList.add('correct');
+                });
+            }
+
             document.getElementById('stats').innerText = `WYNIK: ${score} / ${total}`;
-            
-            // Задержка перед следующим словом, чтобы было видно результат
-            setTimeout(nextWord, 500);
+            setTimeout(nextWord, 1000);
         }
 
-        // Запускаем первое слово при загрузке
+        // Озвучка главного слова на карточке
+        function speakWord() {
+            const textToSpeak = mode === 'ru' ? currentWord.ru : currentWord.pl;
+            const lang = mode === 'ru' ? 'ru-RU' : 'pl-PL';
+            speakText(textToSpeak, lang);
+        }
+
+        // Универсальная функция озвучки
+        function speakText(text, lang) {
+            // Прерываем предыдущую озвучку, если она еще идет
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = lang;
+            
+            // Настройка голоса (можно поэкспериментировать, но дефолтные обычно норм)
+            utterance.rate = 0.9; // Чуть медленнее для лучшего понимания
+            utterance.pitch = 1.0;
+            
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // Запуск
         nextWord();
     </script>
 </body>
