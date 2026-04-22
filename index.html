@@ -31,60 +31,56 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Главные табы */
+        /* Табы */
         .tabs { display: flex; width: 100%; background: #0F172A; border-bottom: 1px solid #1E293B; position: fixed; top: 0; z-index: 10; }
         .tab { flex: 1; padding: 16px 0; text-align: center; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: 0.2s; border-bottom: 2px solid transparent; text-transform: uppercase; letter-spacing: 1px; }
         .tab.active { color: var(--text-main); border-bottom: 2px solid var(--accent); }
 
         .container { width: 90%; max-width: 400px; text-align: center; margin-top: 80px; display: flex; flex-direction: column; justify-content: center; padding-bottom: 80px; }
         
-        /* Табы режимов */
         .mode-tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
-        .mode-btn { background: var(--btn-bg); color: var(--text-muted); border: 1px solid #1E293B; padding: 8px 16px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; cursor: pointer; transition: 0.2s; }
+        .mode-btn { background: var(--btn-bg); color: var(--text-muted); border: 1px solid #1E293B; padding: 8px 16px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; cursor: pointer; }
         .mode-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
         .header-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding: 0 10px; }
-        .stats { font-size: 0.75rem; color: var(--text-muted); letter-spacing: 2px; font-weight: 600; text-transform: uppercase; }
-        .lives { color: var(--error); font-size: 1.2rem; letter-spacing: 2px; }
+        .stats-label { font-size: 0.75rem; color: var(--text-muted); letter-spacing: 2px; font-weight: 600; text-transform: uppercase; }
+        .lives { color: var(--error); font-size: 1.2rem; }
 
-        /* Таймер Спринта */
+        /* Таймер */
         .timer-container { width: 100%; height: 6px; background: #0F172A; border-radius: 3px; overflow: hidden; margin-bottom: 20px; display: none; }
-        .timer-bar { height: 100%; width: 100%; background: var(--correct); transition: width 0.1s linear, background-color 0.3s ease; } 
+        .timer-bar { height: 100%; width: 100%; background: var(--correct); transition: width 0.1s linear; }
 
-        .word-card { background: var(--card-bg); padding: 40px 20px; border-radius: 20px; border: 1px solid #1E293B; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 140px;}
-        .word-card h1 { margin: 0; font-size: 2.2rem; font-weight: 700; letter-spacing: -0.02em; cursor: pointer; }
+        /* Карточка */
+        .word-card { background: var(--card-bg); padding: 40px 20px; border-radius: 20px; border: 1px solid #1E293B; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 140px; }
+        .word-card h1 { margin: 0; font-size: 2.2rem; font-weight: 700; letter-spacing: -0.02em; }
+        .speaker-icon { margin-top: 15px; font-size: 1.5rem; cursor: pointer; background: #1E293B; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 
-        .speaker-icon { margin-top: 15px; font-size: 1.5rem; cursor: pointer; opacity: 0.6; transition: 0.2s; background: #1E293B; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-        .speaker-icon:active { transform: scale(0.9); opacity: 1; }
-
+        /* Кнопки ответов */
         .btn-group { display: flex; flex-direction: column; gap: 12px; }
-        button.option-btn { border: 1px solid #1E293B; padding: 18px 20px; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; background: var(--btn-bg); color: #FFFFFF; transition: transform 0.1s ease, background 0.2s, border-color 0.2s; width: 100%; }
-        button.option-btn:active { transform: scale(0.96); }
-
+        button.option-btn { border: 1px solid #1E293B; padding: 18px 20px; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; background: var(--btn-bg); color: #FFFFFF; transition: 0.2s; width: 100%; }
         .correct { background: rgba(16, 185, 129, 0.1) !important; border-color: var(--correct) !important; color: var(--correct) !important; }
-        .wrong { animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both; background: rgba(239, 68, 68, 0.1) !important; border-color: var(--error) !important; color: var(--error) !important; }
+        .wrong { background: rgba(239, 68, 68, 0.1) !important; border-color: var(--error) !important; color: var(--error) !important; animation: shake 0.3s; }
 
-        /* Плавающая кнопка Ошибок */
-        .fab-mistakes { position: fixed; bottom: 20px; right: 20px; background: #EF4444; color: #fff; padding: 14px 24px; border-radius: 30px; font-weight: bold; font-size: 0.9rem; cursor: pointer; z-index: 50; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); transition: 0.2s; border: none; }
-        .fab-mistakes:active { transform: scale(0.95); }
+        /* FAB Ошибок */
+        .fab-mistakes { position: fixed; bottom: 20px; right: 20px; background: #EF4444; color: #fff; padding: 14px 24px; border-radius: 30px; font-weight: bold; font-size: 0.9rem; cursor: pointer; z-index: 50; display: none; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); }
 
-        /* Экран статистики */
-        #stats-page { display: none; flex-direction: column; gap: 15px; margin-top: 50px; padding-top: 20px; }
-        .stat-box { background: #1E293B; padding: 20px; border-radius: 16px; border: 1px solid #334155; text-align: left; }
-        .stat-box h3 { margin: 0 0 10px 0; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; }
-        .stat-box .value { font-size: 2rem; font-weight: bold; color: #fff; margin: 0; }
-        .stat-box .highlight { color: var(--accent); }
+        /* Попап с плохим котом */
+        .cat-bad-popup { position: fixed; bottom: 85px; right: 20px; width: 110px; background: var(--card-bg); border-radius: 16px; padding: 8px; text-align: center; border: 2px solid var(--error); transform: translateY(200%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 100; }
+        .cat-bad-popup.show { transform: translateY(0); }
+        .cat-bad-popup img { width: 100%; border-radius: 10px; }
 
-        #message-screen { display: none; flex-direction: column; align-items: center; justify-content: center; height: 60vh; }
-        #message-screen h2 { font-size: 2rem; margin-bottom: 10px; }
-        #message-screen p { color: var(--text-muted); margin-bottom: 30px; text-align: center; }
-        .action-btn { background: var(--accent); color: #fff; border: none; padding: 15px 30px; border-radius: 12px; font-weight: bold; font-size: 1.1rem; cursor: pointer; }
+        /* Экраны сообщений и статистики */
+        #message-screen, #mistakes-screen, #stats-page { display: none; flex-direction: column; align-items: center; justify-content: center; }
+        #stats-page { margin-top: 100px; gap: 15px; }
+        .stat-box { background: #1E293B; padding: 20px; border-radius: 16px; border: 1px solid #334155; width: 85%; text-align: left; }
+        .cat-good { width: 180px; border-radius: 20px; margin-bottom: 20px; border: 3px solid var(--correct); }
+
+        .action-btn { background: var(--accent); color: #fff; border: none; padding: 15px 30px; border-radius: 12px; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin-top: 20px; }
 
         @keyframes shake {
             10%, 90% { transform: translate3d(-2px, 0, 0); }
             20%, 80% { transform: translate3d(4px, 0, 0); }
             30%, 50%, 70% { transform: translate3d(-8px, 0, 0); }
-            40%, 60% { transform: translate3d(8px, 0, 0); }
         }
     </style>
 </head>
@@ -103,7 +99,7 @@
         </div>
 
         <div class="header-info">
-            <div class="stats" id="stats-header">УРОВЕНЬ 1 (0/20)</div>
+            <div class="stats-label" id="stats-header">УРОВЕНЬ 1 (0/20)</div>
             <div class="lives" id="lives">🤍🤍</div>
         </div>
         
@@ -111,91 +107,86 @@
             <div class="timer-bar" id="timer-bar"></div>
         </div>
 
-        <div class="word-card" id="card">
+        <div class="word-card">
             <h1 id="word" onclick="speakWord()">Dom</h1>
-            <div class="speaker-icon" id="speaker-btn" onclick="speakWord()">🔊</div>
+            <div class="speaker-icon" onclick="speakWord()">🔊</div>
         </div>
 
         <div class="btn-group" id="options-container"></div>
     </div>
 
-    <div class="container" id="stats-page">
-        <div class="stat-box">
-            <h3>Текущий уровень</h3>
-            <p class="value highlight" id="st-level">1</p>
+    <div class="container" id="mistakes-screen">
+        <div class="header-info" style="width:100%">
+            <div class="stats-label" id="mistakes-header">ОШИБКИ (0/0)</div>
+            <div class="lives">🔥</div>
         </div>
-        <div class="stat-box">
-            <h3>Пройдено слов</h3>
-            <p class="value" id="st-words">0</p>
+        <div class="word-card">
+            <h1 id="m-word" onclick="speakMistake()">...</h1>
+            <div class="speaker-icon" onclick="speakMistake()">🔊</div>
         </div>
-        <div class="stat-box">
-            <h3>Слов в базе ошибок</h3>
-            <p class="value" style="color: var(--error);" id="st-mistakes">0</p>
-        </div>
+        <div class="btn-group" id="m-options-container" style="width:100%"></div>
+        <button class="action-btn" style="background:#334155" onclick="closeMistakes()">Выйти</button>
     </div>
 
-    <div class="fab-mistakes" id="fab-mistakes" onclick="startMistakesTrain()">
-        🔥 Ошибки (<span id="fab-count">0</span>)
+    <div class="container" id="stats-page">
+        <div class="stat-box"><h3>Уровень</h3><p id="st-level" style="font-size:2rem; font-weight:bold">1</p></div>
+        <div class="stat-box"><h3>Слов выучено</h3><p id="st-words" style="font-size:2rem; font-weight:bold">0</p></div>
     </div>
 
     <div class="container" id="message-screen">
+        <img id="cat-win" src="good.png" class="cat-good" onerror="this.style.display='none'">
         <h2 id="msg-title">Заголовок</h2>
         <p id="msg-desc">Описание</p>
-        <button class="action-btn" onclick="returnToPlay()">Продолжить</button>
+        <button id="msg-btn" class="action-btn" onclick="nextAction()">Продолжить</button>
+    </div>
+
+    <div class="cat-bad-popup" id="cat-bad">
+        <img src="bad.png" alt="bad cat" onerror="this.style.display='none'">
+    </div>
+
+    <div class="fab-mistakes" id="fab-mistakes" onclick="openMistakes()">
+        🔥 Ошибки (<span id="fab-count">0</span>)
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // [Здесь твой массив levelsData на 1000 слов]
-        // Для краткости я оставил первые уровни, в твоем файле их будет 50.
         const levelsData = [
-            [ {pl:"Tak",ru:"Да"},{pl:"Nie",ru:"Нет"},{pl:"Proszę",ru:"Пожалуйста"},{pl:"Dziękuję",ru:"Спасибо"},{pl:"Przepraszam",ru:"Извините"},{pl:"Dzień dobry",ru:"Добрый день"},{pl:"Dobry wieczór",ru:"Добрый вечер"},{pl:"Dobranoc",ru:"Спокойной ночи"},{pl:"Cześć",ru:"Привет / Пока"},{pl:"Do widzenia",ru:"До свидания"},{pl:"Pan",ru:"Господин"},{pl:"Pani",ru:"Госпожа"},{pl:"Imię",ru:"Имя"},{pl:"Nazwisko",ru:"Фамилия"},{pl:"Człowiek",ru:"Человек"},{pl:"Kobieta",ru:"Женщина"},{pl:"Mężczyzna",ru:"Мужчина"},{pl:"Dziecko",ru:"Ребенок"},{pl:"Dom",ru:"Дом"},{pl:"Praca",ru:"Работа"} ],
+            [ {pl:"Tak",ru:"Да"},{pl:"Nie",ru:"Нет"},{pl:"Proszę",ru:"Пожалуйста"},{pl:"Dziękuję",ru:"Спасибо"},{pl:"Przepraszam",ru:"Извините"},{pl:"Dzień dobry",ru:"Добрый день"},{pl:"Dobry wieczór",ru:"Добрый вечер"},{pl:"Dobranoc",ru:"Спокойной ночи"},{pl:"Cześć",ru:"Привет / Пока"},{pl:"Do widzenia",ru:"До свидания"},{pl:"Pan",ru:"Господин"},{pl:"Pani",ru:"Госпожа"},{pl:"Imię",ru:"Имя"},{pl:"Nazwisko",ru:"Фамилия"},{pl:"Człowieк",ru:"Человек"},{pl:"Kobieta",ru:"Женщина"},{pl:"Mężczyzna",ru:"Мужчина"},{pl:"Dziecko",ru:"Ребенок"},{pl:"Dom",ru:"Дом"},{pl:"Praca",ru:"Работа"} ],
             [ {pl:"Miasto",ru:"Город"},{pl:"Ulica",ru:"Улица"},{pl:"Samochód",ru:"Машина"},{pl:"Autobus",ru:"Автобус"},{pl:"Pociąg",ru:"Поезд"},{pl:"Bilet",ru:"Билет"},{pl:"Pieniądze",ru:"Деньги"},{pl:"Sklep",ru:"Магазин"},{pl:"Woda",ru:"Вода"},{pl:"Jedzenie",ru:"Еда"},{pl:"Chleb",ru:"Хлеб"},{pl:"Mięso",ru:"Мясо"},{pl:"Mleko",ru:"Молоко"},{pl:"Kawa",ru:"Кофе"},{pl:"Herbata",ru:"Чай"},{pl:"Śniadanie",ru:"Завтрак"},{pl:"Obiad",ru:"Обед"},{pl:"Kolacja",ru:"Ужин"},{pl:"Czas",ru:"Время"},{pl:"Godzina",ru:"Час"} ]
-            // ... остальные уровни оставь как были
         ];
 
         const allWordsFlat = levelsData.flat();
-
-        let stats = JSON.parse(localStorage.getItem('polish_stats')) || { words: 0, mistakesTotal: 0 };
+        let stats = JSON.parse(localStorage.getItem('polish_stats')) || { words: 0 };
         let mistakesDb = JSON.parse(localStorage.getItem('polish_mistakes')) || [];
-        let currentLevel = parseInt(localStorage.getItem('polish_level')) || 0; 
+        let currentLevel = parseInt(localStorage.getItem('polish_level')) || 0;
         
-        let currentMode = 'classic'; 
-        let isMistakeMode = false;
-        
+        let currentMode = 'classic';
         let levelWords = [];
         let wordIndex = 0;
         let mistakesMade = 0;
-        let maxMistakes = 0;
+        let maxMistakes = 1;
         let isWaiting = false;
-
         let timerInterval;
-        let timeDuration = 7000; 
 
         function updateStatsUI() {
             document.getElementById('st-level').innerText = currentLevel + 1;
             document.getElementById('st-words').innerText = stats.words;
-            document.getElementById('st-mistakes').innerText = mistakesDb.length;
             document.getElementById('fab-count').innerText = mistakesDb.length;
             document.getElementById('fab-mistakes').style.display = mistakesDb.length > 0 ? 'flex' : 'none';
         }
 
         function switchTab(tab) {
+            clearInterval(timerInterval);
+            document.getElementById('game-container').style.display = tab === 'play' ? 'flex' : 'none';
+            document.getElementById('stats-page').style.display = tab === 'stats' ? 'flex' : 'none';
+            document.getElementById('mistakes-screen').style.display = 'none';
+            document.getElementById('message-screen').style.display = 'none';
             document.getElementById('tab-play').className = tab === 'play' ? 'tab active' : 'tab';
             document.getElementById('tab-stats').className = tab === 'stats' ? 'tab active' : 'tab';
-            
-            if (tab === 'stats') {
-                clearInterval(timerInterval);
-                document.getElementById('game-container').style.display = 'none';
-                document.getElementById('stats-page').style.display = 'flex';
-                updateStatsUI();
-            } else {
-                document.getElementById('stats-page').style.display = 'none';
-                document.getElementById('game-container').style.display = 'flex';
-                if (!isMistakeMode) nextWord();
-            }
+            if (tab === 'stats') updateStatsUI();
+            else startLevel();
         }
 
         function setMode(mode) {
@@ -203,217 +194,188 @@
             document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('btn-' + mode).classList.add('active');
             document.getElementById('timer-container').style.display = mode === 'sprint' ? 'block' : 'none';
-            clearInterval(timerInterval);
             nextWord();
         }
 
         function startLevel() {
-            if (currentLevel >= levelsData.length) return;
-            maxMistakes = (currentLevel + 1) <= 20 ? 1 : 2;
+            if (currentLevel >= levelsData.length) {
+                showMsg("Победа!", "Все уровни пройдены!", true, "Заново", resetProgress);
+                return;
+            }
+            wordIndex = 0;
             mistakesMade = 0;
+            maxMistakes = (currentLevel + 1) <= 20 ? 1 : 2;
             levelWords = shuffle([...levelsData[currentLevel]]);
-            wordIndex = 0;
-            updateHeader();
-            updateStatsUI();
-            nextWord();
-        }
-
-        function startMistakesTrain() {
-            if (mistakesDb.length === 0) return;
-            isMistakeMode = true;
-            document.getElementById('mode-tabs').style.display = 'none';
-            document.getElementById('timer-container').style.display = 'none';
-            clearInterval(timerInterval);
-            levelWords = shuffle([...mistakesDb]);
-            wordIndex = 0;
+            
+            document.getElementById('game-container').style.display = 'flex';
+            document.getElementById('message-screen').style.display = 'none';
             updateHeader();
             nextWord();
         }
 
         function updateHeader() {
-            if (!isMistakeMode) {
-                document.getElementById('stats-header').innerText = `УРОВЕНЬ ${currentLevel + 1} (${wordIndex}/${levelWords.length})`;
-                let hearts = '';
-                for(let i=0; i <= maxMistakes - mistakesMade; i++) hearts += '🤍';
-                document.getElementById('lives').innerText = hearts;
-            } else {
-                document.getElementById('stats-header').innerText = `ОШИБКИ (${wordIndex}/${levelWords.length})`;
-                document.getElementById('lives').innerText = '🔥';
-            }
-        }
-
-        function startSprintTimer(currentWordObj, targetKey) {
-            let start = Date.now();
-            let bar = document.getElementById('timer-bar');
-            bar.style.width = '100%';
-            bar.style.backgroundColor = 'var(--correct)';
-
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                let elapsed = Date.now() - start;
-                let remaining = timeDuration - elapsed;
-                let percent = (remaining / timeDuration) * 100;
-                
-                if (remaining <= 0) {
-                    clearInterval(timerInterval);
-                    processAnswer(null, null, currentWordObj, targetKey, false, true);
-                } else {
-                    bar.style.width = percent + '%';
-                    if (percent < 30) bar.style.backgroundColor = 'var(--error)';
-                    else if (percent < 60) bar.style.backgroundColor = 'var(--warning)';
-                }
-            }, 50);
+            document.getElementById('stats-header').innerText = `УРОВЕНЬ ${currentLevel + 1} (${wordIndex}/${levelWords.length})`;
+            let hearts = '';
+            for(let i=0; i <= maxMistakes - mistakesMade; i++) hearts += '🤍';
+            document.getElementById('lives').innerText = hearts;
         }
 
         function nextWord() {
             if (wordIndex >= levelWords.length) {
-                clearInterval(timerInterval);
-                if (!isMistakeMode) {
-                    currentLevel++;
-                    localStorage.setItem('polish_level', currentLevel);
-                    showMessage(`Уровень ${currentLevel} пройден!`, "Отличная работа!", true, "Дальше", startLevel);
-                } else {
-                    isMistakeMode = false;
-                    document.getElementById('mode-tabs').style.display = 'flex';
-                    startLevel();
-                }
+                currentLevel++;
+                localStorage.setItem('polish_level', currentLevel);
+                showMsg(`Уровень ${currentLevel} пройден!`, "Отличная работа!", true, "Дальше", startLevel);
                 return;
             }
-
             isWaiting = false;
-            const currentWord = levelWords[wordIndex];
+            const cur = levelWords[wordIndex];
+            const askRu = currentMode === 'audio' ? false : Math.random() > 0.5;
             
-            // В режиме Аудио ВСЕГДА задаем польское слово (askRu = false)
-            let askRu = currentMode === 'audio' ? false : Math.random() > 0.5;
-            const mainText = askRu ? currentWord.ru : currentWord.pl;
-            const targetKey = askRu ? 'pl' : 'ru';
-
             const wordEl = document.getElementById('word');
+            wordEl.innerText = (currentMode === 'audio') ? '🎧' : (askRu ? cur.ru : cur.pl);
+            wordEl.dataset.text = askRu ? cur.ru : cur.pl;
             wordEl.dataset.lang = askRu ? 'ru-RU' : 'pl-PL';
-            wordEl.dataset.text = mainText; 
-            
-            if (currentMode === 'audio') {
-                wordEl.innerText = '🎧';
-                speakWord(); 
-            } else {
-                wordEl.innerText = mainText;
-            }
 
-            let wrongOptions = allWordsFlat.filter(w => w[targetKey] !== currentWord[targetKey]);
-            wrongOptions = shuffle(wrongOptions).slice(0, 2);
-            let options = shuffle([currentWord[targetKey], wrongOptions[0][targetKey], wrongOptions[1][targetKey]]);
+            if (currentMode === 'audio') speakWord();
 
-            const container = document.getElementById('options-container');
-            container.innerHTML = '';
-            
-            options.forEach(opt => {
-                const btn = document.createElement('button');
-                btn.className = 'option-btn';
-                btn.innerText = opt;
-                btn.onclick = () => processAnswer(btn, opt, currentWord, targetKey, askRu, false);
-                container.appendChild(btn);
+            renderOptions('options-container', cur, askRu ? 'pl' : 'ru', (btn, opt) => {
+                checkAnswer(btn, opt, cur, askRu ? 'pl' : 'ru', askRu);
             });
-            
-            updateHeader();
-            if (currentMode === 'sprint' && !isMistakeMode) startSprintTimer(currentWord, targetKey);
+
+            if (currentMode === 'sprint') startSprint(cur, askRu ? 'pl' : 'ru');
         }
 
-        function processAnswer(btn, selected, currentWordObj, targetKey, wasRu, isTimeOut) {
+        function checkAnswer(btn, selected, cur, target, wasRu) {
             if (isWaiting) return;
             isWaiting = true;
             clearInterval(timerInterval);
 
-            const isCorrect = !isTimeOut && (selected === currentWordObj[targetKey]);
-
-            if (isCorrect) {
+            if (selected === cur[target]) {
                 btn.classList.add('correct');
-                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
-                
-                // Озвучиваем только польские ответы (когда вопрос был на русском)
-                // И НЕ озвучиваем в режиме аудио (там уже и так звучит польский)
                 if (wasRu && currentMode !== 'audio') speakText(selected, 'pl-PL');
-
-                if (!isMistakeMode) {
-                    stats.words++;
-                    localStorage.setItem('polish_stats', JSON.stringify(stats));
-                } else {
-                    mistakesDb = mistakesDb.filter(w => w.pl !== currentWordObj.pl);
-                    localStorage.setItem('polish_mistakes', JSON.stringify(mistakesDb));
-                }
-
-                updateStatsUI();
+                stats.words++;
+                localStorage.setItem('polish_stats', JSON.stringify(stats));
                 wordIndex++;
                 setTimeout(nextWord, 800);
             } else {
-                if (btn) btn.classList.add('wrong');
-                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
-                
-                document.querySelectorAll('.option-btn').forEach(b => {
-                    if (b.innerText === currentWordObj[targetKey]) b.classList.add('correct');
-                });
-
-                if (!mistakesDb.some(w => w.pl === currentWordObj.pl)) {
-                    mistakesDb.push(currentWordObj);
+                btn.classList.add('wrong');
+                showBadCat();
+                if (!mistakesDb.some(m => m.pl === cur.pl)) {
+                    mistakesDb.push(cur);
                     localStorage.setItem('polish_mistakes', JSON.stringify(mistakesDb));
                 }
-
-                updateStatsUI();
-
-                if (!isMistakeMode) {
-                    mistakesMade++;
-                    updateHeader();
-                    if (mistakesMade > maxMistakes) {
-                        setTimeout(() => showMessage("Уровень провален", isTimeOut ? "Время вышло!" : "Слишком много ошибок.", true, "Заново", startLevel), 1000);
-                        return;
-                    }
+                document.querySelectorAll('#options-container .option-btn').forEach(b => {
+                    if (b.innerText === cur[target]) b.classList.add('correct');
+                });
+                mistakesMade++;
+                updateHeader();
+                if (mistakesMade > maxMistakes) {
+                    setTimeout(() => showMsg("Провал", "Слишком много ошибок.", true, "Заново", startLevel), 1000);
+                } else {
+                    wordIndex++;
+                    setTimeout(nextWord, 1500);
                 }
-                wordIndex++;
-                setTimeout(nextWord, 1500);
             }
+            updateStatsUI();
         }
 
-        function showMessage(title, desc, showBtn, btnText, btnAction) {
+        /* ЛОГИКА ОШИБОК (НОВОЕ ОКНО) */
+        function openMistakes() {
             document.getElementById('game-container').style.display = 'none';
-            const msgScreen = document.getElementById('message-screen');
-            msgScreen.style.display = 'flex';
+            document.getElementById('mistakes-screen').style.display = 'flex';
+            wordIndex = 0;
+            levelWords = shuffle([...mistakesDb]);
+            nextMistake();
+        }
+
+        function nextMistake() {
+            if (wordIndex >= levelWords.length || mistakesDb.length === 0) {
+                closeMistakes();
+                return;
+            }
+            isWaiting = false;
+            const cur = levelWords[wordIndex];
+            document.getElementById('mistakes-header').innerText = `ОШИБКИ (${wordIndex + 1}/${levelWords.length})`;
+            
+            const wordEl = document.getElementById('m-word');
+            wordEl.innerText = cur.pl;
+            wordEl.dataset.text = cur.pl;
+
+            renderOptions('m-options-container', cur, 'ru', (btn, opt) => {
+                if (isWaiting) return;
+                isWaiting = true;
+                if (opt === cur.ru) {
+                    btn.classList.add('correct');
+                    mistakesDb = mistakesDb.filter(m => m.pl !== cur.pl);
+                    localStorage.setItem('polish_mistakes', JSON.stringify(mistakesDb));
+                    wordIndex++;
+                    setTimeout(nextMistake, 800);
+                } else {
+                    btn.classList.add('wrong');
+                    setTimeout(() => { btn.classList.remove('wrong'); isWaiting = false; }, 800);
+                }
+                updateStatsUI();
+            });
+        }
+
+        function closeMistakes() {
+            document.getElementById('mistakes-screen').style.display = 'none';
+            document.getElementById('game-container').style.display = 'flex';
+            startLevel();
+        }
+
+        /* ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ */
+        function renderOptions(id, cur, target, callback) {
+            const container = document.getElementById(id);
+            container.innerHTML = '';
+            let wr = shuffle(allWordsFlat.filter(w => w[target] !== cur[target])).slice(0, 2);
+            let opts = shuffle([cur[target], wr[0][target], wr[1][target]]);
+            opts.forEach(o => {
+                const b = document.createElement('button');
+                b.className = 'option-btn';
+                b.innerText = o;
+                b.onclick = () => callback(b, o);
+                container.appendChild(b);
+            });
+        }
+
+        function startSprint(cur, target) {
+            let start = Date.now();
+            let bar = document.getElementById('timer-bar');
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                let p = 100 - ((Date.now() - start) / 7000 * 100);
+                bar.style.width = p + '%';
+                bar.style.backgroundColor = p < 30 ? 'var(--error)' : (p < 60 ? 'var(--warning)' : 'var(--correct)');
+                if (p <= 0) { clearInterval(timerInterval); checkAnswer(null, '', cur, target, false); }
+            }, 50);
+        }
+
+        function showBadCat() {
+            const c = document.getElementById('cat-bad');
+            c.classList.add('show');
+            setTimeout(() => c.classList.remove('show'), 1500);
+        }
+
+        function showMsg(title, desc, btn, btnT, action) {
+            document.getElementById('game-container').style.display = 'none';
+            document.getElementById('mistakes-screen').style.display = 'none';
+            const s = document.getElementById('message-screen');
+            s.style.display = 'flex';
             document.getElementById('msg-title').innerText = title;
             document.getElementById('msg-desc').innerText = desc;
-            const btn = msgScreen.querySelector('button');
-            btn.style.display = showBtn ? 'block' : 'none';
-            btn.innerText = btnText;
-            btn.onclick = btnAction;
+            document.getElementById('cat-win').style.display = title.includes('пройден') ? 'block' : 'none';
+            const b = document.getElementById('msg-btn');
+            b.innerText = btnT;
+            window.nextAction = action;
         }
 
-        function returnToPlay() {
-            document.getElementById('message-screen').style.display = 'none';
-            document.getElementById('game-container').style.display = 'flex';
-        }
+        function resetProgress() { localStorage.clear(); location.reload(); }
+        function speakWord() { const el = document.getElementById('word'); speakText(el.dataset.text, el.dataset.lang); }
+        function speakMistake() { speakText(document.getElementById('m-word').dataset.text, 'pl-PL'); }
+        function speakText(t, l) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = l; u.rate = 0.9; window.speechSynthesis.speak(u); }
+        function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
-        function speakWord() {
-            const el = document.getElementById('word');
-            // Озвучиваем только если это польское слово (режим аудио или когда askRu = false)
-            if (el.dataset.lang === 'pl-PL' || currentMode === 'audio') {
-                speakText(el.dataset.text, 'pl-PL');
-            }
-        }
-
-        function speakText(text, lang) {
-            window.speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = lang;
-            utterance.rate = 0.9;
-            window.speechSynthesis.speak(utterance);
-        }
-
-        function shuffle(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
-
-        updateStatsUI();
         startLevel();
     </script>
 </body>
