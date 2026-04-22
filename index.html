@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Polish Club Pro v2.1</title>
+    <title>Polish Club Pro v2.2</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
@@ -15,7 +15,7 @@
             --accent: #3B82F6;
             --correct: #10B981;
             --warning: #F59E0B;
-            --error: #FF3B30; /* Системный красный ТГ */
+            --error: #FF3B30; 
             --btn-bg: #1E293B;
         }
 
@@ -32,71 +32,61 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Табы */
         .tabs { display: flex; width: 100%; background: #0F172A; border-bottom: 1px solid #1E293B; position: fixed; top: 0; z-index: 10; }
         .tab { flex: 1; padding: 18px 0; text-align: center; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: 0.2s; border-bottom: 3px solid transparent; text-transform: uppercase; }
         .tab.active { color: var(--text-main); border-bottom: 3px solid var(--accent); }
 
         .container { width: 92%; max-width: 450px; text-align: center; margin-top: 80px; display: flex; flex-direction: column; height: calc(100vh - 85px); box-sizing: border-box; }
         
-        .mode-tabs { display: flex; width: 100%; gap: 6px; margin-bottom: 20px; }
-        .mode-btn { flex: 1; background: var(--btn-bg); color: var(--text-muted); border: 1px solid #1E293B; padding: 12px 2px; border-radius: 12px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.2s; }
+        .mode-tabs { display: flex; width: 100%; gap: 6px; margin-bottom: 15px; }
+        .mode-btn { flex: 1; background: var(--btn-bg); color: var(--text-muted); border: 1px solid #1E293B; padding: 12px 2px; border-radius: 12px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; cursor: pointer; }
         .mode-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
-        .header-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 0 5px; }
-        .stats-label { font-size: 0.75rem; color: var(--text-muted); font-weight: bold; letter-spacing: 1px; }
-        .lives { color: var(--error); font-size: 1.2rem; }
+        .header-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 0 5px; }
+        .stats-label { font-size: 0.7rem; color: var(--text-muted); font-weight: bold; }
+        .lives { color: var(--error); font-size: 1.1rem; }
 
-        /* Таймер */
-        .timer-container { width: 100%; height: 6px; background: #0F172A; border-radius: 3px; overflow: hidden; margin-bottom: 20px; display: none; }
+        .timer-container { width: 100%; height: 6px; background: #0F172A; border-radius: 3px; overflow: hidden; margin-bottom: 15px; display: none; }
         .timer-bar { height: 100%; width: 100%; background: var(--correct); transition: width 0.1s linear; }
 
-        .word-card { background: var(--card-bg); padding: 35px 20px; border-radius: 24px; border: 1px solid #1E293B; margin-bottom: 20px; min-height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .word-card h1 { margin: 0; font-size: 1.8rem; font-weight: 700; line-height: 1.2; }
+        .word-card { background: var(--card-bg); padding: 30px 20px; border-radius: 24px; border: 1px solid #1E293B; margin-bottom: 15px; min-height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .word-card h1 { margin: 0; font-size: 1.8rem; font-weight: 700; line-height: 1.2; transition: font-size 0.2s; }
+        .word-card h1.small-font { font-size: 1.4rem; }
         .speaker-icon { margin-top: 15px; font-size: 1.4rem; cursor: pointer; background: #1E293B; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 
-        /* Фразы и подсказки */
-        .sentence-slots { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; min-height: 50px; margin-bottom: 25px; padding: 12px; border-bottom: 2px dashed #1E293B; }
-        .tile { background: var(--btn-bg); border: 1px solid #334155; padding: 12px 16px; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; user-select: none; }
+        .sentence-slots { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; min-height: 45px; margin-bottom: 20px; padding: 10px; border-bottom: 2px dashed #1E293B; }
+        .tile { background: var(--btn-bg); border: 1px solid #334155; padding: 10px 14px; border-radius: 10px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: 0.1s; }
         .tile.used { opacity: 0.2; pointer-events: none; }
         .tile.placed { background: var(--accent); border-color: var(--accent); }
         
-        .correct-answer-hint { display: none; margin-top: 15px; padding: 15px; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--correct); border-radius: 12px; color: var(--correct); font-weight: 600; font-size: 0.9rem; text-align: center; animation: fadeIn 0.3s; }
+        .correct-hint-box { display: none; margin-bottom: 15px; padding: 15px; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--correct); border-radius: 12px; color: var(--correct); font-weight: 600; font-size: 0.85rem; text-align: center; animation: fadeIn 0.3s; }
 
-        /* Кнопки действий */
-        .btn-group { display: flex; flex-direction: column; gap: 12px; }
-        button.option-btn { border: 1px solid #1E293B; padding: 18px; border-radius: 15px; font-size: 1.1rem; font-weight: 600; cursor: pointer; background: var(--btn-bg); color: #FFFFFF; width: 100%; }
+        .btn-group { display: flex; flex-direction: column; gap: 10px; }
+        button.option-btn { border: 1px solid #1E293B; padding: 16px; border-radius: 14px; font-size: 1.05rem; font-weight: 600; cursor: pointer; background: var(--btn-bg); color: #FFFFFF; width: 100%; }
         
-        .action-btn { background: var(--accent); color: #fff; border: none; padding: 22px 30px; border-radius: 16px; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: 0.2s; }
-        .action-btn:active { transform: scale(0.98); }
+        .action-btn { background: var(--accent); color: #fff; border: none; padding: 22px 30px; border-radius: 16px; font-weight: 800; font-size: 1.1rem; cursor: pointer; }
 
-        /* Ошибки FAB */
         .fab-mistakes { position: fixed; bottom: 25px; right: 20px; background: var(--error); color: #fff; padding: 16px 24px; border-radius: 35px; font-weight: 800; font-size: 0.9rem; cursor: pointer; z-index: 50; display: none; align-items: center; gap: 8px; box-shadow: 0 8px 25px rgba(255, 59, 48, 0.4); border: none; }
 
-        /* Статистика */
         #stats-page { overflow-y: auto; display: none; text-align: left; }
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .stat-box { background: #1E293B; padding: 15px; border-radius: 18px; }
-        .stat-box h3 { margin: 0; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
-        .stat-box .value { font-size: 1.4rem; font-weight: 800; margin-top: 5px; color: #fff; }
+        .stat-box h3 { margin: 0; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; }
+        .stat-box .value { font-size: 1.3rem; font-weight: 800; margin-top: 4px; }
 
         .leaderboard-title { margin: 30px 0 80px 0; font-size: 1rem; color: var(--accent); text-transform: uppercase; font-weight: 900; text-align: center; letter-spacing: 2px; }
-        .leader-row { display: flex; justify-content: space-between; padding: 15px; background: rgba(255,255,255,0.04); border-radius: 14px; margin-bottom: 8px; font-size: 0.95rem; border: 1px solid transparent; }
-        .leader-score { color: var(--correct); font-weight: bold; }
+        .leader-row { display: flex; justify-content: space-between; padding: 15px; background: rgba(255,255,255,0.04); border-radius: 14px; margin-bottom: 8px; }
+        
+        .reset-btn { background: var(--error); padding: 28px; width: 100%; border-radius: 20px; font-size: 1.1rem; margin: 40px 0; border: none; color: #fff; font-weight: 900; }
 
-        .reset-btn { background: var(--error); padding: 28px; width: 100%; border-radius: 20px; font-size: 1.1rem; margin-top: 40px; margin-bottom: 40px; border: none; color: #fff; font-weight: 900; box-shadow: 0 10px 20px rgba(255, 59, 48, 0.2); }
-
-        /* Сообщения */
         #message-screen { display: none; flex-direction: column; align-items: center; justify-content: center; }
-        .cat-good { width: 185px; border-radius: 25px; margin-bottom: 25px; border: 4px solid var(--correct); }
+        .msg-cat { width: 180px; border-radius: 25px; margin-bottom: 20px; }
 
-        /* Кот */
-        .cat-bad-popup { position: fixed; bottom: 95px; right: 20px; width: 165px; background: var(--card-bg); border-radius: 25px; padding: 12px; border: 2px solid var(--error); transform: translateY(300%); transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 100; box-shadow: 0 15px 40px rgba(0,0,0,0.6); }
+        .cat-bad-popup { position: fixed; bottom: 95px; right: 20px; width: 165px; background: var(--card-bg); border-radius: 25px; padding: 12px; border: 2px solid var(--error); transform: translateY(350%); transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 100; }
         .cat-bad-popup.show { transform: translateY(0); }
         .cat-bad-popup img { width: 100%; border-radius: 15px; }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes shake { 10%, 90% { transform: translateX(-3px); } 20%, 80% { transform: translateX(4px); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -120,22 +110,22 @@
         <div class="timer-container" id="timer-container"><div class="timer-bar" id="timer-bar"></div></div>
         
         <div class="word-card">
-            <h1 id="word">Учимся...</h1>
+            <h1 id="word">Загрузка...</h1>
             <div class="speaker-icon" id="speak-btn" onclick="speakCurrent()">🔊</div>
         </div>
 
         <div id="phrase-builder-ui" style="display:none">
             <div class="sentence-slots" id="slots-container"></div>
             <div class="btn-group" style="flex-direction:row; flex-wrap:wrap; justify-content:center; gap:8px" id="tiles-container"></div>
-            <button class="action-btn" id="check-phrase-btn" style="width:100%; margin-top:20px" onclick="checkSentence()">Проверить</button>
-            <div class="correct-answer-hint" id="correct-hint"></div>
+            <div class="correct-hint-box" id="correct-hint"></div>
+            <button class="action-btn" style="width:100%" onclick="checkSentence()">Проверить</button>
         </div>
 
         <div class="btn-group" id="options-container"></div>
     </div>
 
     <div class="container" id="mistakes-screen" style="display:none">
-        <div class="header-info"><div class="stats-label" id="mistakes-header">ОШИБКИ</div></div>
+        <div class="header-info"><div class="stats-label">РАБОТА НАД ОШИБКАМИ</div></div>
         <div class="word-card"><h1 id="m-word">...</h1><div class="speaker-icon" onclick="speakMistake()">🔊</div></div>
         <div class="btn-group" id="m-options-container"></div>
         <button class="action-btn" style="background:#334155; margin-top:20px" onclick="closeMistakes()">Выйти</button>
@@ -143,18 +133,18 @@
 
     <div class="container" id="stats-page">
         <div class="stat-grid">
-            <div class="stat-box"><h3>Мой Опыт</h3><p id="st-xp" class="value">0 XP</p></div>
+            <div class="stat-box"><h3>Опыт</h3><p id="st-xp" class="value">0 XP</p></div>
             <div class="stat-box"><h3>Уровень</h3><p id="st-level" class="value">1</p></div>
             <div class="stat-box"><h3>Слов</h3><p id="st-words" class="value">0</p></div>
             <div class="stat-box"><h3>Фраз</h3><p id="st-phrases" class="value">0</p></div>
         </div>
         <div class="leaderboard-title">ТОП ПШЕКОВ 🏆</div>
         <div id="leaderboard-list"></div>
-        <button class="reset-btn" onclick="resetProgress()">СБРОСИТЬ ВЕСЬ ПРОГРЕСС</button>
+        <button class="reset-btn" onclick="resetProgress()">СБРОСИТЬ ПРОГРЕСС</button>
     </div>
 
     <div class="container" id="message-screen">
-        <img id="cat-win" src="good.png" class="cat-good">
+        <img id="msg-cat-img" src="good.png" class="msg-cat">
         <h2 id="msg-title"></h2>
         <p id="msg-desc"></p>
         <button class="action-btn" onclick="nextAction()">Продолжить</button>
@@ -169,7 +159,6 @@
         const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         const tg = window.Telegram.WebApp;
-        tg.expand();
         const userName = tg.initDataUnsafe?.user?.first_name || "Панама";
 
         const levelsData = [
@@ -177,7 +166,7 @@
             [ {pl:"Miasto",ru:"Город"},{pl:"Ulica",ru:"Улица"},{pl:"Samochód",ru:"Машина"},{pl:"Autobus",ru:"Автобус"},{pl:"Pociąg",ru:"Поезд"},{pl:"Bilet",ru:"Билет"},{pl:"Pieniądze",ru:"Деньги"},{pl:"Sklep",ru:"Магазин"},{pl:"Woda",ru:"Вода"},{pl:"Jedzenie",ru:"Еда"},{pl:"Chleb",ru:"Хлеб"},{pl:"Mięso",ru:"Мясо"},{pl:"Mleko",ru:"Молоко"},{pl:"Kawa",ru:"Кофе"},{pl:"Herbata",ru:"Чай"},{pl:"Śniadanie",ru:"Завтрак"},{pl:"Obiad",ru:"Обед"},{pl:"Kolacja",ru:"Ужин"},{pl:"Czas",ru:"Время"},{pl:"Godzina",ru:"Час"} ],
             [ {pl:"Rodzina",ru:"Семья"},{pl:"Matka",ru:"Мать"},{pl:"Ojciec",ru:"Отец"},{pl:"Brat",ru:"Брат"},{pl:"Siostra",ru:"Сестра"},{pl:"Babcia",ru:"Бабушка"},{pl:"Dziadek",ru:"Дедушка"},{pl:"Wujek",ru:"Дядя"},{pl:"Ciocia",ru:"Тетя"},{pl:"Syn",ru:"Сын"},{pl:"Córka",ru:"Дочь"},{pl:"Przyjaciel",ru:"Друг"},{pl:"Sąsiad",ru:"Сосед"},{pl:"Chłopak",ru:"Парень"},{pl:"Dziewczyna",ru:"Девушка"},{pl:"Dziadkowie",ru:"Бабушка и дедушка"},{pl:"Rodzice",ru:"Родители"},{pl:"Kuzyn",ru:"Двоюродный брат"},{pl:"Małżeństwo",ru:"Брак"},{pl:"Ślub",ru:"Свадьба"} ],
             [ {pl:"Dobry",ru:"Хороший"},{pl:"Zły",ru:"Плохой"},{pl:"Duży",ru:"Большой"},{pl:"Mały",ru:"Маленький"},{pl:"Nowy",ru:"Новый"},{pl:"Stary",ru:"Старый"},{pl:"Gorący",ru:"Горячий"},{pl:"Zimny",ru:"Холодный"},{pl:"Szybki",ru:"Быстрый"},{pl:"Wolny",ru:"Медленный / Свободный"},{pl:"Drogi",ru:"Дорогой"},{pl:"Tani",ru:"Дешевый"},{pl:"Czysty",ru:"Чистый"},{pl:"Brudny",ru:"Грязный"},{pl:"Ładny",ru:"Красивый"},{pl:"Brzydki",ru:"Уродливый"},{pl:"Wysoki",ru:"Высокий"},{pl:"Niski",ru:"Низкий"},{pl:"Trudny",ru:"Трудный"},{pl:"Łatwy",ru:"Легкий"} ],
-            [ {pl:"Robić",ru:"Делать"},{pl:"Mówić",ru:"Говорить"},{pl:"Widzieć",ru:"Видеть"},{pl:"Słyszeć",ru:"Слышать"},{pl:"Myśleć",ru:"Думать"},{pl:"Wiedzieć",ru:"Знать"},{pl:"Mieć",ru:"Иметь"},{pl:"Być",ru:"Быть"},{pl:"Chcieć",ru:"Хотеть"},{pl:"Móc",ru:"Мочь"},{pl:"Musieć",ru:"Должен"},{pl:"Iść",ru:"Идти"},{pl:"Jechać",ru:"Ехать"},{pl:"Pracować",ru:"Работать"},{pl:"Grać",ru:"Играть"},{pl:"Czytać",ru:"Читать"},{pl:"Pisać",ru:"Писать"},{pl:"Pić",ru:"Пить"},{pl:"Jeść",ru:"Есть (кушать)"},{pl:"Spać",ru:"Спать"} ],
+            [ {pl:"Robić",ru:"Делать"},{pl:"Mówić",ru:"Говорить"},{pl:"Widzieć",ru:"Видеть"},{pl:"Słышать",ru:"Слышать"},{pl:"Myśleть",ru:"Думать"},{pl:"Wiedzieть",ru:"Знать"},{pl:"Mieć",ru:"Иметь"},{pl:"Być",ru:"Быть"},{pl:"Chcieć",ru:"Хотеть"},{pl:"Móc",ru:"Мочь"},{pl:"Musieć",ru:"Должен"},{pl:"Iść",ru:"Идти"},{pl:"Jechać",ru:"Ехать"},{pl:"Pracować",ru:"Работать"},{pl:"Grać",ru:"Играть"},{pl:"Czytać",ru:"Читать"},{pl:"Pisać",ru:"Писать"},{pl:"Pić",ru:"Пить"},{pl:"Jeść",ru:"Есть (кушать)"},{pl:"Spać",ru:"Спать"} ],
             [ {pl:"Pokój",ru:"Комната"},{pl:"Kuchnia",ru:"Кухня"},{pl:"Łazienka",ru:"Ванная"},{pl:"Sypialnia",ru:"Спальня"},{pl:"Łóżko",ru:"Кровать"},{pl:"Krzesło",ru:"Стул"},{pl:"Stół",ru:"Стол"},{pl:"Drzwi",ru:"Двери"},{pl:"Ściana",ru:"Стена"},{pl:"Podłoga",ru:"Пол"},{pl:"Sufit",ru:"Потолок"},{pl:"Lampa",ru:"Лампа"},{pl:"Telewizor",ru:"Телевизор"},{pl:"Komputer",ru:"Компьютер"},{pl:"Telefon",ru:"Телефон"},{pl:"Klucz",ru:"Ключ"},{pl:"Torba",ru:"Сумка"},{pl:"Zegarek",ru:"Часы"},{pl:"Lustro",ru:"Зеркало"},{pl:"Szafa",ru:"Шкаф"} ],
             [ {pl:"Głowa",ru:"Голова"},{pl:"Twarz",ru:"Лицо"},{pl:"Oko",ru:"Глаз"},{pl:"Ucho",ru:"Ухо"},{pl:"Nos",ru:"Нос"},{pl:"Usta",ru:"Рот / Губы"},{pl:"Ząб",ru:"Зуб"},{pl:"Ręka",ru:"Рука"},{pl:"Noga",ru:"Нога"},{pl:"Palec",ru:"Палец"},{pl:"Włosy",ru:"Волосы"},{pl:"Plecy",ru:"Спина"},{pl:"Serce",ru:"Сердце"},{pl:"Krew",ru:"Кровь"},{pl:"Lekarz",ru:"Врач"},{pl:"Apteka",ru:"Аптека"},{pl:"Szpital",ru:"Больница"},{pl:"Choroba",ru:"Болезнь"},{pl:"Ból",ru:"Боль"},{pl:"Zdrowie",ru:"Здоровье"} ],
             [ {pl:"Niebo",ru:"Небо"},{pl:"Gwiazda",ru:"Звезда"},{pl:"Księżyc",ru:"Луна"},{pl:"Chmura",ru:"Облако"},{pl:"Deszcz",ru:"Дождь"},{pl:"Śnieг",ru:"Снег"},{pl:"Wiatr",ru:"Ветер"},{pl:"Burza",ru:"Буря"},{pl:"Mgła",ru:"Туман"},{pl:"Ziemia",ru:"Земля"},{pl:"Góra",ru:"Гора"},{pl:"Las",ru:"Лес"},{pl:"Rzeka",ru:"Река"},{pl:"Morze",ru:"Море"},{pl:"Plaża",ru:"Пляж"},{pl:"Zwierzę",ru:"Животное"},{pl:"Pies",ru:"Собака"},{pl:"Kot",ru:"Кот"},{pl:"Ptak",ru:"Птица"},{pl:"Ryba",ru:"Рыба"} ],
@@ -229,7 +218,6 @@
             document.getElementById('message-screen').style.display = 'none';
             document.getElementById('mistakes-screen').style.display = 'none';
             
-            // Дизайнерский фикс: переключаем класс active
             document.getElementById('tab-play').classList.toggle('active', tab === 'play');
             document.getElementById('tab-stats').classList.toggle('active', tab === 'stats');
 
@@ -247,7 +235,7 @@
             document.getElementById('st-words').innerText = stats.words;
             document.getElementById('st-phrases').innerText = stats.phrases;
             document.getElementById('fab-count').innerText = mistakesDb.length;
-            document.getElementById('fab-mistakes').style.display = mistakesDb.length > 0 ? 'flex' : 'none';
+            document.getElementById('fab-mistakes').style.display = (mistakesDb.length > 0 && document.getElementById('stats-page').style.display !== 'flex') ? 'flex' : 'none';
         }
 
         function setMode(mode) {
@@ -277,7 +265,7 @@
                 currentLevel++;
                 localStorage.setItem('pl_level', currentLevel);
                 saveStats();
-                showMsg("Уровень пройден!", `+${currentMode === 'phrases' ? 50 : 20} XP!`, startLevel);
+                showMsg("Уровень пройден!", `Отличная работа! +${currentMode === 'phrases' ? 50 : 20} XP`, startLevel, true);
                 return;
             }
             isWaiting = false;
@@ -295,10 +283,15 @@
         function renderWordsMode(cur) {
             const askRu = currentMode === 'audio' ? false : Math.random() > 0.5;
             const wordEl = document.getElementById('word');
+            wordEl.classList.remove('small-font');
+            document.getElementById('speak-btn').style.display = 'flex';
+            
             wordEl.innerText = currentMode === 'audio' ? '🎧' : (askRu ? cur.ru : cur.pl);
             wordEl.dataset.val = (currentMode === 'audio' || !askRu) ? cur.pl : cur.ru;
             wordEl.dataset.lang = (currentMode === 'audio' || !askRu) ? 'pl-PL' : 'ru-RU';
-            if (currentMode === 'audio') speakCurrent();
+            
+            // Если слово на польском — озвучиваем сразу
+            if (currentMode === 'audio' || !askRu) speakCurrent();
             
             const container = document.getElementById('options-container');
             container.innerHTML = '';
@@ -310,27 +303,23 @@
                 const b = document.createElement('button');
                 b.className = 'option-btn';
                 b.innerText = o;
-                b.onclick = () => checkWordAnswer(b, o, cur[target], cur);
+                b.onclick = () => {
+                    // Если мы выбираем польское слово — озвучиваем его при клике
+                    if (target === 'pl') speakText(o, 'pl-PL');
+                    checkWordAnswer(b, o, cur[target], cur);
+                };
                 container.appendChild(b);
             });
 
             if (currentMode === 'sprint') startSprintTimer(cur, target);
         }
 
-        function startSprintTimer(cur, target) {
-            let start = Date.now();
-            let bar = document.getElementById('timer-bar');
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                let p = 100 - ((Date.now() - start) / 7000 * 100);
-                bar.style.width = p + '%';
-                if (p <= 0) { clearInterval(timerInterval); checkWordAnswer(null, '', target, cur); }
-            }, 50);
-        }
-
         function renderPhrasesMode(cur) {
             document.getElementById('options-container').style.display = 'none';
             document.getElementById('phrase-builder-ui').style.display = 'block';
+            document.getElementById('speak-btn').style.display = 'none';
+            document.getElementById('word').classList.add('small-font');
+
             const isMissingWordMode = Math.random() > 0.6;
             selectedPhraseWords = [];
             const slots = document.getElementById('slots-container');
@@ -364,6 +353,7 @@
                 t.innerText = w;
                 t.onclick = () => {
                     if (t.classList.contains('used')) return;
+                    speakText(w, 'pl-PL'); // Озвучка при нажатии плитки
                     t.classList.add('used');
                     addWordToSentence(w, t);
                 };
@@ -396,7 +386,7 @@
                 document.getElementById('correct-hint').innerText = "Правильно: " + cur.pl;
                 document.getElementById('correct-hint').style.display = 'block';
                 mistakesMade++;
-                if (mistakesMade > 2) setTimeout(() => showMsg("Провал", "Попробуй еще раз!", startLevel), 2000);
+                if (mistakesMade > 2) setTimeout(() => showMsg("Провал", "Попробуй еще раз!", startLevel, false), 2000);
             }
         }
 
@@ -413,7 +403,7 @@
                 showBadCat();
                 addMistake(curObj);
                 mistakesMade++;
-                if (mistakesMade > 1) setTimeout(() => showMsg("Провал", "Слишком много ошибок", startLevel), 800);
+                if (mistakesMade > 1) setTimeout(() => showMsg("Провал", "Слишком много ошибок", startLevel, false), 800);
                 else { wordIndex++; setTimeout(nextQuestion, 1200); }
             }
         }
@@ -429,6 +419,7 @@
         function openMistakes() {
             document.getElementById('game-container').style.display = 'none';
             document.getElementById('mistakes-screen').style.display = 'flex';
+            document.getElementById('fab-mistakes').style.display = 'none';
             wordIndex = 0; levelItems = shuffle([...mistakesDb]);
             renderMistakeQuestion();
         }
@@ -438,6 +429,7 @@
             isWaiting = false;
             const cur = levelItems[wordIndex];
             document.getElementById('m-word').innerText = cur.pl;
+            speakText(cur.pl, 'pl-PL');
             const container = document.getElementById('m-options-container');
             container.innerHTML = '';
             let wr = shuffle(allWordsFlat.filter(w => w.ru !== cur.ru)).slice(0, 2);
@@ -459,7 +451,7 @@
             });
         }
 
-        function closeMistakes() { document.getElementById('mistakes-screen').style.display = 'none'; startLevel(); }
+        function closeMistakes() { document.getElementById('mistakes-screen').style.display = 'none'; startLevel(); updateStatsUI(); }
 
         function saveStats() {
             localStorage.setItem('pl_stats_v2', JSON.stringify(stats));
@@ -482,37 +474,49 @@
             `).join('');
         }
 
+        function startSprintTimer(cur, target) {
+            let start = Date.now();
+            let bar = document.getElementById('timer-bar');
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                let p = 100 - ((Date.now() - start) / 7000 * 100);
+                bar.style.width = p + '%';
+                if (p <= 0) { clearInterval(timerInterval); checkWordAnswer(null, '', target, cur); }
+            }, 50);
+        }
+
         function showBadCat() {
             const c = document.getElementById('cat-bad');
             c.classList.add('show');
             setTimeout(() => c.classList.remove('show'), 2500);
         }
 
-        function showMsg(t, d, action) {
+        function showMsg(t, d, action, isWin) {
             document.getElementById('game-container').style.display = 'none';
-            const m = document.getElementById('message-screen');
-            m.style.display = 'flex';
+            document.getElementById('message-screen').style.display = 'flex';
             document.getElementById('msg-title').innerText = t;
             document.getElementById('msg-desc').innerText = d;
+            document.getElementById('msg-cat-img').src = isWin ? 'good.png' : 'bad.png';
             window.nextAction = action;
         }
 
         function speakCurrent() {
             const el = document.getElementById('word');
-            const u = new SpeechSynthesisUtterance(el.dataset.val || el.innerText);
-            u.lang = el.dataset.lang || 'pl-PL';
-            speechSynthesis.speak(u);
+            speakText(el.dataset.val || el.innerText, el.dataset.lang || 'pl-PL');
         }
 
-        function speakMistake() {
-            const t = document.getElementById('m-word').innerText;
+        function speakMistake() { speakText(document.getElementById('m-word').innerText, 'pl-PL'); }
+
+        function speakText(t, l) {
+            window.speechSynthesis.cancel();
             const u = new SpeechSynthesisUtterance(t);
-            u.lang = 'pl-PL';
-            speechSynthesis.speak(u);
+            u.lang = l;
+            u.rate = 0.9;
+            window.speechSynthesis.speak(u);
         }
 
         function shuffle(a) { return a.sort(() => Math.random() - 0.5); }
-        function resetProgress() { if(confirm("Точно сбросить всё?")) { localStorage.clear(); location.reload(); } }
+        function resetProgress() { if(confirm("Сбросить всё?")) { localStorage.clear(); location.reload(); } }
 
         startLevel();
         updateStatsUI();
