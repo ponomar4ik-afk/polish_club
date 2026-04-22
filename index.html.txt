@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Polski Rodzaj</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg-color: #0B0F19; /* Экстремально темный фон, почти черный */
+            --card-bg: #151A27;  /* Чуть светлее для карточки, чтобы создать глубину */
+            --text-main: #FFFFFF;
+            --text-muted: #64748B;
+            /* Акцентные "неоновые" цвета для фокуса */
+            --accent-ten: #3B82F6; /* Синий */
+            --accent-ta: #F43F5E;  /* Розово-красный */
+            --accent-to: #10B981;  /* Зеленый */
+            --error: #EF4444;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent; /* Убираем дефолтное мерцание при тапе */
+        }
+
+        .container {
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .stats {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            letter-spacing: 2px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .word-card {
+            background: var(--card-bg);
+            padding: 48px 20px;
+            border-radius: 20px;
+            border: 1px solid #1E293B; /* Тонкий контур для резкости */
+            margin-bottom: 36px;
+            transition: transform 0.15s ease-out;
+        }
+
+        .word-card h1 {
+            margin: 0;
+            font-size: 2.8rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .word-card p {
+            margin-top: 12px;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+        }
+
+        button {
+            border: none;
+            padding: 16px 0;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            color: #FFFFFF;
+            transition: transform 0.1s ease, filter 0.2s;
+        }
+
+        button:active {
+            transform: scale(0.92);
+            filter: brightness(1.2);
+        }
+
+        .btn-ten { background-color: var(--accent-ten); }
+        .btn-ta { background-color: var(--accent-ta); }
+        .btn-to { background-color: var(--accent-to); }
+
+        /* Жесткие состояния ответа без лишней анимации */
+        .correct { 
+            border-color: var(--accent-to) !important;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+        }
+        .wrong { 
+            animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both;
+            border-color: var(--error) !important;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-2px, 0, 0); }
+            20%, 80% { transform: translate3d(4px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-8px, 0, 0); }
+            40%, 60% { transform: translate3d(8px, 0, 0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="stats" id="stats">WYNIK: 0 / 0</div>
+        
+        <div class="word-card" id="card">
+            <h1 id="word">Dom</h1>
+            <p id="translation">дом</p>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn-ten" onclick="check('ten')">TEN</button>
+            <button class="btn-ta" onclick="check('ta')">TA</button>
+            <button class="btn-to" onclick="check('to')">TO</button>
+        </div>
+    </div>
+
+    <script>
+        // Инициализация Telegram Mini App
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        // Базовый словарь (можешь добавлять сюда новые слова)
+        const words = [
+            { w: "Słońce", t: "солнце", r: "to" },
+            { w: "Kobieta", t: "женщина", r: "ta" },
+            { w: "Mężczyzna", t: "мужчина", r: "ten" },
+            { w: "Okno", t: "окно", r: "to" },
+            { w: "Noc", t: "ночь", r: "ta" },
+            { w: "Dzień", t: "день", r: "ten" },
+            { w: "Naczynie", t: "посуда", r: "to" },
+            { w: "Rzecz", t: "вещь", r: "ta" },
+            { w: "Samochód", t: "машина", r: "ten" },
+            { w: "Książka", t: "книга", r: "ta" },
+            { w: "Dziecko", t: "ребенок", r: "to" },
+            { w: "Miłość", t: "любовь", r: "ta" }
+        ];
+
+        let currentWord = {};
+        let score = 0;
+        let total = 0;
+
+        function nextWord() {
+            const card = document.getElementById('card');
+            // Сбрасываем классы правильного/неправильного ответа
+            card.className = 'word-card';
+            
+            // Выбираем случайное слово
+            currentWord = words[Math.floor(Math.random() * words.length)];
+            document.getElementById('word').innerText = currentWord.w;
+            document.getElementById('translation').innerText = currentWord.t;
+        }
+
+        function check(gender) {
+            total++;
+            const card = document.getElementById('card');
+            
+            if (gender === currentWord.r) {
+                score++;
+                card.classList.add('correct');
+                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            } else {
+                card.classList.add('wrong');
+                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+            }
+
+            // Обновляем статистику (Wynik - это "счет/результат" по-польски)
+            document.getElementById('stats').innerText = `WYNIK: ${score} / ${total}`;
+            
+            // Задержка перед следующим словом, чтобы было видно результат
+            setTimeout(nextWord, 500);
+        }
+
+        // Запускаем первое слово при загрузке
+        nextWord();
+    </script>
+</body>
+</html>
