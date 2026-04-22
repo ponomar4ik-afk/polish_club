@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Polski Trener Pro</title>
+    <title>Polish Club Pro</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
@@ -31,7 +32,7 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Главные табы */
+        /* Навигация */
         .tabs { display: flex; width: 100%; background: #0F172A; border-bottom: 1px solid #1E293B; position: fixed; top: 0; z-index: 10; }
         .tab { flex: 1; padding: 16px 0; text-align: center; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: 0.2s; border-bottom: 2px solid transparent; text-transform: uppercase; letter-spacing: 1px; }
         .tab.active { color: var(--text-main); border-bottom: 2px solid var(--accent); }
@@ -39,48 +40,50 @@
         .container { width: 90%; max-width: 400px; text-align: center; margin-top: 80px; display: flex; flex-direction: column; justify-content: center; padding-bottom: 80px; }
         
         .mode-tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 20px; }
-        .mode-btn { background: var(--btn-bg); color: var(--text-muted); border: 1px solid #1E293B; padding: 8px 16px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; cursor: pointer; transition: 0.2s; }
+        .mode-btn { background: var(--btn-bg); color: var(--text-muted); border: 1px solid #1E293B; padding: 8px 16px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; cursor: pointer; }
         .mode-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
         .header-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding: 0 10px; }
         .stats-label { font-size: 0.75rem; color: var(--text-muted); letter-spacing: 2px; font-weight: 600; text-transform: uppercase; }
-        .lives { color: var(--error); font-size: 1.2rem; letter-spacing: 2px; }
+        .lives { color: var(--error); font-size: 1.2rem; }
 
-        /* Таймер */
         .timer-container { width: 100%; height: 6px; background: #0F172A; border-radius: 3px; overflow: hidden; margin-bottom: 20px; display: none; }
         .timer-bar { height: 100%; width: 100%; background: var(--correct); transition: width 0.1s linear; }
 
-        /* Карточка */
         .word-card { background: var(--card-bg); padding: 40px 20px; border-radius: 20px; border: 1px solid #1E293B; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 140px; }
         .word-card h1 { margin: 0; font-size: 2.2rem; font-weight: 700; letter-spacing: -0.02em; }
         .speaker-icon { margin-top: 15px; font-size: 1.5rem; cursor: pointer; background: #1E293B; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 
-        /* Кнопки ответов */
         .btn-group { display: flex; flex-direction: column; gap: 12px; }
         button.option-btn { border: 1px solid #1E293B; padding: 18px 20px; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; background: var(--btn-bg); color: #FFFFFF; transition: 0.2s; width: 100%; }
         .correct { background: rgba(16, 185, 129, 0.1) !important; border-color: var(--correct) !important; color: var(--correct) !important; }
         .wrong { background: rgba(239, 68, 68, 0.1) !important; border-color: var(--error) !important; color: var(--error) !important; animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both; }
 
-        /* FAB Ошибок */
         .fab-mistakes { position: fixed; bottom: 20px; right: 20px; background: #EF4444; color: #fff; padding: 14px 24px; border-radius: 30px; font-weight: bold; font-size: 0.9rem; cursor: pointer; z-index: 50; display: none; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4); border: none; }
 
-        /* Попап Плохого кота (увеличен) */
+        /* Огромный плохой кот */
         .cat-bad-popup { position: fixed; bottom: 85px; right: 20px; width: 165px; background: var(--card-bg); border-radius: 20px; padding: 10px; text-align: center; border: 2px solid var(--error); transform: translateY(200%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 100; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .cat-bad-popup.show { transform: translateY(0); }
         .cat-bad-popup img { width: 100%; border-radius: 12px; }
 
-        /* Экраны и статистика */
-        #message-screen, #mistakes-screen, #stats-page { display: none; flex-direction: column; align-items: center; justify-content: center; }
-        #stats-page { margin-top: 100px; gap: 15px; }
-        .stat-box { background: #1E293B; padding: 20px; border-radius: 16px; border: 1px solid #334155; width: 85%; text-align: left; }
-        .cat-good { width: 180px; border-radius: 20px; margin-bottom: 20px; border: 3px solid var(--correct); }
+        #stats-page { margin-top: 80px; overflow-y: auto; width: 90%; display: none; flex-direction: column; }
+        .stat-box { background: #1E293B; padding: 15px; border-radius: 16px; border: 1px solid #334155; margin-bottom: 10px; text-align: left; }
+        .stat-box h3 { margin: 0 0 5px 0; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
+        .stat-box .value { font-size: 1.5rem; font-weight: bold; color: #fff; margin: 0; }
 
+        .leaderboard-title { margin: 20px 0 10px; font-size: 0.9rem; color: var(--accent); text-transform: uppercase; font-weight: bold; text-align: center;}
+        .leader-row { display: flex; justify-content: space-between; padding: 12px 15px; background: rgba(255,255,255,0.03); border-radius: 10px; margin-bottom: 5px; font-size: 0.9rem; }
+        .leader-score { color: var(--correct); font-weight: bold; }
+
+        #message-screen { display: none; flex-direction: column; align-items: center; justify-content: center; }
+        .cat-good { width: 185px; border-radius: 20px; margin-bottom: 20px; border: 3px solid var(--correct); }
         .action-btn { background: var(--accent); color: #fff; border: none; padding: 15px 30px; border-radius: 12px; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin-top: 20px; }
 
         @keyframes shake {
             10%, 90% { transform: translate3d(-2px, 0, 0); }
             20%, 80% { transform: translate3d(4px, 0, 0); }
             30%, 50%, 70% { transform: translate3d(-8px, 0, 0); }
+            40%, 60% { transform: translate3d(8px, 0, 0); }
         }
     </style>
 </head>
@@ -97,113 +100,103 @@
             <button class="mode-btn" id="btn-sprint" onclick="setMode('sprint')">Спринт</button>
             <button class="mode-btn" id="btn-audio" onclick="setMode('audio')">Аудио</button>
         </div>
-
         <div class="header-info">
             <div class="stats-label" id="stats-header">УРОВЕНЬ 1 (0/20)</div>
             <div class="lives" id="lives">🤍🤍</div>
         </div>
-        
-        <div class="timer-container" id="timer-container">
-            <div class="timer-bar" id="timer-bar"></div>
-        </div>
-
+        <div class="timer-container" id="timer-container"><div class="timer-bar" id="timer-bar"></div></div>
         <div class="word-card">
             <h1 id="word" onclick="speakWord()">Dom</h1>
             <div class="speaker-icon" onclick="speakWord()">🔊</div>
         </div>
-
         <div class="btn-group" id="options-container"></div>
     </div>
 
-    <div class="container" id="mistakes-screen">
-        <div class="header-info" style="width:100%">
-            <div class="stats-label" id="mistakes-header">ОШИБКИ (0/0)</div>
-            <div class="lives">🔥</div>
-        </div>
-        <div class="word-card">
-            <h1 id="m-word" onclick="speakMistake()">...</h1>
-            <div class="speaker-icon" onclick="speakMistake()">🔊</div>
-        </div>
+    <div class="container" id="mistakes-screen" style="display:none">
+        <div class="header-info" style="width:100%"><div class="stats-label" id="mistakes-header">ОШИБКИ (0/0)</div><div class="lives">🔥</div></div>
+        <div class="word-card"><h1 id="m-word" onclick="speakMistake()">...</h1><div class="speaker-icon" onclick="speakMistake()">🔊</div></div>
         <div class="btn-group" id="m-options-container" style="width:100%"></div>
         <button class="action-btn" style="background:#334155" onclick="closeMistakes()">Выйти</button>
     </div>
 
     <div class="container" id="stats-page">
-        <div class="stat-box"><h3>Текущий уровень</h3><p id="st-level" style="font-size:2rem; font-weight:bold; color:var(--accent)">1</p></div>
-        <div class="stat-box"><h3>Выучено слов</h3><p id="st-words" style="font-size:2rem; font-weight:bold">0</p></div>
-        <button class="action-btn" style="background:var(--error); margin-top:40px" onclick="resetProgress()">Сбросить прогресс</button>
+        <div class="stat-box"><h3>Твой уровень</h3><p id="st-level" class="value">1</p></div>
+        <div class="stat-box"><h3>Выучено слов</h3><p id="st-words" class="value">0</p></div>
+        <div class="leaderboard-title">Рейтинг Пшеков 🏆</div>
+        <div id="leaderboard-list">Загрузка рейтинга...</div>
     </div>
 
     <div class="container" id="message-screen">
         <img id="cat-win" src="good.png" class="cat-good" onerror="this.style.display='none'">
-        <h2 id="msg-title">Заголовок</h2>
-        <p id="msg-desc">Описание</p>
+        <h2 id="msg-title">...</h2>
+        <p id="msg-desc">...</p>
         <button id="msg-btn" class="action-btn" onclick="nextAction()">Продолжить</button>
     </div>
 
-    <div class="cat-bad-popup" id="cat-bad">
-        <img src="bad.png" alt="bad cat" onerror="this.style.display='none'">
-    </div>
-
-    <div class="fab-mistakes" id="fab-mistakes" onclick="openMistakes()">
-        🔥 Ошибки (<span id="fab-count">0</span>)
-    </div>
+    <div class="cat-bad-popup" id="cat-bad"><img src="bad.png" onerror="this.style.display='none'"></div>
+    <div class="fab-mistakes" id="fab-mistakes" onclick="openMistakes()">🔥 Ошибки (<span id="fab-count">0</span>)</div>
 
     <script>
+        // ДАННЫЕ SUPABASE
+        const SUPABASE_URL = 'https://lftbwacoprombmrctcaq.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxmdGJ3YWNvcHJvbWJtcmN0Y2FxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY4NzkyNDYsImV4cCI6MjA5MjQ1NTI0Nn0.96ZOQhWFXo5v1TOqrodHdT0nSSKa6IbcoikBYOv4ftM';
+        const sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
         const tg = window.Telegram.WebApp;
         tg.expand();
+        const userName = tg.initDataUnsafe?.user?.first_name || "Панама";
 
         const levelsData = [
-            [ {pl:"Tak",ru:"Да"},{pl:"Nie",ru:"Нет"},{pl:"Proszę",ru:"Пожалуйста"},{pl:"Dziękuję",ru:"Спасибо"},{pl:"Przepraszam",ru:"Извините"},{pl:"Dzień dobry",ru:"Добрый день"},{pl:"Dobry wieczór",ru:"Добрый вечер"},{pl:"Dobranoc",ru:"Спокойной ночи"},{pl:"Cześć",ru:"Привет / Пока"},{pl:"Do widzenia",ru:"До свидания"},{pl:"Pan",ru:"Господин"},{pl:"Pani",ru:"Госпожа"},{pl:"Imię",ru:"Имя"},{pl:"Nazwisko",ru:"Фамилия"},{pl:"Człowiek",ru:"Человек"},{pl:"Kobieta",ru:"Женщина"},{pl:"Mężczyzna",ru:"Мужчина"},{pl:"Dziecko",ru:"Ребенок"},{pl:"Dom",ru:"Дом"},{pl:"Praca",ru:"Работа"} ],
+            [ {pl:"Tak",ru:"Да"},{pl:"Nie",ru:"Нет"},{pl:"Proszę",ru:"Пожалуйста"},{pl:"Dziękuję",ru:"Спасибо"},{pl:"Przepraszam",ru:"Извините"},{pl:"Dzień dobry",ru:"Добрый день"},{pl:"Dobry wieczór",ru:"Добрый вечер"},{pl:"Dobranoc",ru:"Спокойной ночи"},{pl:"Cześć",ru:"Привет / Пока"},{pl:"Do widzenia",ru:"До свидания"},{pl:"Pan",ru:"Господин"},{pl:"Pani",ru:"Госпожа"},{pl:"Imię",ru:"Имя"},{pl:"Nazwisko",ru:"Фамилия"},{pl:"Człowieк",ru:"Человек"},{pl:"Kobieta",ru:"Женщина"},{pl:"Mężczyzna",ru:"Мужчина"},{pl:"Dziecko",ru:"Ребенок"},{pl:"Dom",ru:"Дом"},{pl:"Praca",ru:"Работа"} ],
             [ {pl:"Miasto",ru:"Город"},{pl:"Ulica",ru:"Улица"},{pl:"Samochód",ru:"Машина"},{pl:"Autobus",ru:"Автобус"},{pl:"Pociąg",ru:"Поезд"},{pl:"Bilet",ru:"Билет"},{pl:"Pieniądze",ru:"Деньги"},{pl:"Sklep",ru:"Магазин"},{pl:"Woda",ru:"Вода"},{pl:"Jedzenie",ru:"Еда"},{pl:"Chleb",ru:"Хлеб"},{pl:"Mięso",ru:"Мясо"},{pl:"Mleko",ru:"Молоко"},{pl:"Kawa",ru:"Кофе"},{pl:"Herbata",ru:"Чай"},{pl:"Śniadanie",ru:"Завтрак"},{pl:"Obiad",ru:"Обед"},{pl:"Kolacja",ru:"Ужин"},{pl:"Czas",ru:"Время"},{pl:"Godzina",ru:"Час"} ],
             [ {pl:"Rodzina",ru:"Семья"},{pl:"Matka",ru:"Мать"},{pl:"Ojciec",ru:"Отец"},{pl:"Brat",ru:"Брат"},{pl:"Siostra",ru:"Сестра"},{pl:"Babcia",ru:"Бабушка"},{pl:"Dziadek",ru:"Дедушка"},{pl:"Wujek",ru:"Дядя"},{pl:"Ciocia",ru:"Тетя"},{pl:"Syn",ru:"Сын"},{pl:"Córka",ru:"Дочь"},{pl:"Przyjaciel",ru:"Друг"},{pl:"Sąsiad",ru:"Сосед"},{pl:"Chłopak",ru:"Парень"},{pl:"Dziewczyna",ru:"Девушка"},{pl:"Dziadkowie",ru:"Бабушка и дедушка"},{pl:"Rodzice",ru:"Родители"},{pl:"Kuzyn",ru:"Двоюродный брат"},{pl:"Małżeństwo",ru:"Брак"},{pl:"Ślub",ru:"Свадьба"} ],
             [ {pl:"Dobry",ru:"Хороший"},{pl:"Zły",ru:"Плохой"},{pl:"Duży",ru:"Большой"},{pl:"Mały",ru:"Маленький"},{pl:"Nowy",ru:"Новый"},{pl:"Stary",ru:"Старый"},{pl:"Gorący",ru:"Горячий"},{pl:"Zimny",ru:"Холодный"},{pl:"Szybki",ru:"Быстрый"},{pl:"Wolny",ru:"Медленный / Свободный"},{pl:"Drogi",ru:"Дорогой"},{pl:"Tani",ru:"Дешевый"},{pl:"Czysty",ru:"Чистый"},{pl:"Brudny",ru:"Грязный"},{pl:"Ładny",ru:"Красивый"},{pl:"Brzydki",ru:"Уродливый"},{pl:"Wysoki",ru:"Высокий"},{pl:"Niski",ru:"Низкий"},{pl:"Trudny",ru:"Трудный"},{pl:"Łатwy",ru:"Легкий"} ],
-            [ {pl:"Robić",ru:"Делать"},{pl:"Mówić",ru:"Говорить"},{pl:"Widzieć",ru:"Видеть"},{pl:"Słyszeć",ru:"Слышать"},{pl:"Myśleć",ru:"Думать"},{pl:"Wiedzieć",ru:"Знать"},{pl:"Mieć",ru:"Иметь"},{pl:"Być",ru:"Быть"},{pl:"Chcieć",ru:"Хотеть"},{pl:"Móc",ru:"Мочь"},{pl:"Musieć",ru:"Должен"},{pl:"Iść",ru:"Идти"},{pl:"Jechać",ru:"Ехать"},{pl:"Pracować",ru:"Работать"},{pl:"Grać",ru:"Играть"},{pl:"Czytać",ru:"Читать"},{pl:"Pisać",ru:"Писать"},{pl:"Pić",ru:"Пить"},{pl:"Jeść",ru:"Есть (кушать)"},{pl:"Spać",ru:"Спать"} ],
-            [ {pl:"Pokój",ru:"Комната"},{pl:"Kuchnia",ru:"Кухня"},{pl:"Łazienka",ru:"Ванная"},{pl:"Sypialnia",ru:"Спальня"},{pl:"Łóżko",ru:"Кровать"},{pl:"Krzesło",ru:"Стул"},{pl:"Stół",ru:"Стол"},{pl:"Drzwi",ru:"Двери"},{pl:"Ściana",ru:"Стена"},{pl:"Podłoga",ru:"Пол"},{pl:"Sufit",ru:"Потолок"},{pl:"Lampa",ru:"Лампа"},{pl:"Telewizor",ru:"Телевизор"},{pl:"Komputer",ru:"Компьютер"},{pl:"Telefon",ru:"Телефон"},{pl:"Klucz",ru:"Ключ"},{pl:"Torba",ru:"Сумка"},{pl:"Zegarek",ru:"Часы"},{pl:"Lustro",ru:"Зеркало"},{pl:"Szafa",ru:"Шкаф"} ],
+            [ {pl:"Robić",ru:"Делать"},{pl:"Mówić",ru:"Говорить"},{pl:"Widzieć",ru:"Видеть"},{pl:"Słышать",ru:"Слышать"},{pl:"Myśleть",ru:"Думать"},{pl:"Wiedzieть",ru:"Знать"},{pl:"Mieć",ru:"Иметь"},{pl:"Być",ru:"Быть"},{pl:"Chcieć",ru:"Хотеть"},{pl:"Móc",ru:"Мочь"},{pl:"Musieć",ru:"Должен"},{pl:"Iść",ru:"Идти"},{pl:"Jechać",ru:"Ехать"},{pl:"Pracować",ru:"Работать"},{pl:"Grać",ru:"Играть"},{pl:"Czytać",ru:"Читать"},{pl:"Pisać",ru:"Писать"},{pl:"Pić",ru:"Пить"},{pl:"Jeść",ru:"Есть (кушать)"},{pl:"Spać",ru:"Спать"} ],
+            [ {pl:"Pokój",ru:"Комната"},{pl:"Kuchnia",ru:"Кухня"},{pl:"Łazienka",ru:"Ванная"},{pl:"Sypialnia",ru:"Спальня"},{pl:"Łóżko",ru:"Кровать"},{pl:"Krzesło",ru:"Стул"},{pl:"Stół",ru:"Стол"},{pl:"Drzwi",ru:"Двери"},{pl:"Ściana",ru:"Стена"},{pl:"Podлoga",ru:"Пол"},{pl:"Sufit",ru:"Потолок"},{pl:"Lampa",ru:"Лампа"},{pl:"Telewizor",ru:"Телевизор"},{pl:"Komputer",ru:"Компьютер"},{pl:"Telefon",ru:"Телефон"},{pl:"Klucz",ru:"Ключ"},{pl:"Torba",ru:"Сумка"},{pl:"Zegarek",ru:"Часы"},{pl:"Lustро",ru:"Зеркало"},{pl:"Szafa",ru:"Шкаф"} ],
             [ {pl:"Głowa",ru:"Голова"},{pl:"Twarz",ru:"Лицо"},{pl:"Oko",ru:"Глаз"},{pl:"Ucho",ru:"Ухо"},{pl:"Nos",ru:"Нос"},{pl:"Usta",ru:"Рот / Губы"},{pl:"Ząб",ru:"Зуб"},{pl:"Ręka",ru:"Рука"},{pl:"Noga",ru:"Нога"},{pl:"Palec",ru:"Палец"},{pl:"Włosy",ru:"Волосы"},{pl:"Plecy",ru:"Спина"},{pl:"Serce",ru:"Сердце"},{pl:"Krew",ru:"Кровь"},{pl:"Lekarz",ru:"Врач"},{pl:"Apteka",ru:"Аптека"},{pl:"Szpital",ru:"Больница"},{pl:"Choroba",ru:"Болезнь"},{pl:"Ból",ru:"Боль"},{pl:"Zdrowie",ru:"Здоровье"} ],
             [ {pl:"Niebo",ru:"Небо"},{pl:"Gwiazda",ru:"Звезда"},{pl:"Księżyc",ru:"Луна"},{pl:"Chmura",ru:"Облако"},{pl:"Deszcz",ru:"Дождь"},{pl:"Śnieг",ru:"Снег"},{pl:"Wiatr",ru:"Ветер"},{pl:"Burza",ru:"Буря"},{pl:"Mgła",ru:"Туман"},{pl:"Ziemia",ru:"Земля"},{pl:"Góra",ru:"Гора"},{pl:"Las",ru:"Лес"},{pl:"Rzeka",ru:"Река"},{pl:"Morze",ru:"Море"},{pl:"Plaża",ru:"Пляж"},{pl:"Zwierzę",ru:"Животное"},{pl:"Pies",ru:"Собака"},{pl:"Kot",ru:"Кот"},{pl:"Ptak",ru:"Птица"},{pl:"Ryba",ru:"Рыба"} ],
             [ {pl:"Ubranie",ru:"Одежда"},{pl:"Koszula",ru:"Рубашка"},{pl:"Spodnie",ru:"Брюки"},{pl:"Sukienka",ru:"Платье"},{pl:"But",ru:"Ботинок"},{pl:"Czapka",ru:"Шапка"},{pl:"Kurtka",ru:"Куртка"},{pl:"Skarpetka",ru:"Носок"},{pl:"Płaszcz",ru:"Пальто"},{pl:"Kolor",ru:"Цвет"},{pl:"Biały",ru:"Белый"},{pl:"Czarny",ru:"Черный"},{pl:"Czerwony",ru:"Красный"},{pl:"Niebieski",ru:"Синий"},{pl:"Zielony",ru:"Зеленый"},{pl:"Żółty",ru:"Желтый"},{pl:"Szary",ru:"Серый"},{pl:"Brązowy",ru:"Коричневый"},{pl:"Różowy",ru:"Розовый"},{pl:"Pomarańczowy",ru:"Оранжевый"} ],
-            [ {pl:"Lotnisko",ru:"Аэропорт"},{pl:"Samolot",ru:"Самолет"},{pl:"Most",ru:"Мост"},{pl:"Rondo",ru:"Кольцо"},{pl:"Dworzec",ru:"Вокзал"},{pl:"Przystanek",ru:"Остановка"},{pl:"Rower",ru:"Велосипед"},{pl:"Piesi",ru:"Пешеходы"},{pl:"Chodnik",ru:"Тротуар"},{pl:"Światła",ru:"Светофор"},{pl:"Kierowca",ru:"Водитель"},{pl:"Pasażer",ru:"Пассажир"},{pl:"Droga",ru:"Дорога"},{pl:"Kierunek",ru:"Направление"},{pl:"Północ",ru:"Север"},{pl:"Południe",ru:"Юг"},{pl:"Wschód",ru:"Восток"},{pl:"Zachód",ru:"Запад"},{pl:"Mapa",ru:"Карта"},{pl:"Podróż",ru:"Путешествие"} ],
-            [ {pl: "Szkoła", ru: "Школа" }, { pl: "Uniwersytet", ru: "Университет" }, { pl: "Nauczyciel", ru: "Учитель" }, { pl: "Student", ru: "Студент" }, { pl: "Lekcja", ru: "Урок" }, { pl: "Egzamin", ru: "Экзамен" }, { pl: "Biuro", ru: "Офис" }, { pl: "Szef", ru: "Начальник" }, { pl: "Kolega", ru: "Коллега" }, { pl: "Wynagrodzenie", ru: "Зарплата" }, { pl: "Emerytura", ru: "Пенсия" }, { pl: "Bezrobotny", ru: "Безработный" }, { pl: "Doświadczenie", ru: "Опыт" }, { pl: "Umiejętność", ru: "Навык" }, { pl: "Spotkanie", ru: "Встреча" }, { pl: "Dokument", ru: "Документ" }, { pl: "Podpis", ru: "Подпись" }, { pl: "Wiadomość", ru: "Сообщение" }, { pl: "Sukces", ru: "Успех" }, { pl: "Porażka", ru: "Провал" } ],
-            [ { pl: "Szczęśliwy", ru: "Счастливый" }, { pl: "Smutny", ru: "Грустный" }, { pl: "Wesoły", ru: "Веселый" }, { pl: "Zły", ru: "Злой" }, { pl: "Zmęczony", ru: "Уставший" }, { pl: "Głodny", ru: "Голодный" }, { pl: "Ciekawy", ru: "Интересный" }, { pl: "Ważny", ru: "Важный" }, { pl: "Mądry", ru: "Умный" }, { pl: "Głupi", ru: "Глупый" }, { pl: "Silny", ru: "Сильный" }, { pl: "Słaby", ru: "Слабый" }, { pl: "Bogaty", ru: "Богатый" }, { pl: "Biedny", ru: "Бедный" }, { pl: "Uczciwy", ru: "Честный" }, { pl: "Leniwy", ru: "Ленивый" }, { pl: "Dziwny", ru: "Странный" }, { pl: "Bezpieczny", ru: "Безопасный" }, { pl: "Niebezpieczny", ru: "Опасный" }, { pl: "Wolny", ru: "Свободный" } ],
-            [ { pl: "Poniedziałek", ru: "Понедельник" }, { pl: "Wtorek", ru: "Вторник" }, { pl: "Środa", ru: "Среда" }, { pl: "Czwartek", ru: "Четверг" }, { pl: "Piątek", ru: "Пятница" }, { pl: "Sobota", ru: "Суббота" }, { pl: "Niedziela", ru: "Воскресенье" }, { pl: "Tydzień", ru: "Неделя" }, { pl: "Miesiąc", ru: "Месяц" }, { pl: "Rok", ru: "Год" }, { pl: "Styczeń", ru: "Январь" }, { pl: "Luty", ru: "Февраль" }, { pl: "Marzec", ru: "Март" }, { pl: "Kwiecień", ru: "Апрель" }, { pl: "Maj", ru: "Май" }, { pl: "Czerwiec", ru: "Июнь" }, { pl: "Lipiec", ru: "Июль" }, { pl: "Sierpień", ru: "Август" }, { pl: "Wrzesień", ru: "Сентябрь" }, { pl: "Grudzień", ru: "Декабрь" } ],
-            [ { pl: "Gotować", ru: "Готовить" }, { pl: "Smażyć", ru: "Жарить" }, { pl: "Piec", ru: "Печь" }, { pl: "Smaczny", ru: "Вкусный" }, { pl: "Sól", ru: "Соль" }, { pl: "Cukier", ru: "Сахар" }, { pl: "Pieprz", ru: "Перец" }, { pl: "Olej", ru: "Масло (раст.)" }, { pl: "Talerz", ru: "Тарелка" }, { pl: "Kubek", ru: "Кружка" }, { pl: "Sztućce", ru: "Столовые приборы" }, { pl: "Nóż", ru: "Нож" }, { pl: "Widelec", ru: "Вилка" }, { pl: "Łyżka", ru: "Ложка" }, { pl: "Patelnia", ru: "Сковорода" }, { pl: "Garnek", ru: "Кастрюля" }, { pl: "Lodówka", ru: "Холодильник" }, { pl: "Piekarnik", ru: "Духовка" }, { pl: "Warzywa", ru: "Овощи" }, { pl: "Owoce", ru: "Фрукты" } ],
-            [ { pl: "Internet", ru: "Интернет" }, { pl: "Strona", ru: "Страница / Сайт" }, { pl: "Hasło", ru: "Пароль" }, { pl: "Poczta", ru: "Почта" }, { pl: "Ekran", ru: "Экран" }, { pl: "Klawiatura", ru: "Клавиатура" }, { pl: "Myszka", ru: "Мышка" }, { pl: "Ładowarka", ru: "Зарядка" }, { pl: "Bateria", ru: "Батарея" }, { pl: "Sygnał", ru: "Сигнал" }, { pl: "Aplikacja", ru: "Приложение" }, { pl: "Plik", ru: "Файл" }, { pl: "Drukarka", ru: "Принтер" }, { pl: "Kamera", ru: "Камера" }, { pl: "Słuchawki", ru: "Наушники" }, { pl: "Głośnik", ru: "Динамик" }, { pl: "Pamięć", ru: "Память" }, { pl: "Przycisk", ru: "Кнопка" }, { pl: "Włączyć", ru: "Включить" }, { pl: "Wyłączyć", ru: "Выключить" } ],
-            [ { pl: "Wakacje", ru: "Отпуск" }, { pl: "Rezerwacja", ru: "Бронь" }, { pl: "Recepcja", ru: "Ресепшн" }, { pl: "Pokój", ru: "Номер / Комната" }, { pl: "Łóżko pojedyncze", ru: "Односпальная кровать" }, { pl: "Klimatyzacja", ru: "Кондиционер" }, { pl: "Winda", ru: "Лифт" }, { pl: "Klucz", ru: "Ключ" }, { pl: "Paszport", ru: "Паспорт" }, { pl: "Granica", ru: "Граница" }, { pl: "Wycieczka", ru: "Экскурсия" }, { pl: "Przewodnik", ru: "Гид" }, { pl: "Zwiedzać", ru: "Осматривать достопримечательности" }, { pl: "Zabytek", ru: "Памятник архитектуры" }, { pl: "Widok", ru: "Вид" }, { pl: "Morze", ru: "Море" }, { pl: "Góry", ru: "Горы" }, { pl: "Las", ru: "Лес" }, { pl: "Jezioro", ru: "Озеро" }, { pl: "Wyspa", ru: "Остров" } ],
-            [ { pl: "Prawda", ru: "Правда" }, { pl: "Kłamstwo", ru: "Ложь" }, { pl: "Nadzieja", ru: "Надежда" }, { pl: "Wiara", ru: "Вера" }, { pl: "Sen", ru: "Сон" }, { pl: "Marzenie", ru: "Мечта" }, { pl: "Cel", ru: "Цель" }, { pl: "Wybór", ru: "Выбор" }, { pl: "Decyzja", ru: "Решение" }, { pl: "Problem", ru: "Проблема" }, { pl: "Rozwiązanie", ru: "Решение (задачи)" }, { pl: "Zmiana", ru: "Перемена" }, { pl: "Przyszłość", ru: "Будущее" }, { pl: "Przeszłość", ru: "Прошлое" }, { pl: "Teraźniejszość", ru: "Настоящее" }, { pl: "Wolność", ru: "Свобода" }, { pl: "Pokój", ru: "Мир (отсутствие войны)" }, { pl: "Wojna", ru: "Война" }, { pl: "Sprawiedliwość", ru: "Справедливость" }, { pl: "Siła", ru: "Сила" } ],
-            [ { pl: "Zawsze", ru: "Всегда" }, { pl: "Nigdy", ru: "Никогда" }, { pl: "Często", ru: "Часто" }, { pl: "Rzadko", ru: "Редко" }, { pl: "Czasami", ru: "Иногда" }, { pl: "Zwykle", ru: "Обычно" }, { pl: "Nagle", ru: "Вдруг" }, { pl: "Wcześnie", ru: "Рано" }, { pl: "Późno", ru: "Поздно" }, { pl: "Teraz", ru: "Сейчас" }, { pl: "Potem", ru: "Потом" }, { pl: "Zaraz", ru: "Сейчас / Скоро" }, { pl: "Wczoraj", ru: "Вчера" }, { pl: "Dzisiaj", ru: "Сегодня" }, { pl: "Jutro", ru: "Завтра" }, { pl: "Rano", ru: "Утром" }, { pl: "Wieczorem", ru: "Вечером" }, { pl: "W nocy", ru: "Ночью" }, { pl: "Dawno", ru: "Давно" }, { pl: "Niedawno", ru: "Недавно" } ],
-            [ { pl: "Recepta", ru: "Рецепт (врача)" }, { pl: "Lekarstwo", ru: "Лекарство" }, { pl: "Tabletka", ru: "Таблетка" }, { pl: "Zastrzyк", ru: "Укол" }, { pl: "Krew", ru: "Кровь" }, { pl: "Badanie", ru: "Исследование / Анализ" }, { pl: "Ciśnienie", ru: "Давление" }, { pl: "Gorączka", ru: "Температура / Жар" }, { pl: "Kaszel", ru: "Кашель" }, { pl: "Katar", ru: "Насморк" }, { pl: "Przeziębienie", ru: "Простуда" }, { pl: "Grypa", ru: "Грипп" }, { pl: "Rana", ru: "Рана" }, { pl: "Oparzenie", ru: "Ожог" }, { pl: "Złamanie", ru: "Перелом" }, { pl: "Ból głowy", ru: "Головная боль" }, { pl: "Apteczka", ru: "Аптечка" }, { pl: "Ratownik", ru: "Спасатель" }, { pl: "Karetka", ru: "Скорая помощь" }, { pl: "Zdrowieć", ru: "Выздоравливать" } ],
-            [ { pl: "Państwo", ru: "Государство" }, { pl: "Prawo", ru: "Закон" }, { pl: "Społeczeństwo", ru: "Общество" }, { pl: "Obywatel", ru: "Гражданин" }, { pl: "Polityka", ru: "Политика" }, { pl: "Wybory", ru: "Выборы" }, { pl: "Rząd", ru: "Правительство" }, { pl: "Podatek", ru: "Налог" }, { pl: "Kara", ru: "Наказание / Штраф" }, { pl: "Nagroda", ru: "Награда" }, { pl: "Pomoc", ru: "Помощь" }, { pl: "Wsparcie", ru: "Поддержка" }, { pl: "Zasada", ru: "Правило" }, { pl: "Obowiązek", ru: "Обязанность" }, { pl: "Odpowiedzialność", ru: "Ответственность" }, { pl: "Bezpieczeństwo", ru: "Безопасность" }, { pl: "Konflikt", ru: "Конфликт" }, { pl: "Pokój", ru: "Мир" }, { pl: "Umowa", ru: "Договор" }, { pl: "Współpraca", ru: "Сотрудничество" } ],
-            [ { pl: "Drewno", ru: "Дерево (материал)" }, { pl: "Metal", ru: "Металл" }, { pl: "Szkło", ru: "Стекло" }, { pl: "Plastik", ru: "Пластик" }, { pl: "Papier", ru: "Бумага" }, { pl: "Kamień", ru: "Камень" }, { pl: "Piasek", ru: "Песок" }, { pl: "Ziemia", ru: "Земля (грунт)" }, { pl: "Powietrze", ru: "Воздух" }, { pl: "Ogień", ru: "Огонь" }, { pl: "Lód", ru: "Лед" }, { pl: "Złoto", ru: "Золото" }, { pl: "Srebro", ru: "Серебро" }, { pl: "Żelazo", ru: "Железо" }, { pl: "Wełna", ru: "Шерсть" }, { pl: "Bawełna", ru: "Хлопок" }, { pl: "Skóra", ru: "Кожа" }, { pl: "Guma", ru: "Резина" }, { pl: "Węgiel", ru: "Уголь" }, { pl: "Olej", ru: "Масло (техническое)" } ],
+            [ {pl:"Lotnisko",ru:"Аэропорт"},{pl:"Samolot",ru:"Самолет"},{pl:"Most",ru:"Мост"},{pl:"Rondo",ru:"Кольцо"},{pl:"Dworzec",ru:"Вокзал"},{pl:"Przystanek",ru:"Остановка"},{pl:"Rower",ru:"Велосипед"},{pl:"Piesi",ru:"Пешеходы"},{pl:"Chodnik",ru:"Тротуар"},{pl:"Światła",ru:"Светофор"},{pl:"Kierowca",ru:"Водитель"},{pl:"Pasażer",ru:"Пассажир"},{pl:"Droga",ru:"Дорога"},{pl:"Kierunek",ru:"Направление"},{pl:"Północ",ru:"Север"},{pl:"Poлudnie",ru:"Юг"},{pl:"Wschód",ru:"Восток"},{pl:"Zachód",ru:"Запад"},{pl:"Mapa",ru:"Карта"},{pl:"Podróż",ru:"Путешествие"} ],
+            [ {pl: "Szkoła", ru: "Школа" }, { pl: "Uniwersytet", ru: "Университет" }, { pl: "Nauczyciel", ru: "Учитель" }, { pl: "Student", ru: "Студент" }, { pl: "Lekcja", ru: "Урок" }, { pl: "Egzamin", ru: "Экзамен" }, { pl: "Biuro", ru: "Офис" }, { pl: "Szef", ru: "Начальник" }, { pl: "Kolega", ru: "Коллега" }, { pl: "Wynagrodzenie", ru: "Зарплата" }, { pl: "Emerytura", ru: "Пенсия" }, { pl: "Bezrobotny", ru: "Безработный" }, { pl: "Doświadczenie", ru: "Опыт" }, { pl: "Umiejętность", ru: "Навык" }, { pl: "Spotkanie", ru: "Встреча" }, { pl: "Dokument", ru: "Документ" }, { pl: "Podpis", ru: "Подпись" }, { pl: "Wiadomość", ru: "Сообщение" }, { pl: "Sukces", ru: "Успех" }, { pl: "Porażka", ru: "Провал" } ],
+            [ { pl: "Szczęśliwy", ru: "Счастливый" }, { pl: "Smutny", ru: "Грустный" }, { pl: "Wesoлы", ru: "Веселый" }, { pl: "Zły", ru: "Злой" }, { pl: "Zmęczony", ru: "Уставший" }, { pl: "Głodny", ru: "Голодный" }, { pl: "Ciekawy", ru: "Интересный" }, { pl: "Ważny", ru: "Важный" }, { pl: "Mądry", ru: "Умный" }, { pl: "Głupi", ru: "Глупый" }, { pl: "Silny", ru: "Сильный" }, { pl: "Sweak", ru: "Слабый" }, { pl: "Bogaty", ru: "Богатый" }, { pl: "Biedny", ru: "Бедный" }, { pl: "Uczciwy", ru: "Честный" }, { pl: "Leniwy", ru: "Ленивый" }, { pl: "Dziwny", ru: "Странный" }, { pl: "Bezpieczny", ru: "Безопасный" }, { pl: "Niebezpieчный", ru: "Опасный" }, { pl: "Wolny", ru: "Свободный" } ],
+            [ { pl: "Poniedziałek", ru: "Понедельник" }, { pl: "Wtorek", ru: "Вторник" }, { pl: "Środa", ru: "Среда" }, { pl: "Czwartek", ru: "Четверг" }, { pl: "Piątek", ru: "Пятница" }, { pl: "Sobota", ru: "Суббота" }, { pl: "Niedziela", ru: "Воскресенье" }, { pl: "Tydzień", ru: "Неделя" }, { pl: "Miesiąc", ru: "Месяц" }, { pl: "Rok", ru: "Год" }, { pl: "Styczeń", ru: "Январь" }, { pl: "Luty", ru: "Февраль" }, { pl: "Marzec", ru: "Март" }, { pl: "Kwiecień", ru: "Апрель" }, { pl: "Maj", ru: "Май" }, { pl: "Czerwiec", ru: "Июнь" }, { pl: "Lipiec", ru: "Июль" }, { pl: "Sierpieнь", ru: "Август" }, { pl: "Wrzesień", ru: "Сентябрь" }, { pl: "Grudzień", ru: "Декабрь" } ],
+            [ { pl: "Gotować", ru: "Готовить" }, { pl: "Smażyć", ru: "Жарить" }, { pl: "Piec", ru: "Печь" }, { pl: "Smaczny", ru: "Вкусный" }, { pl: "Sól", ru: "Соль" }, { pl: "Cukier", ru: "Сахар" }, { pl: "Pieprz", ru: "Перец" }, { pl: "Olej", ru: "Масло" }, { pl: "Talerz", ru: "Тарелка" }, { pl: "Kubek", ru: "Кружка" }, { pl: "Sztućce", ru: "Столовые приборы" }, { pl: "Nóż", ru: "Нож" }, { pl: "Widelec", ru: "Вилка" }, { pl: "Łyżка", ru: "Ложка" }, { pl: "Patelnia", ru: "Сковорода" }, { pl: "Garnek", ru: "Кастрюля" }, { pl: "Lodówka", ru: "Холодильник" }, { pl: "Piekarnik", ru: "Духовка" }, { pl: "Warzywa", ru: "Овощи" }, { pl: "Owoce", ru: "Фрукты" } ],
+            [ { pl: "Internet", ru: "Интернет" }, { pl: "Strona", ru: "Сайт" }, { pl: "Hasło", ru: "Пароль" }, { pl: "Poczta", ru: "Почта" }, { pl: "Ekран", ru: "Экран" }, { pl: "Klawiatura", ru: "Клавиатура" }, { pl: "Myszka", ru: "Мышка" }, { pl: "Ładowarka", ru: "Зарядка" }, { pl: "Bateria", ru: "Батарея" }, { pl: "Sygnał", ru: "Сигнал" }, { pl: "Aplikacja", ru: "Приложение" }, { pl: "Plik", ru: "Файл" }, { pl: "Drukarka", ru: "Принтер" }, { pl: "Kamera", ru: "Камера" }, { pl: "Słuchawki", ru: "Наушники" }, { pl: "Głośnik", ru: "Динамик" }, { pl: "Pamięć", ru: "Память" }, { pl: "Przycisk", ru: "Кнопка" }, { pl: "Włączyć", ru: "Включить" }, { pl: "Wyłączyć", ru: "Выключить" } ],
+            [ { pl: "Wakacje", ru: "Отпуск" }, { pl: "Rezerwacja", ru: "Бронь" }, { pl: "Recepcja", ru: "Ресепшн" }, { pl: "Pokój", ru: "Номер" }, { pl: "Łóżko", ru: "Кровать" }, { pl: "Klimatyzacja", ru: "Кондиционер" }, { pl: "Winda", ru: "Лифт" }, { pl: "Klucz", ru: "Ключ" }, { pl: "Paszпорт", ru: "Паспорт" }, { pl: "Granica", ru: "Граница" }, { pl: "Wycieczka", ru: "Экскурсия" }, { pl: "Przewodnik", ru: "Гид" }, { pl: "Zwiedzać", ru: "Осматривать" }, { pl: "Zabytek", ru: "Памятник" }, { pl: "Widok", ru: "Вид" }, { pl: "Morze", ru: "Море" }, { pl: "Góry", ru: "Горы" }, { pl: "Las", ru: "Лес" }, { pl: "Jezioro", ru: "Озеро" }, { pl: "Wyspa", ru: "Остров" } ],
+            [ { pl: "Prawda", ru: "Правда" }, { pl: "Kłamstwo", ru: "Ложь" }, { pl: "Nadzieja", ru: "Надежда" }, { pl: "Wiara", ru: "Вера" }, { pl: "Sen", ru: "Сон" }, { pl: "Marzenie", ru: "Мечта" }, { pl: "Cel", ru: "Цель" }, { pl: "Wybór", ru: "Выбор" }, { pl: "Decyzja", ru: "Решение" }, { pl: "Problem", ru: "Проблема" }, { pl: "Rozwiązanie", ru: "Решение" }, { pl: "Zmiana", ru: "Перемена" }, { pl: "Przyszłość", ru: "Будущее" }, { pl: "Przeszłość", ru: "Прошлое" }, { pl: "Teraźniejszość", ru: "Настоящее" }, { pl: "Wolность", ru: "Свобода" }, { pl: "Pokój (stan)", ru: "Мир" }, { pl: "Wojna", ru: "Война" }, { pl: "Sprawiedliwość", ru: "Справедливость" }, { pl: "Siła", ru: "Сила" } ],
+            [ { pl: "Zawsze", ru: "Всегда" }, { pl: "Nigdy", ru: "Никогда" }, { pl: "Często", ru: "Часто" }, { pl: "Rzadko", ru: "Редко" }, { pl: "Czasami", ru: "Иногда" }, { pl: "Zwykle", ru: "Обычно" }, { pl: "Nagle", ru: "Вдруг" }, { pl: "Wcześnie", ru: "Рано" }, { pl: "Późno", ru: "Поздно" }, { pl: "Teraz", ru: "Сейчас" }, { pl: "Potem", ru: "Потом" }, { pl: "Zaraz", ru: "Скоро" }, { pl: "Wczoraj", ru: "Вчера" }, { pl: "Dzisiaj", ru: "Сегодня" }, { pl: "Jutro", ru: "Завтра" }, { pl: "Rano", ru: "Утром" }, { pl: "Wieczorem", ru: "Вечером" }, { pl: "W nocy", ru: "Ночью" }, { pl: "Dawno", ru: "Давно" }, { pl: "Niedawno", ru: "Недавно" } ],
+            [ { pl: "Recepta", ru: "Рецепт" }, { pl: "Lekarstwo", ru: "Лекарство" }, { pl: "Tabletka", ru: "Таблетка" }, { pl: "Zastrzyк", ru: "Укол" }, { pl: "Krew", ru: "Кровь" }, { pl: "Badanie", ru: "Анализ" }, { pl: "Ciśnienie", ru: "Давление" }, { pl: "Gorączka", ru: "Температура" }, { pl: "Kaszel", ru: "Кашель" }, { pl: "Katar", ru: "Насморк" }, { pl: "Przeziębienie", ru: "Простуда" }, { pl: "Grypa", ru: "Грипп" }, { pl: "Rana", ru: "Рана" }, { pl: "Oparzenie", ru: "Ожог" }, { pl: "Złamanie", ru: "Перелом" }, { pl: "Ból głowy", ru: "Головная боль" }, { pl: "Apteczka", ru: "Аптечка" }, { pl: "Ratownik", ru: "Спасатель" }, { pl: "Karetka", ru: "Скорая помощь" }, { pl: "Zdrowieć", ru: "Выздоравливать" } ],
+            [ { pl: "Państwo", ru: "Государство" }, { pl: "Prawo", ru: "Закон" }, { pl: "Społeczeństwo", ru: "Общество" }, { pl: "Obywatel", ru: "Гражданин" }, { pl: "Polityka", ru: "Политика" }, { pl: "Wybory", ru: "Выборы" }, { pl: "Rząd", ru: "Правительство" }, { pl: "Podatek", ru: "Налог" }, { pl: "Kara", ru: "Наказание" }, { pl: "Nagroda", ru: "Награда" }, { pl: "Pomoc", ru: "Помощь" }, { pl: "Wsparcie", ru: "Поддержка" }, { pl: "Zasada", ru: "Правило" }, { pl: "Obowiązek", ru: "Обязанность" }, { pl: "Odpowiedzialность", ru: "Ответственность" }, { pl: "Bezpieczeństwo", ru: "Безопасность" }, { pl: "Konflikt", ru: "Конфликт" }, { pl: "Pokój", ru: "Мир" }, { pl: "Umowa", ru: "Договор" }, { pl: "Współpraca", ru: "Сотрудничество" } ],
+            [ { pl: "Drewno", ru: "Дерево" }, { pl: "Metal", ru: "Металл" }, { pl: "Szkło", ru: "Стекло" }, { pl: "Plastik", ru: "Пластик" }, { pl: "Papier", ru: "Бумага" }, { pl: "Kamień", ru: "Камень" }, { pl: "Piasek", ru: "Песок" }, { pl: "Ziemia", ru: "Земля" }, { pl: "Powietrze", ru: "Воздух" }, { pl: "Ogień", ru: "Огонь" }, { pl: "Lód", ru: "Лед" }, { pl: "Złoto", ru: "Золото" }, { pl: "Srebro", ru: "Серебро" }, { pl: "Żelazo", ru: "Железо" }, { pl: "Wełna", ru: "Шерсть" }, { pl: "Bawełна", ru: "Хлопок" }, { pl: "Skóra", ru: "Кожа" }, { pl: "Guma", ru: "Резина" }, { pl: "Węgiel", ru: "Уголь" }, { pl: "Olej", ru: "Масло" } ],
             [ { pl: "Zaczynać", ru: "Начинать" }, { pl: "Kończyć", ru: "Заканчивать" }, { pl: "Szukać", ru: "Искать" }, { pl: "Znaleźć", ru: "Найти" }, { pl: "Otwierać", ru: "Открывать" }, { pl: "Zamykać", ru: "Закрывать" }, { pl: "Dawać", ru: "Давать" }, { pl: "Brać", ru: "Брать" }, { pl: "Kupować", ru: "Покупать" }, { pl: "Sprzedawać", ru: "Продавать" }, { pl: "Pytać", ru: "Спрашивать" }, { pl: "Odpowiadać", ru: "Отвечать" }, { pl: "Pomagać", ru: "Помогать" }, { pl: "Przeszkadzać", ru: "Мешать" }, { pl: "Zapominać", ru: "Забывать" }, { pl: "Pamiętać", ru: "Помнить" }, { pl: "Zgubić", ru: "Потерять" }, { pl: "Szanować", ru: "Уважать" }, { pl: "Nienawidzić", ru: "Ненавидеть" }, { pl: "Kochać", ru: "Любить" } ],
-            [ { pl: "Firma", ru: "Фирма / Компания" }, { pl: "Przedsiębiorstwo", ru: "Предприятие" }, { pl: "Biznes", ru: "Бизнес" }, { pl: "Umowa", ru: "Договор" }, { pl: "Projekt", ru: "Проект" }, { pl: "Klient", ru: "Клиент" }, { pl: "Pracownik", ru: "Сотрудник" }, { pl: "Zebranie", ru: "Собрание" }, { pl: "Cel", ru: "Цель" }, { pl: "Wynik", ru: "Результат" }, { pl: "Rynek", ru: "Рынок" }, { pl: "Konkurencja", ru: "Конкуренция" }, { pl: "Budżet", ru: "Бюджет" }, { pl: "Inwestycja", ru: "Инвестиция" }, { pl: "Koszt", ru: "Расход / Стоимость" }, { pl: "Zysk", ru: "Прибыль" }, { pl: "Strata", ru: "Убыток" }, { pl: "Zarząd", ru: "Правление" }, { pl: "Kariera", ru: "Карьера" }, { pl: "Awans", ru: "Повышение" } ],
-            [ { pl: "Ponieważ", ru: "Потому что" }, { pl: "Chociaż", ru: "Хотя" }, { pl: "Dlatego", ru: "Поэтому" }, { pl: "Jednak", ru: "Однако" }, { pl: "Podczas", ru: "Во время" }, { pl: "Zamiast", ru: "Вместо" }, { pl: "Oprócz", ru: "Кроме" }, { pl: "Według", ru: "Согласно / По" }, { pl: "Wzdłuż", ru: "Вдоль" }, { pl: "Wokół", ru: "Вокруг" }, { pl: "Obok", ru: "Рядом" }, { pl: "Pomiędzy", ru: "Между" }, { pl: "Naprzeciwko", ru: "Напротив" }, { pl: "Oraz", ru: "А также" }, { pl: "Żeby", ru: "Чтобы" }, { pl: "Jeżeli", ru: "Если" }, { pl: "Więc", ru: "Значит / Итак" }, { pl: "Albo", ru: "Или" }, { pl: "Ani", ru: "Ни" }, { pl: "Czy", ru: "Ли / Разве" } ],
-            [ { pl: "Policja", ru: "Полиция" }, { pl: "Sąd", ru: "Суд" }, { pl: "Sędzia", ru: "Судья" }, { pl: "Prawnik", ru: "Юрист / Адвокат" }, { pl: "Wina", ru: "Вина" }, { pl: "Niewinność", ru: "Невиновность" }, { pl: "Przestępstwo", ru: "Преступление" }, { pl: "Morderstwo", ru: "Убийство" }, { pl: "Kradzież", ru: "Кража" }, { pl: "Złodziej", ru: "Вор" }, { pl: "Więzienie", ru: "Тюрьма" }, { pl: "Dowód", ru: "Доказательство" }, { pl: "Świadek", ru: "Свидетель" }, { pl: "Ofiara", ru: "Жертва" }, { pl: "Podejrzany", ru: "Подозреваемый" }, { pl: "Śledztwo", ru: "Расследование" }, { pl: "Nielegalny", ru: "Нелегальный" }, { pl: "Kara", ru: "Наказание" }, { pl: "Mandat", ru: "Штраф" }, { pl: "Obrona", ru: "Защита" } ],
-            [ { pl: "Pełny", ru: "Полный" }, { pl: "Pusty", ru: "Пустой" }, { pl: "Głęboki", ru: "Глубокий" }, { pl: "Płytki", ru: "Мелкий (о глубине)" }, { pl: "Szeroki", ru: "Широкий" }, { pl: "Wąski", ru: "Узкий" }, { pl: "Gruby", ru: "Толстый" }, { pl: "Cienki", ru: "Тонкий" }, { pl: "Miękki", ru: "Мягкий" }, { pl: "Twardy", ru: "Твердый" }, { pl: "Gładki", ru: "Гладкий" }, { pl: "Szorstki", ru: "Шершавый" }, { pl: "Ostry", ru: "Острый" }, { pl: "Tępy", ru: "Тупой" }, { pl: "Jasny", ru: "Светлый / Ясный" }, { pl: "Ciemny", ru: "Темный" }, { pl: "Głośny", ru: "Громкий" }, { pl: "Cichy", ru: "Тихий" }, { pl: "Ciężki", ru: "Тяжелый" }, { pl: "Lekki", ru: "Легкий" } ],
-            [ { pl: "Sztuka", ru: "Искусство" }, { pl: "Obraz", ru: "Картина" }, { pl: "Rzeźba", ru: "Скульптура" }, { pl: "Wystawa", ru: "Выставка" }, { pl: "Galeria", ru: "Галерея" }, { pl: "Muzeum", ru: "Музей" }, { pl: "Teatr", ru: "Театр" }, { pl: "Kino", ru: "Кино" }, { pl: "Scena", ru: "Сцена" }, { pl: "Aktor", ru: "Актер" }, { pl: "Reżyser", ru: "Режиссер" }, { pl: "Widz", ru: "Зритель" }, { pl: "Gazeta", ru: "Газета" }, { pl: "Czasopismo", ru: "Журнал" }, { pl: "Artykuł", ru: "Статья" }, { pl: "Wywiad", ru: "Интервью" }, { pl: "Reklama", ru: "Реклама" }, { pl: "Dziennikarz", ru: "Журналист" }, { pl: "Plotka", ru: "Сплетня" }, { pl: "Recenzja", ru: "Отзыв / Рецензия" } ],
-            [ { pl: "Budzić się", ru: "Просыпаться" }, { pl: "Wstawać", ru: "Вставать" }, { pl: "Myć się", ru: "Мыться" }, { pl: "Kąpać się", ru: "Купаться" }, { pl: "Ubierać się", ru: "Одеваться" }, { pl: "Czesać się", ru: "Расчесываться" }, { pl: "Golić się", ru: "Бриться" }, { pl: "Szczoteczka", ru: "Щетка" }, { pl: "Pasta", ru: "Паста" }, { pl: "Mydło", ru: "Мыло" }, { pl: "Ręcznik", ru: "Полотенце" }, { pl: "Szampon", ru: "Шампунь" }, { pl: "Krem", ru: "Крем" }, { pl: "Prysznic", ru: "Душ" }, { pl: "Wanna", ru: "Ванна" }, { pl: "Makijaż", ru: "Макияж" }, { pl: "Perfumy", ru: "Духи" }, { pl: "Zapach", ru: "Запах" }, { pl: "Grzebień", ru: "Гребень / Расческа" }, { pl: "Suszarka", ru: "Фен" } ],
-            [ { pl: "Świat", ru: "Мир (планета)" }, { pl: "Kontynent", ru: "Континент" }, { pl: "Kraj", ru: "Страна" }, { pl: "Stolica", ru: "Столица" }, { pl: "Granica", ru: "Граница" }, { pl: "Region", ru: "Регион" }, { pl: "Województwo", ru: "Воеводство" }, { pl: "Powiat", ru: "Уезд (повят)" }, { pl: "Gmina", ru: "Гмина (община)" }, { pl: "Półwysep", ru: "Полуостров" }, { pl: "Zatoka", ru: "Залив" }, { pl: "Ocean", ru: "Океан" }, { pl: "Pustynia", ru: "Пустыня" }, { pl: "Puszcza", ru: "Дремучий лес / Пуща" }, { pl: "Wulkan", ru: "Вулкан" }, { pl: "Jaskinia", ru: "Пещера" }, { pl: "Wodospad", ru: "Водопад" }, { pl: "Dolina", ru: "Долина" }, { pl: "Równina", ru: "Равнина" }, { pl: "Pagórek", ru: "Холм" } ],
-            [ { pl: "Przypadek", ru: "Случай" }, { pl: "Powód", ru: "Причина" }, { pl: "Skutek", ru: "Следствие / Результат" }, { pl: "Szansa", ru: "Шанс" }, { pl: "Możliwość", ru: "Возможность" }, { pl: "Pewność", ru: "Уверенность" }, { pl: "Wątpliwość", ru: "Сомнение" }, { pl: "Zaleta", ru: "Достоинство / Плюс" }, { pl: "Wada", ru: "Недостаток / Минус" }, { pl: "Różnica", ru: "Разница" }, { pl: "Podobieństwo", ru: "Сходство" }, { pl: "Szczegół", ru: "Деталь" }, { pl: "Całość", ru: "Целое" }, { pl: "Połowa", ru: "Половина" }, { pl: "Reszta", ru: "Остаток / Сдача" }, { pl: "Początek", ru: "Начало" }, { pl: "Środek", ru: "Середина" }, { pl: "Koniec", ru: "Конец" }, { pl: "Błąd", ru: "Ошибка" }, { pl: "Racja", ru: "Правота" } ],
-            [ { pl: "Budynek", ru: "Здание" }, { pl: "Wieżowiec", ru: "Небоскреб" }, { pl: "Kamienica", ru: "Многоквартирный дом (старый)" }, { pl: "Osiedle", ru: "Жилой район / Поселок" }, { pl: "Ratusz", ru: "Ратуша" }, { pl: "Zamek", ru: "Замок" }, { pl: "Pałac", ru: "Дворец" }, { pl: "Kościół", ru: "Церковь / Костел" }, { pl: "Cmentarz", ru: "Кладбище" }, { pl: "Pomnik", ru: "Памятник" }, { pl: "Dzielnica", ru: "Район города" }, { pl: "Przedmieście", ru: "Пригород" }, { pl: "Krawężnik", ru: "Бордюр" }, { pl: "Skrzyżowanie", ru: "Перекресток" }, { pl: "Plac", ru: "Площадь" }, { pl: "Fontanna", ru: "Фонтан" }, { pl: "Ławka", ru: "Скамья" }, { pl: "Latarnia", ru: "Фонарь" }, { pl: "Śmietnik", ru: "Мусорка" }, { pl: "Zaułek", ru: "Переулок / Тупик" } ],
-            [ { pl: "Biegać", ru: "Бегать" }, { pl: "Skakać", ru: "Прыгать" }, { pl: "Pływać", ru: "Плавать" }, { pl: "Latać", ru: "Летать" }, { pl: "Czołgać się", ru: "Ползать" }, { pl: "Wspinać się", ru: "Взбираться" }, { pl: "Pchać", ru: "Толкать" }, { pl: "Ciągnąć", ru: "Тянуть" }, { pl: "Rzucać", ru: "Бросать" }, { pl: "Łapać", ru: "Ловить" }, { pl: "Trzymać", ru: "Держать" }, { pl: "Puszczać", ru: "Отпускать" }, { pl: "Stać", ru: "Стоять" }, { pl: "Siedzieć", ru: "Сидеть" }, { pl: "Leżeć", ru: "Лежать" }, { pl: "Wisieć", ru: "Висеть" }, { pl: "Kłaść", ru: "Класть" }, { pl: "Stawiać", ru: "Ставить" }, { pl: "Siadać", ru: "Садиться" }, { pl: "Wstawać", ru: "Вставать" } ],
-            [ { pl: "Nauka", ru: "Наука / Обучение" }, { pl: "Badanie", ru: "Исследование" }, { pl: "Naukowiec", ru: "Ученый" }, { pl: "Wynalazek", ru: "Изобретение" }, { pl: "Odkrycie", ru: "Открытие" }, { pl: "Teoria", ru: "Теория" }, { pl: "Praktyka", ru: "Практика" }, { pl: "Doświadczenie", ru: "Опыт (научный и жизненный)" }, { pl: "Eksperyment", ru: "Эксперимент" }, { pl: "Wnioseк", ru: "Вывод" }, { pl: "Dowód", ru: "Доказательство" }, { pl: "Analiza", ru: "Анализ" }, { pl: "Chemia", ru: "Химия" }, { pl: "Fizyka", ru: "Физика" }, { pl: "Biologia", ru: "Биология" }, { pl: "Historia", ru: "История" }, { pl: "Geografia", ru: "География" }, { pl: "Matematyka", ru: "Математика" }, { pl: "Filozofia", ru: "Философия" }, { pl: "Psychologia", ru: "Психология" } ],
-            [ { pl: "Narzędzie", ru: "Инструмент" }, { pl: "Młotek", ru: "Молоток" }, { pl: "Śrubokręt", ru: "Отвертка" }, { pl: "Gwoźdź", ru: "Гвоздь" }, { pl: "Śruba", ru: "Винт / Болт" }, { pl: "Klucz", ru: "Ключ (гаечный)" }, { pl: "Piła", ru: "Пила" }, { pl: "Siekiera", ru: "Топор" }, { pl: "Wiertarka", ru: "Дрель" }, { pl: "Maszyna", ru: "Машина (механизм)" }, { pl: "Silnik", ru: "Двигатель" }, { pl: "Część", ru: "Часть / Деталь" }, { pl: "Naprawa", ru: "Ремонт" }, { pl: "Zepsuty", ru: "Сломанный" }, { pl: "Działać", ru: "Работать (о механизме)" }, { pl: "Koło", ru: "Колесо" }, { pl: "Przewód", ru: "Провод" }, { pl: "Prąd", ru: "Ток / Электричество" }, { pl: "Bateria", ru: "Батарейка" }, { pl: "Zasilanie", ru: "Питание (электрическое)" } ],
-            [ { pl: "Odważny", ru: "Смелый" }, { pl: "Tchórzliwy", ru: "Трусливый" }, { pl: "Cierpliwy", ru: "Терпеливый" }, { pl: "Niecierpliwy", ru: "Нетерпеливый" }, { pl: "Spokojny", ru: "Спокойный" }, { pl: "Nerwowy", ru: "Нервный" }, { pl: "Uprzejmy", ru: "Вежливый" }, { pl: "Bezczelny", ru: "Наглый" }, { pl: "Dumny", ru: "Гордый" }, { pl: "Skromny", ru: "Скромный" }, { pl: "Zazdrosny", ru: "Ревнивый / Завистливый" }, { pl: "Wierny", ru: "Верный" }, { pl: "Lojalny", ru: "Лояльный" }, { pl: "Samolubny", ru: "Эгоистичный" }, { pl: "Hojny", ru: "Щедрый" }, { pl: "Skąpy", ru: "Скупой" }, { pl: "Surowy", ru: "Строгий" }, { pl: "Łagodny", ru: "Мягкий (по характеру)" }, { pl: "Ambitny", ru: "Амбициозный" }, { pl: "Leniwy", ru: "Ленивый" } ],
-            [ { pl: "Gospodarka", ru: "Экономика" }, { pl: "Waluta", ru: "Валюта" }, { pl: "Gotówka", ru: "Наличные" }, { pl: "Karta", ru: "Карта (банковская)" }, { pl: "Konto", ru: "Счет" }, { pl: "Przelew", ru: "Перевод (денежный)" }, { pl: "Kredyt", ru: "Кредит" }, { pl: "Dług", ru: "Долг" }, { pl: "Rata", ru: "Взнос (при рассрочке)" }, { pl: "Podatek", ru: "Налог" }, { pl: "Cło", ru: "Пошлина" }, { pl: "Giełda", ru: "Биржа" }, { pl: "Akcja", ru: "Акция (ценная бумага)" }, { pl: "Inwestycja", ru: "Инвестиция" }, { pl: "Zysk", ru: "Прибыль" }, { pl: "Strata", ru: "Убыток" }, { pl: "Kryzys", ru: "Кризис" }, { pl: "Inflacja", ru: "Инфляция" }, { pl: "Cena", ru: "Цена" }, { pl: "Wartość", ru: "Ценность / Стоимость" } ],
-            [ { pl: "Wybory", ru: "Выборы" }, { pl: "Głosowanie", ru: "Голосование" }, { pl: "Kandydat", ru: "Кандидат" }, { pl: "Partia", ru: "Партия" }, { pl: "Kampania", ru: "Кампания" }, { pl: "Prezydent", ru: "Президент" }, { pl: "Premier", ru: "Премьер-министр" }, { pl: "Minister", ru: "Министр" }, { pl: "Sejm", ru: "Сейм (парламент)" }, { pl: "Senat", ru: "Сенат" }, { pl: "Ustawa", ru: "Закон (акт)" }, { pl: "Konstytucja", ru: "Конституция" }, { pl: "Prawa", ru: "Права" }, { pl: "Obowiązki", ru: "Обязанности" }, { pl: "Demokracja", ru: "Демократия" }, { pl: "Dyktatura", ru: "Диктатура" }, { pl: "Cenzura", ru: "Цензура" }, { pl: "Propaganda", ru: "Пропаганда" }, { pl: "Wolność", ru: "Свобода" }, { pl: "Debata", ru: "Дебаты" } ],
-            [ { pl: "Środowisko", ru: "Окружающая среда" }, { pl: "Zanieczyszczenie", ru: "Загрязнение" }, { pl: "Ochrona", ru: "Охрана / Защита" }, { pl: "Klimat", ru: "Климат" }, { pl: "Katastrofa", ru: "Катастрофа" }, { pl: "Trzęsienie ziemi", ru: "Землетрясение" }, { pl: "Powódź", ru: "Наводнение" }, { pl: "Pożar", ru: "Пожар" }, { pl: "Huragan", ru: "Ураган" }, { pl: "Gatunek", ru: "Вид (биологический)" }, { pl: "Ekologia", ru: "Экология" }, { pl: "Odpady", ru: "Отходы" }, { pl: "Recykling", ru: "Переработка" }, { pl: "Surowce", ru: "Сырье" }, { pl: "Energia", ru: "Энергия" }, { pl: "Słoneczna", ru: "Солнечная (энергия)" }, { pl: "Wiatrowa", ru: "Ветровая (энергия)" }, { pl: "Zasoby", ru: "Ресурсы" }, { pl: "Susza", ru: "Засуха" }, { pl: "Śmieci", ru: "Мусор" } ],
-            [ { pl: "Byt", ru: "Бытие" }, { pl: "Pustka", ru: "Пустота" }, { pl: "Nieskończoność", ru: "Бесконечность" }, { pl: "Wieczność", ru: "Вечность" }, { pl: "Przeznaczenie", ru: "Предназначение" }, { pl: "Los", ru: "Судьба" }, { pl: "Szczęście", ru: "Счастье / Удача" }, { pl: "Pech", ru: "Неудача" }, { pl: "Dusza", ru: "Душа" }, { pl: "Umysł", ru: "Разум" }, { pl: "Świadomość", ru: "Сознание" }, { pl: "Rozum", ru: "Ум / Интеллект" }, { pl: "Emocja", ru: "Эмоция" }, { pl: "Instynkt", ru: "Инстинкт" }, { pl: "Intuicja", ru: "Интуиция" }, { pl: "Sumienie", ru: "Совесть" }, { pl: "Moralność", ru: "Мораль" }, { pl: "Etyka", ru: "Этика" }, { pl: "Sens", ru: "Смысл" }, { pl: "Znaczenie", ru: "Значение" } ],
-            [ { pl: "Literatura", ru: "Литература" }, { pl: "Poezja", ru: "Поэзия" }, { pl: "Powieść", ru: "Роман" }, { pl: "Bajka", ru: "Сказка / Басня" }, { pl: "Autor", ru: "Автор" }, { pl: "Pisarz", ru: "Писатель" }, { pl: "Czytelnik", ru: "Читатель" }, { pl: "Wydawnictwo", ru: "Издательство" }, { pl: "Księgarnia", ru: "Книжный магазин" }, { pl: "Biblioteka", ru: "Библиотека" }, { pl: "Muzyka", ru: "Музыка" }, { pl: "Piosenka", ru: "Песня" }, { pl: "Zespół", ru: "Группа (музыкальная)" }, { pl: "Koncert", ru: "Концерт" }, { pl: "Instrument", ru: "Инструмент" }, { pl: "Gitara", ru: "Гитара" }, { pl: "Pianino", ru: "Пианино" }, { pl: "Taniec", ru: "Танец" }, { pl: "Rytm", ru: "Ритм" }, { pl: "Melodia", ru: "Мелодия" } ],
-            [ { pl: "Przewidywać", ru: "Предвидеть" }, { pl: "Udowadniać", ru: "Доказывать" }, { pl: "Rozwijać", ru: "Развивать" }, { pl: "Unikać", ru: "Избегать" }, { pl: "Narzekać", ru: "Жаловаться" }, { pl: "Podejrzewać", ru: "Подозревать" }, { pl: "Gwarantować", ru: "Гарантировать" }, { pl: "Oskarżać", ru: "Обвинять" }, { pl: "Przekonywać", ru: "Убеждать" }, { pl: "Ostrzegać", ru: "Предупреждать" }, { pl: "Wymagać", ru: "Требовать" }, { pl: "Zgadzać się", ru: "Соглашаться" }, { pl: "Zastanawiać się", ru: "Задумываться" }, { pl: "Przyznawać", ru: "Признавать" }, { pl: "Zaprzeczać", ru: "Отрицать" }, { pl: "Wspominać", ru: "Вспоминать / Упоминать" }, { pl: "Przesadzać", ru: "Преувеличивать" }, { pl: "Cierpieć", ru: "Страдать" }, { pl: "Osiągać", ru: "Достигать" }, { pl: "Rezygnować", ru: "Отказываться" } ],
-            [ { pl: "Dziedzictwo", ru: "Наследие" }, { pl: "Obyczaj", ru: "Обычай" }, { pl: "Tradycja", ru: "Традиция" }, { pl: "Pokolenie", ru: "Поколение" }, { pl: "Mniejszość", ru: "Меньшинство" }, { pl: "Większość", ru: "Большинство" }, { pl: "Uprzedzenie", ru: "Предубеждение" }, { pl: "Tolerancja", ru: "Толерантность" }, { pl: "Dyskryminacja", ru: "Дискриминация" }, { pl: "Obywatelstwo", ru: "Гражданство" }, { pl: "Niepodległość", ru: "Независимость" }, { pl: "Suwerenność", ru: "Суверенитет" }, { pl: "Sojusz", ru: "Союз / Альянс" }, { pl: "Wyznanie", ru: "Вероисповедание" }, { pl: "Świątynia", ru: "Храм" }, { pl: "Rytuał", ru: "Ритуал" }, { pl: "Zwyczaj", ru: "Привычка / Обычай" }, { pl: "Przekonanie", ru: "Убеждение" }, { pl: "Wartość", ru: "Ценность" }, { pl: "Religia", ru: "Религия" } ],
+            [ { pl: "Firma", ru: "Фирма" }, { pl: "Przedsiębiorstwo", ru: "Предприятие" }, { pl: "Biznes", ru: "Бизнес" }, { pl: "Umowa", ru: "Договор" }, { pl: "Projekt", ru: "Проект" }, { pl: "Klient", ru: "Клиент" }, { pl: "Pracownik", ru: "Сотрудник" }, { pl: "Zebranie", ru: "Собрание" }, { pl: "Cel", ru: "Цель" }, { pl: "Wynik", ru: "Результат" }, { pl: "Rynek", ru: "Рынок" }, { pl: "Konkurencja", ru: "Конкуренция" }, { pl: "Budżet", ru: "Бюджет" }, { pl: "Inwestycja", ru: "Инвестиция" }, { pl: "Koszt", ru: "Расход" }, { pl: "Zysk", ru: "Прибыль" }, { pl: "Strata", ru: "Убыток" }, { pl: "Zarząd", ru: "Правление" }, { pl: "Kariera", ru: "Карьера" }, { pl: "Awans", ru: "Повышение" } ],
+            [ { pl: "Ponieważ", ru: "Потому что" }, { pl: "Chociaż", ru: "Хотя" }, { pl: "Dlatego", ru: "Поэтому" }, { pl: "Jednak", ru: "Однако" }, { pl: "Podczas", ru: "Во время" }, { pl: "Zamiast", ru: "Вместо" }, { pl: "Oprócz", ru: "Кроме" }, { pl: "Według", ru: "Согласно" }, { pl: "Wzdłuż", ru: "Вдоль" }, { pl: "Wokół", ru: "Вокруг" }, { pl: "Obok", ru: "Рядом" }, { pl: "Pomiędzy", ru: "Между" }, { pl: "Naprzeciwko", ru: "Напротив" }, { pl: "Oraz", ru: "А также" }, { pl: "Żeby", ru: "Чтобы" }, { pl: "Jeżeli", ru: "Если" }, { pl: "Więc", ru: "Значит" }, { pl: "Albo", ru: "Или" }, { pl: "Ani", ru: "Ни" }, { pl: "Czy", ru: "Разве" } ],
+            [ { pl: "Policja", ru: "Полиция" }, { pl: "Sąd", ru: "Суд" }, { pl: "Sędzia", ru: "Судья" }, { pl: "Prawnik", ru: "Юрист" }, { pl: "Wina", ru: "Вина" }, { pl: "Niewinność", ru: "Невиновность" }, { pl: "Przestępstwo", ru: "Преступление" }, { pl: "Morderstwo", ru: "Убийство" }, { pl: "Kradzież", ru: "Кража" }, { pl: "Złodziej", ru: "Вор" }, { pl: "Więzienie", ru: "Тюрьма" }, { pl: "Dowód", ru: "Доказательство" }, { pl: "Świadek", ru: "Свидетель" }, { pl: "Ofiara", ru: "Жертва" }, { pl: "Podejrzany", ru: "Подозреваемый" }, { pl: "Śledztwo", ru: "Расследование" }, { pl: "Nielegalny", ru: "Нелегальный" }, { pl: "Kara", ru: "Наказание" }, { pl: "Mandat", ru: "Штраф" }, { pl: "Obrona", ru: "Защита" } ],
+            [ { pl: "Pełny", ru: "Полный" }, { pl: "Pusty", ru: "Пустой" }, { pl: "Głęboki", ru: "Глубокий" }, { pl: "Płytki", ru: "Мелкий" }, { pl: "Szeroki", ru: "Широкий" }, { pl: "Wąski", ru: "Узкий" }, { pl: "Gruby", ru: "Толстый" }, { pl: "Cienki", ru: "Тонкий" }, { pl: "Miękki", ru: "Мягкий" }, { pl: "Twardy", ru: "Твердый" }, { pl: "Gładki", ru: "Гладкий" }, { pl: "Szorstki", ru: "Шершавый" }, { pl: "Ostry", ru: "Острый" }, { pl: "Tępy", ru: "Тупой" }, { pl: "Jasny", ru: "Светлый" }, { pl: "Ciemny", ru: "Темный" }, { pl: "Głośny", ru: "Громкий" }, { pl: "Cichy", ru: "Тихий" }, { pl: "Ciężki", ru: "Тяжелый" }, { pl: "Lekki", ru: "Легкий" } ],
+            [ { pl: "Sztuka", ru: "Искусство" }, { pl: "Obraz", ru: "Картина" }, { pl: "Rzeźba", ru: "Скульптура" }, { pl: "Wystawa", ru: "Выставка" }, { pl: "Galeria", ru: "Галерея" }, { pl: "Muzeum", ru: "Музей" }, { pl: "Teatr", ru: "Театр" }, { pl: "Kino", ru: "Кино" }, { pl: "Scena", ru: "Сцена" }, { pl: "Aktor", ru: "Актер" }, { pl: "Reżyser", ru: "Режиссер" }, { pl: "Widz", ru: "Зритель" }, { pl: "Gazeta", ru: "Газета" }, { pl: "Czasopismo", ru: "Журнал" }, { pl: "Artykuł", ru: "Статья" }, { pl: "Wywiad", ru: "Интервью" }, { pl: "Reklama", ru: "Реклама" }, { pl: "Dziennikarz", ru: "Журналист" }, { pl: "Plotka", ru: "Сплетня" }, { pl: "Recenzja", ru: "Рецензия" } ],
+            [ { pl: "Budzić się", ru: "Просыпаться" }, { pl: "Wstawać", ru: "Вставать" }, { pl: "Myć się", ru: "Мыться" }, { pl: "Kąpać się", ru: "Купаться" }, { pl: "Ubierać się", ru: "Одеваться" }, { pl: "Czesać się", ru: "Расчесываться" }, { pl: "Golić się", ru: "Бриться" }, { pl: "Szczoteczka", ru: "Щетка" }, { pl: "Pasta", ru: "Паста" }, { pl: "Mydło", ru: "Мыло" }, { pl: "Ręcznik", ru: "Полотенце" }, { pl: "Szampon", ru: "Шампунь" }, { pl: "Krem", ru: "Крем" }, { pl: "Prysznic", ru: "Душ" }, { pl: "Wanna", ru: "Ванна" }, { pl: "Makijaż", ru: "Макияж" }, { pl: "Perfumy", ru: "Духи" }, { pl: "Zapach", ru: "Запах" }, { pl: "Grzebień", ru: "Расческа" }, { pl: "Suszarka", ru: "Фен" } ],
+            [ { pl: "Świat", ru: "Мир" }, { pl: "Kontynent", ru: "Континент" }, { pl: "Kraj", ru: "Страна" }, { pl: "Stolica", ru: "Столица" }, { pl: "Granica", ru: "Граница" }, { pl: "Region", ru: "Регион" }, { pl: "Województwo", ru: "Воеводство" }, { pl: "Powiat", ru: "Уезд" }, { pl: "Gmina", ru: "Гмина" }, { pl: "Półwysep", ru: "Полуостров" }, { pl: "Zatoka", ru: "Залив" }, { pl: "Ocean", ru: "Океан" }, { pl: "Pustynia", ru: "Пустыня" }, { pl: "Puszcza", ru: "Пуща" }, { pl: "Wulkan", ru: "Вулкан" }, { pl: "Jaskinia", ru: "Пещера" }, { pl: "Wodospad", ru: "Водопад" }, { pl: "Dolina", ru: "Долина" }, { pl: "Równina", ru: "Равнина" }, { pl: "Pagórek", ru: "Холм" } ],
+            [ { pl: "Przypadek", ru: "Случай" }, { pl: "Powód", ru: "Причина" }, { pl: "Skutek", ru: "Следствие" }, { pl: "Szansa", ru: "Шанс" }, { pl: "Możliwość", ru: "Возможность" }, { pl: "Pewность", ru: "Уверенность" }, { pl: "Wątpliwość", ru: "Сомнение" }, { pl: "Zaleta", ru: "Достоинство" }, { pl: "Wada", ru: "Недостаток" }, { pl: "Różница", ru: "Разница" }, { pl: "Podobieństwo", ru: "Сходство" }, { pl: "Szczegół", ru: "Деталь" }, { pl: "Całość", ru: "Целое" }, { pl: "Połowa", ru: "Половина" }, { pl: "Reszta", ru: "Остаток" }, { pl: "Początek", ru: "Начало" }, { pl: "Środek", ru: "Середина" }, { pl: "Koniec", ru: "Конец" }, { pl: "Błąd", ru: "Ошибка" }, { pl: "Racja", ru: "Правота" } ],
+            [ { pl: "Budynek", ru: "Здание" }, { pl: "Wieżowiec", ru: "Небоскреб" }, { pl: "Kamienica", ru: "Дом" }, { pl: "Osiedle", ru: "Район" }, { pl: "Ratusz", ru: "Ратуша" }, { pl: "Zamek", ru: "Замок" }, { pl: "Pałac", ru: "Дворец" }, { pl: "Kościół", ru: "Костел" }, { pl: "Cmentarz", ru: "Кладбище" }, { pl: "Pomnik", ru: "Памятник" }, { pl: "Dzielnica", ru: "Квартал" }, { pl: "Przedmieście", ru: "Пригород" }, { pl: "Krawężник", ru: "Бордюр" }, { pl: "Skrzyżowanie", ru: "Перекресток" }, { pl: "Plac", ru: "Площадь" }, { pl: "Fontanna", ru: "Фонтан" }, { pl: "Ławka", ru: "Скамья" }, { pl: "Latarnia", ru: "Фонарь" }, { pl: "Śmietnik", ru: "Мусорка" }, { pl: "Zaułek", ru: "Переулок" } ],
+            [ { pl: "Biegać", ru: "Бегать" }, { pl: "Skakać", ru: "Прыгать" }, { pl: "Płyвать", ru: "Плавать" }, { pl: "Latać", ru: "Летать" }, { pl: "Czołгаć się", ru: "Ползать" }, { pl: "Wspinać się", ru: "Взбираться" }, { pl: "Pchać", ru: "Толкать" }, { pl: "Ciągnąć", ru: "Тянуть" }, { pl: "Rzucać", ru: "Бросать" }, { pl: "Łapać", ru: "Ловить" }, { pl: "Trzymać", ru: "Держать" }, { pl: "Puszczać", ru: "Отпускать" }, { pl: "Stać", ru: "Стоять" }, { pl: "Siedzieć", ru: "Сидеть" }, { pl: "Leżeć", ru: "Лежать" }, { pl: "Wisieć", ru: "Висеть" }, { pl: "Kłaść", ru: "Класть" }, { pl: "Stawiać", ru: "Ставить" }, { pl: "Siadać", ru: "Садиться" }, { pl: "Wstawać", ru: "Вставать" } ],
+            [ { pl: "Nauka", ru: "Наука" }, { pl: "Badanie", ru: "Исследование" }, { pl: "Naukowiec", ru: "Ученый" }, { pl: "Wynalazek", ru: "Изобретение" }, { pl: "Odkrycie", ru: "Открытие" }, { pl: "Teoria", ru: "Теория" }, { pl: "Praktyka", ru: "Практыка" }, { pl: "Doświadczenie", ru: "Опыт" }, { pl: "Eksperyment", ru: "Эксперимент" }, { pl: "Wnioseк", ru: "Вывод" }, { pl: "Dowód", ru: "Доказательство" }, { pl: "Analiza", ru: "Анализ" }, { pl: "Chemia", ru: "Химия" }, { pl: "Fizyka", ru: "Физика" }, { pl: "Biologia", ru: "Биология" }, { pl: "Historia", ru: "История" }, { pl: "Geografia", ru: "География" }, { pl: "Matematyka", ru: "Математика" }, { pl: "Filozofia", ru: "Философия" }, { pl: "Psychologia", ru: "Психология" } ],
+            [ { pl: "Narzędzie", ru: "Инструмент" }, { pl: "Młotek", ru: "Молоток" }, { pl: "Śrubokręt", ru: "Отвертка" }, { pl: "Gwoźdź", ru: "Гвоздь" }, { pl: "Śruba", ru: "Винт" }, { pl: "Klucz", ru: "Ключ" }, { pl: "Piła", ru: "Пила" }, { pl: "Siekiera", ru: "Топор" }, { pl: "Wiertarka", ru: "Дрель" }, { pl: "Maszyna", ru: "Механизм" }, { pl: "Silnik", ru: "Двигатель" }, { pl: "Część", ru: "Деталь" }, { pl: "Naprawa", ru: "Ремонт" }, { pl: "Zepsuty", ru: "Сломанный" }, { pl: "Działać", ru: "Работать" }, { pl: "Koło", ru: "Колесо" }, { pl: "Przewód", ru: "Провод" }, { pl: "Prąd", ru: "Ток" }, { pl: "Bateria", ru: "Батарейка" }, { pl: "Zasilanie", ru: "Питание" } ],
+            [ { pl: "Odważный", ru: "Смелый" }, { pl: "Tchórzliwy", ru: "Трусливый" }, { pl: "Cierpliwy", ru: "Терпеливый" }, { pl: "Niecierpliwy", ru: "Нетерпеливый" }, { pl: "Spokojny", ru: "Спокойный" }, { pl: "Nerwowy", ru: "Нервный" }, { pl: "Uprzejmy", ru: "Вежливый" }, { pl: "Bezczelny", ru: "Наглый" }, { pl: "Dumny", ru: "Гордый" }, { pl: "Skromny", ru: "Скромный" }, { pl: "Zazdrosny", ru: "Завистливый" }, { pl: "Wierny", ru: "Верный" }, { pl: "Lojalny", ru: "Лояльный" }, { pl: "Samolubny", ru: "Эгоистичный" }, { pl: "Hojny", ru: "Щедрый" }, { pl: "Skąpy", ru: "Скупой" }, { pl: "Surowy", ru: "Строгий" }, { pl: "Łagodny", ru: "Мягкий" }, { pl: "Ambitny", ru: "Амбициозный" }, { pl: "Leniwy", ru: "Лентяй" } ],
+            [ { pl: "Gospodarka", ru: "Экономика" }, { pl: "Waluta", ru: "Валюта" }, { pl: "Gotówka", ru: "Наличные" }, { pl: "Karta", ru: "Карта" }, { pl: "Konto", ru: "Счет" }, { pl: "Przelew", ru: "Перевод" }, { pl: "Kredyt", ru: "Кредит" }, { pl: "Dług", ru: "Долг" }, { pl: "Rata", ru: "Взнос" }, { pl: "Podatek", ru: "Налог" }, { pl: "Cło", ru: "Пошлина" }, { pl: "Giełda", ru: "Биржа" }, { pl: "Akcja", ru: "Акция" }, { pl: "Inwestycja", ru: "Инвестиция" }, { pl: "Zysk", ru: "Прибыль" }, { pl: "Strata", ru: "Убыток" }, { pl: "Kryzys", ru: "Кризис" }, { pl: "Inflacja", ru: "Инфляция" }, { pl: "Cena", ru: "Цена" }, { pl: "Wartość", ru: "Ценность" } ],
+            [ { pl: "Wybory", ru: "Выборы" }, { pl: "Głosowanie", ru: "Голосование" }, { pl: "Kandydat", ru: "Кандидат" }, { pl: "Partia", ru: "Партия" }, { pl: "Kampania", ru: "Кампания" }, { pl: "Prezydent", ru: "Президент" }, { pl: "Premier", ru: "Премьер-министр" }, { pl: "Minister", ru: "Министр" }, { pl: "Sejm", ru: "Сейм" }, { pl: "Senat", ru: "Сенат" }, { pl: "Ustawa", ru: "Закон" }, { pl: "Konstytucja", ru: "Конституция" }, { pl: "Prawa", ru: "Права" }, { pl: "Obowiąзки", ru: "Обязанности" }, { pl: "Demokracja", ru: "Демократия" }, { pl: "Dyktatura", ru: "Диктатура" }, { pl: "Cenzura", ru: "Цензура" }, { pl: "Propaganda", ru: "Пропаганда" }, { pl: "Wolność", ru: "Свобода" }, { pl: "Debata", ru: "Дебаты" } ],
+            [ { pl: "Środowisko", ru: "Окружающая среда" }, { pl: "Zanieczyszczenie", ru: "Загрязнение" }, { pl: "Ochrona", ru: "Охрана" }, { pl: "Klimat", ru: "Климат" }, { pl: "Katastrofa", ru: "Катастрофа" }, { pl: "Trzęsienie ziemi", ru: "Землетрясение" }, { pl: "Powódź", ru: "Наводнение" }, { pl: "Pożar", ru: "Пожар" }, { pl: "Huragan", ru: "Ураган" }, { pl: "Gatunek", ru: "Вид" }, { pl: "Ekologia", ru: "Экология" }, { pl: "Odpady", ru: "Отходы" }, { pl: "Recykling", ru: "Переработка" }, { pl: "Surowce", ru: "Сырье" }, { pl: "Energia", ru: "Энергия" }, { pl: "Słoneczna", ru: "Солнечная" }, { pl: "Wiatrowa", ru: "Ветровая" }, { pl: "Zasoby", ru: "Ресурсы" }, { pl: "Susza", ru: "Засуха" }, { pl: "Śmieci", ru: "Мусор" } ],
+            [ { pl: "Byt", ru: "Бытие" }, { pl: "Pustka", ru: "Пустота" }, { pl: "Nieskończoność", ru: "Бесконечность" }, { pl: "Wieczność", ru: "Вечность" }, { pl: "Przeznaczenie", ru: "Предназначение" }, { pl: "Los", ru: "Судьба" }, { pl: "Szczęście", ru: "Счастье" }, { pl: "Pech", ru: "Неудача" }, { pl: "Dusza", ru: "Душа" }, { pl: "Umysł", ru: "Разум" }, { pl: "Świadomość", ru: "Сознание" }, { pl: "Rozum", ru: "Ум" }, { pl: "Emocja", ru: "Эмоция" }, { pl: "Instynkt", ru: "Инстинкт" }, { pl: "Intuicja", ru: "Интуиция" }, { pl: "Sumienie", ru: "Совесть" }, { pl: "Moralność", ru: "Мораль" }, { pl: "Etyka", ru: "Etyка" }, { pl: "Sens", ru: "Смысл" }, { pl: "Значение", ru: "Значение" } ],
+            [ { pl: "Literatura", ru: "Литература" }, { pl: "Poezja", ru: "Поэзия" }, { pl: "Powieść", ru: "Роман" }, { pl: "Bajka", ru: "Сказка" }, { pl: "Autor", ru: "Автор" }, { pl: "Pisarz", ru: "Писатель" }, { pl: "Czytelnik", ru: "Читатель" }, { pl: "Wydawnictwo", ru: "Издательство" }, { pl: "Księgarnia", ru: "Книжный магазин" }, { pl: "Biblioteka", ru: "Библиотека" }, { pl: "Muzyka", ru: "Музыка" }, { pl: "Piosenka", ru: "Песня" }, { pl: "Zespół", ru: "Группа" }, { pl: "Koncert", ru: "Концерт" }, { pl: "Instrument", ru: "Инструмент" }, { pl: "Gitara", ru: "Гитара" }, { pl: "Pianino", ru: "Пианино" }, { pl: "Taniec", ru: "Танец" }, { pl: "Rytm", ru: "Ритм" }, { pl: "Melodia", ru: "Мелодия" } ],
+            [ { pl: "Przewidywać", ru: "Предвидеть" }, { pl: "Udowadniać", ru: "Доказывать" }, { pl: "Rozwijać", ru: "Развивать" }, { pl: "Unikać", ru: "Избегать" }, { pl: "Narzekać", ru: "Жаловаться" }, { pl: "Podejrzewać", ru: "Подозревать" }, { pl: "Gwarantować", ru: "Гарантировать" }, { pl: "Oskarżać", ru: "Обвинять" }, { pl: "Przekonywać", ru: "Убеждать" }, { pl: "Ostrzegać", ru: "Предупреждать" }, { pl: "Wymagać", ru: "Требовать" }, { pl: "Zgadzać się", ru: "Соглашаться" }, { pl: "Zastanawiać się", ru: "Задумываться" }, { pl: "Przyznawać", ru: "Признавать" }, { pl: "Zaprzeczać", ru: "Отрицать" }, { pl: "Wspominać", ru: "Вспоминать" }, { pl: "Przesadzać", ru: "Преувеличивать" }, { pl: "Cierpieć", ru: "Страдать" }, { pl: "Osiągać", ru: "Достигать" }, { pl: "Rezygnować", ru: "Отказываться" } ],
+            [ { pl: "Dziedzictwo", ru: "Наследие" }, { pl: "Obyczaj", ru: "Обычай" }, { pl: "Tradycja", ru: "Традиция" }, { pl: "Pokolenie", ru: "Поколение" }, { pl: "Mniejszość", ru: "Меньшинство" }, { pl: "Większość", ru: "Большинство" }, { pl: "Uprzedzenie", ru: "Предубеждение" }, { pl: "Tolerancja", ru: "Толерантность" }, { pl: "Dyskryminacja", ru: "Дискриминация" }, { pl: "Obywatelstwo", ru: "Гражданство" }, { pl: "Niepodległość", ru: "Независимость" }, { pl: "Suwerenność", ru: "Суверенитет" }, { pl: "Sojusz", ru: "Союз" }, { pl: "Wyznanie", ru: "Вероисповедание" }, { pl: "Świątynia", ru: "Храм" }, { pl: "Rytuał", ru: "Ритуал" }, { pl: "Zwyczaj", ru: "Привычка" }, { pl: "Przekonanie", ru: "Убеждение" }, { pl: "Wartość", ru: "Ценность" }, { pl: "Religia", ru: "Religia" } ],
             [ { pl: "Środowisko naturalne", ru: "Среда обитания" }, { pl: "Zagrożenie", ru: "Угроза" }, { pl: "Zanieczyszczenie", ru: "Загрязнение" }, { pl: "Ocieplenie", ru: "Потепление" }, { pl: "Lodowiec", ru: "Ледник" }, { pl: "Trzęsienie", ru: "Землетрясение" }, { pl: "Żywioł", ru: "Стихия" }, { pl: "Przestrzeń", ru: "Пространство" }, { pl: "Wszechświat", ru: "Вселенная" }, { pl: "Grawitacja", ru: "Гравитация" }, { pl: "Próżnia", ru: "Вакуум" }, { pl: "Powierzchnia", ru: "Поверхность" }, { pl: "Głębia", ru: "Глубина" }, { pl: "Szczyt", ru: "Вершина" }, { pl: "Zbocze", ru: "Склон" }, { pl: "Przepaść", ru: "Пропасть" }, { pl: "Pustynia", ru: "Пустыня" }, { pl: "Dżungla", ru: "Джунгли" }, { pl: "Bagno", ru: "Болото" }, { pl: "Źródło", ru: "Источник" } ],
-            [ { pl: "Zdesperowany", ru: "Отчаянный" }, { pl: "Niezależny", ru: "Независимый" }, { pl: "Odpowiedzialny", ru: "Ответственный" }, { pl: "Wrażliwy", ru: "Чувствительный" }, { pl: "Obojętny", ru: "Равнодушный" }, { pl: "Zaskoczony", ru: "Удивленный" }, { pl: "Przerażony", ru: "Напуганный" }, { pl: "Podekscytowany", ru: "Взволнованный" }, { pl: "Rozczarowany", ru: "Разочарованный" }, { pl: "Zadowolony", ru: "Довольный" }, { pl: "Uparty", ru: "Упрямый" }, { pl: "Naiwny", ru: "Наивный" }, { pl: "Przebiegły", ru: "Хитрый" }, { pl: "Złośliwy", ru: "Злобный" }, { pl: "Hojny", ru: "Щедрый" }, { pl: "Skąpy", ru: "Скупой" }, { pl: "Odważny", ru: "Смелый" }, { pl: "Tchórzliwy", ru: "Трусливый" }, { pl: "Zdolny", ru: "Способный" }, { pl: "Niezgrabny", ru: "Неуклюжий" } ],
-            [ { pl: "Konstytucja", ru: "Конституция" }, { pl: "Prawodawstwo", ru: "Законодательство" }, { pl: "Przepis", ru: "Предписание" }, { pl: "Wyrok", ru: "Приговор" }, { pl: "Oskarżony", ru: "Обвиняемый" }, { pl: "Powód (w sądzie)", ru: "Истец" }, { pl: "Świadek", ru: "Свидетель" }, { pl: "Łapówka", ru: "Взятка" }, { pl: "Korupcja", ru: "Коррупция" }, { pl: "Przemyt", ru: "Контрабанда" }, { pl: "Giełda", ru: "Биржа" }, { pl: "Akcja", ru: "Акция" }, { pl: "Obligacja", ru: "Облигация" }, { pl: "Odsetki", ru: "Проценты" }, { pl: "Kredyt", ru: "Кредит" }, { pl: "Hipoteka", ru: "Ипотека" }, { pl: "Bankructwo", ru: "Банкротство" }, { pl: "Gospodarka", ru: "Экономика" }, { pl: "Podaż", ru: "Предложение" }, { pl: "Popyt", ru: "Спрос" } ],
-            [ { pl: "Tożsamość", ru: "Идентичность" }, { pl: "Świadomość", ru: "Сознание" }, { pl: "Podświadomoсть", ru: "Подсознание" }, { pl: "Istnienie", ru: "Существование" }, { pl: "Rzeczywistość", ru: "Реальность" }, { pl: "Złudzenie", ru: "Иллюзия" }, { pl: "Wyobraźnia", ru: "Воображение" }, { pl: "Pamięć ludzka", ru: "Память" }, { pl: "Wspomnienie", ru: "Воспоминание" }, { pl: "Doświadczenie", ru: "Опыт" }, { pl: "Prawda", ru: "Правда" }, { pl: "Fałsz", ru: "Ложь" }, { pl: "Logika", ru: "Логика" }, { pl: "Absurd", ru: "Абсурд" }, { pl: "Paradoks", ru: "Парадокс" }, { pl: "Przyczyna", ru: "Причина" }, { pl: "Skutek", ru: "Следствие" }, { pl: "Cel", ru: "Цель" }, { pl: "Środek do celu", ru: "Средство" }, { pl: "Znaczenie", ru: "Значение" } ],
-            [ { pl: "Pielęgniarka", ru: "Медсестра" }, { pl: "Inżynier", ru: "Инженер" }, { pl: "Księgowy", ru: "Бухгалтер" }, { pl: "Prawnik", ru: "Юрист" }, { pl: "Sędzia", ru: "Судья" }, { pl: "Polityк", ru: "Политик" }, { pl: "Urzędnik", ru: "Чиновник" }, { pl: "Rzemieślnik", ru: "Ремесленник" }, { pl: "Rolnik", ru: "Фермер" }, { pl: "Przedsiębiorca", ru: "Предприниматель" }, { pl: "Naukowiec", ru: "Ученый" }, { pl: "Badacz", ru: "Исследователь" }, { pl: "Artysta", ru: "Художник / Артист" }, { pl: "Twórca", ru: "Творец" }, { pl: "Pisarz", ru: "Писатель" }, { pl: "Dziennikarz", ru: "Журналист" }, { pl: "Tłumacz", ru: "Переводчик" }, { pl: "Kelner", ru: "Официант" }, { pl: "Kucharz", ru: "Повар" }, { pl: "Kierowca", ru: "Водитель" } ],
-            [ { pl: "Urządzenie", ru: "Устройство" }, { pl: "Sprzęt", ru: "Оборудование" }, { pl: "Narzędzie", ru: "Инструмент" }, { pl: "Wynalazek", ru: "Изобретение" }, { pl: "Odkrycie", ru: "Открытие" }, { pl: "Przewód", ru: "Провод" }, { pl: "Gniazdko", ru: "Розетка" }, { pl: "Wtyczka", ru: "Вилка (шнура)" }, { pl: "Przełącznik", ru: "Переключатель" }, { pl: "Żarówka", ru: "Лампочка" }, { pl: "Ekran", ru: "Экран" }, { pl: "Klawiatura", ru: "Клавиатура" }, { pl: "Drukarka", ru: "Принтер" }, { pl: "Ładowarka", ru: "Зарядка" }, { pl: "Słuchawki", ru: "Наушники" }, { pl: "Głośnik", ru: "Колонка" }, { pl: "Odtwarzacz", ru: "Плеер" }, { pl: "Pilot", ru: "Пульт" }, { pl: "Bateria", ru: "Батарея" }, { pl: "Akumulator", ru: "Аккумулятор" } ],
-            [ { pl: "Natychmiast", ru: "Немедленно" }, { pl: "Ostatecznie", ru: "В конечном итоге" }, { pl: "Prawdopodobnie", ru: "Вероятно" }, { pl: "Oczywiście", ru: "Конечно" }, { pl: "Całkowicie", ru: "Полностью" }, { pl: "Częściowo", ru: "Частично" }, { pl: "Znacznie", ru: "Значительно" }, { pl: "Niewiele", ru: "Немного" }, { pl: "Zbyt", ru: "Слишком" }, { pl: "Wystarczająco", ru: "Достаточно" }, { pl: "Niemal", ru: "Почти" }, { pl: "Ledwie", ru: "Едва" }, { pl: "Głównie", ru: "Главным образом" }, { pl: "Wyłącznie", ru: "Исключительно" }, { pl: "Szczególnie", ru: "Особенно" }, { pl: "Powszechnie", ru: "Повсеместно" }, { pl: "Zupełnie", ru: "Совершенно" }, { pl: "Nagminnie", ru: "Сплошь и рядом" }, { pl: "Stopniowo", ru: "Постепенно" }, { pl: "Zaraz", ru: "Сейчас / Скоро" } ],
-            [ { pl: "Zapominać", ru: "Забывать (не запоминать)" }, { pl: "Pamiętać", ru: "Помнить (не память)" }, { pl: "Grzeczny", ru: "Вежливый (не грешный)" }, { pl: "Uroda", ru: "Красота (не уродство)" }, { pl: "Czaszka", ru: "Череп (не чашка)" }, { pl: "Kubek", ru: "Кружка (не кубок)" }, { pl: "Dworzec", ru: "Вокзал (не дворец)" }, { pl: "Dywan", ru: "Ковер (не диван)" }, { pl: "Sklep", ru: "Магазин (не склеп)" }, { pl: "Krzesło", ru: "Стул (не кресло)" }, { pl: "Fotel", ru: "Кресло (не стул)" }, { pl: "Pensja", ru: "Зарплата (не пенсия)" }, { pl: "Emerytura", ru: "Пенсия (не увольнение)" }, { pl: "Krawat", ru: "Галстук (не кровать)" }, { pl: "Łóżko", ru: "Кровать (не ложка)" }, { pl: "Łyżka", ru: "Ложка" }, { pl: "Prosto", ru: "Прямо (не просто)" }, { pl: "Zwykły", ru: "Обычный (не привычный)" }, { pl: "Pukać", ru: "Стучать (не пукать)" }, { pl: "Woń", ru: "Аромат (не вонь)" } ]
+            [ { pl: "Zdesperowany", ru: "Отчаянный" }, { pl: "Niezależный", ru: "Независимый" }, { pl: "Odpowiedzialny", ru: "Ответственный" }, { pl: "Wrażliвый", ru: "Чувствительный" }, { pl: "Obojęтный", ru: "Равнодушный" }, { pl: "Zaskoczony", ru: "Удивленный" }, { pl: "Przerażony", ru: "Напуганный" }, { pl: "Podekscytowany", ru: "Взволнованный" }, { pl: "Rozczarowany", ru: "Разочарованный" }, { pl: "Zadowolony", ru: "Довольный" }, { pl: "Uparty", ru: "Упрямый" }, { pl: "Naiwny", ru: "Наивный" }, { pl: "Przebiegлы", ru: "Хитрый" }, { pl: "Złośliwy", ru: "Злобный" }, { pl: "Hojny", ru: "Щедрый" }, { pl: "Skąpy", ru: "Скупой" }, { pl: "Odważный", ru: "Смелый" }, { pl: "Tchórzliwy", ru: "Трусливый" }, { pl: "Zdolny", ru: "Способный" }, { pl: "Niezgrabny", ru: "Неуклюжий" } ],
+            [ { pl: "Konstytucja", ru: "Конституция" }, { pl: "Prawodawstwo", ru: "Законодательство" }, { pl: "Przepis", ru: "Предписание" }, { pl: "Wyrok", ru: "Приговор" }, { pl: "Oskarżony", ru: "Обвиняемый" }, { pl: "Powód", ru: "Истец" }, { pl: "Świadek", ru: "Свидетель" }, { pl: "Łapówka", ru: "Взятка" }, { pl: "Korupcja", ru: "Коррупция" }, { pl: "Przemyt", ru: "Контрабанда" }, { pl: "Giełda", ru: "Биржа" }, { pl: "Akcja", ru: "Акция" }, { pl: "Obligacja", ru: "Облигация" }, { pl: "Odsetки", ru: "Проценты" }, { pl: "Kredyt", ru: "Кредит" }, { pl: "Hipoteka", ru: "Ипотека" }, { pl: "Bankructwo", ru: "Банкротство" }, { pl: "Gospodarka", ru: "Экономика" }, { pl: "Podaż", ru: "Предложение" }, { pl: "Popyt", ru: "Спрос" } ],
+            [ { pl: "Tożsamość", ru: "Идентичность" }, { pl: "Świadomość", ru: "Сознание" }, { pl: "Podświadomoсть", ru: "Подсознание" }, { pl: "Istnienie", ru: "Существование" }, { pl: "Rzeczywistość", ru: "Реальность" }, { pl: "Zлudzenie", ru: "Иллюзия" }, { pl: "Wyobraźnia", ru: "Воображение" }, { pl: "Pamięть", ru: "Память" }, { pl: "Wspomnienie", ru: "Воспоминание" }, { pl: "Doświadчение", ru: "Опыт" }, { pl: "Prawda", ru: "Prawda" }, { pl: "Faлsz", ru: "Ложь" }, { pl: "Logika", ru: "Logika" }, { pl: "Absurd", ru: "Absurd" }, { pl: "Paradoks", ru: "Paradoks" }, { pl: "Przyczyna", ru: "Причина" }, { pl: "Skutek", ru: "Следствие" }, { pl: "Cel", ru: "Цель" }, { pl: "Środek", ru: "Средство" }, { pl: "Значение", ru: "Значение" } ],
+            [ { pl: "Pielęgniarka", ru: "Медсестра" }, { pl: "Inżynier", ru: "Инженер" }, { pl: "Księgowy", ru: "Бухгалтер" }, { pl: "Prawnik", ru: "Юрист" }, { pl: "Sędzia", ru: "Судья" }, { pl: "Polityк", ru: "Политик" }, { pl: "Urzędnik", ru: "Чиновник" }, { pl: "Rzemieślnik", ru: "Ремесленник" }, { pl: "Rolnik", ru: "Фермер" }, { pl: "Przedsiębiorca", ru: "Предприниматель" }, { pl: "Naukowiec", ru: "Ученый" }, { pl: "Badacz", ru: "Исследователь" }, { pl: "Artysta", ru: "Артист" }, { pl: "Twórca", ru: "Творец" }, { pl: "Pisarz", ru: "Писатель" }, { pl: "Dziennikarz", ru: "Журналист" }, { pl: "Tłumacz", ru: "Переводчик" }, { pl: "Kelner", ru: "Официант" }, { pl: "Kucharz", ru: "Повар" }, { pl: "Kierowca", ru: "Водитель" } ],
+            [ { pl: "Urządzenie", ru: "Устройство" }, { pl: "Sprzęt", ru: "Оборудование" }, { pl: "Narzędzie", ru: "Инструмент" }, { pl: "Wynalazek", ru: "Изобретение" }, { pl: "Odkrycie", ru: "Открытие" }, { pl: "Przewód", ru: "Провод" }, { pl: "Gniazdko", ru: "Розетка" }, { pl: "Wtyczka", ru: "Вилка" }, { pl: "Przełącznik", ru: "Переключатель" }, { pl: "Żarówka", ru: "Лампочка" }, { pl: "Ekran", ru: "Экран" }, { pl: "Klawiatura", ru: "Клавиатура" }, { pl: "Drukarka", ru: "Принтер" }, { pl: "Ładowarka", ru: "Зарядка" }, { pl: "Słuchawki", ru: "Наушники" }, { pl: "Głośник", ru: "Колонка" }, { pl: "Odtwarzacz", ru: "Плеер" }, { pl: "Pilot", ru: "Пульт" }, { pl: "Bateria", ru: "Батарея" }, { pl: "Akumulator", ru: "Аккумулятор" } ],
+            [ { pl: "Natychmiast", ru: "Немедленно" }, { pl: "Ostatecznie", ru: "В конечном итоге" }, { pl: "Prawdopodobnie", ru: "Вероятно" }, { pl: "Oczywiście", ru: "Конечно" }, { pl: "Całkowicie", ru: "Полностью" }, { pl: "Częściowo", ru: "Частично" }, { pl: "Znacznie", ru: "Значительно" }, { pl: "Niewiele", ru: "Немного" }, { pl: "Zbyt", ru: "Слишком" }, { pl: "Wystarczająco", ru: "Достаточно" }, { pl: "Niemal", ru: "Почти" }, { pl: "Ledwie", ru: "Едва" }, { pl: "Głównie", ru: "Главным образом" }, { pl: "Wyłącznie", ru: "Исключительно" }, { pl: "Szczególnie", ru: "Особенно" }, { pl: "Powszechnie", ru: "Повсеместно" }, { pl: "Zupełnie", ru: "Совершенно" }, { pl: "Nagminnie", ru: "Часто" }, { pl: "Stopniowo", ru: "Постепенно" }, { pl: "Zaraz", ru: "Скоро" } ],
+            [ { pl: "Zapominać", ru: "Забывать" }, { pl: "Pamiętać", ru: "Помнить" }, { pl: "Grzeczny", ru: "Вежливый" }, { pl: "Uroda", ru: "Красота" }, { pl: "Czaszka", ru: "Череп" }, { pl: "Kubek", ru: "Кружка" }, { pl: "Dworzec", ru: "Вокзал" }, { pl: "Dywan", ru: "Ковер" }, { pl: "Sklep", ru: "Магазин" }, { pl: "Krzesło", ru: "Стул" }, { pl: "Fotel", ru: "Кресло" }, { pl: "Pensja", ru: "Зарплата" }, { pl: "Emerytura", ru: "Пенсия" }, { pl: "Krawat", ru: "Галстук" }, { pl: "Łóżko", ru: "Кровать" }, { pl: "Łyżka", ru: "Ложка" }, { pl: "Prosto", ru: "Прямо" }, { pl: "Zwyкły", ru: "Ообычный" }, { pl: "Pukać", ru: "Стучать" }, { pl: "Woń", ru: "Аромат" } ]
         ];
 
         const allWordsFlat = levelsData.flat();
@@ -218,6 +211,34 @@
         let maxMistakes = 1;
         let isWaiting = false;
         let timerInterval;
+
+        async function syncWithCloud() {
+            try {
+                await sbClient.from('leaderboard').upsert({ 
+                    username: userName, 
+                    score: stats.words, 
+                    level: currentLevel + 1 
+                }, { onConflict: 'username' });
+            } catch (e) { console.error("Cloud sync failed", e); }
+        }
+
+        async function fetchLeaderboard() {
+            const list = document.getElementById('leaderboard-list');
+            const { data, error } = await sbClient
+                .from('leaderboard')
+                .select('*')
+                .order('score', { ascending: false })
+                .limit(10);
+            
+            if (error) { list.innerText = "Ошибка загрузки"; return; }
+            
+            list.innerHTML = data.map((user, i) => `
+                <div class="leader-row" style="${user.username === userName ? 'border: 1px solid var(--accent)' : ''}">
+                    <span class="leader-name">${i+1}. ${user.username}</span>
+                    <span class="leader-score">${user.score} слов</span>
+                </div>
+            `).join('');
+        }
 
         function updateStatsUI() {
             document.getElementById('st-level').innerText = currentLevel + 1;
@@ -234,8 +255,10 @@
             document.getElementById('message-screen').style.display = 'none';
             document.getElementById('tab-play').className = tab === 'play' ? 'tab active' : 'tab';
             document.getElementById('tab-stats').className = tab === 'stats' ? 'tab active' : 'tab';
-            if (tab === 'stats') updateStatsUI();
-            else startLevel();
+            if (tab === 'stats') {
+                updateStatsUI();
+                fetchLeaderboard();
+            } else startLevel();
         }
 
         function setMode(mode) {
@@ -251,51 +274,37 @@
                 showMsg("Победа!", "Все 1000 слов пройдены!", true, "Начать заново", resetProgress);
                 return;
             }
-            wordIndex = 0;
-            mistakesMade = 0;
+            wordIndex = 0; mistakesMade = 0;
             maxMistakes = (currentLevel + 1) <= 20 ? 1 : 2;
             levelWords = shuffle([...levelsData[currentLevel]]);
-            
             document.getElementById('game-container').style.display = 'flex';
             document.getElementById('message-screen').style.display = 'none';
-            updateHeader();
-            nextWord();
-        }
-
-        function updateHeader() {
-            document.getElementById('stats-header').innerText = `УРОВЕНЬ ${currentLevel + 1} (${wordIndex}/${levelWords.length})`;
-            let hearts = '';
-            for(let i=0; i <= maxMistakes - mistakesMade; i++) hearts += '🤍';
-            document.getElementById('lives').innerText = hearts;
+            updateHeader(); nextWord();
         }
 
         function nextWord() {
-            if (!levelsData[currentLevel]) {
-                showMsg("Победа!", "Все уровни пройдены!", true, "Заново", resetProgress);
-                return;
-            }
             if (wordIndex >= levelWords.length) {
                 currentLevel++;
                 localStorage.setItem('polish_level', currentLevel);
+                syncWithCloud();
                 showMsg(`Уровень ${currentLevel} пройден!`, "Отличная работа!", true, "Дальше", startLevel);
                 return;
             }
             isWaiting = false;
             const cur = levelWords[wordIndex];
-            const askRu = currentMode === 'audio' ? false : Math.random() > 0.5;
+            let askRu = currentMode === 'audio' ? false : Math.random() > 0.5;
             
             const wordEl = document.getElementById('word');
             wordEl.innerText = (currentMode === 'audio') ? '🎧' : (askRu ? cur.ru : cur.pl);
-            wordEl.dataset.text = askRu ? cur.ru : cur.pl;
-            wordEl.dataset.lang = askRu ? 'ru-RU' : 'pl-PL';
+            // Fix audio logic
+            wordEl.dataset.text = (currentMode === 'audio' || !askRu) ? cur.pl : cur.ru;
+            wordEl.dataset.lang = (currentMode === 'audio' || !askRu) ? 'pl-PL' : 'ru-RU';
 
             if (currentMode === 'audio') speakWord();
 
-            renderOptions('options-container', cur, askRu ? 'pl' : 'ru', (btn, opt) => {
-                checkAnswer(btn, opt, cur, askRu ? 'pl' : 'ru', askRu);
-            });
-
+            renderOptions('options-container', cur, askRu ? 'pl' : 'ru', (btn, opt) => checkAnswer(btn, opt, cur, askRu ? 'pl' : 'ru', askRu));
             if (currentMode === 'sprint') startSprint(cur, askRu ? 'pl' : 'ru');
+            updateHeader();
         }
 
         function checkAnswer(btn, selected, cur, target, wasRu) {
@@ -308,6 +317,7 @@
                 if (wasRu && currentMode !== 'audio') speakText(selected, 'pl-PL');
                 stats.words++;
                 localStorage.setItem('polish_stats', JSON.stringify(stats));
+                if (stats.words % 5 === 0) syncWithCloud();
                 wordIndex++;
                 setTimeout(nextWord, 800);
             } else {
@@ -324,10 +334,7 @@
                 updateHeader();
                 if (mistakesMade > maxMistakes) {
                     setTimeout(() => showMsg("Провал", "Слишком много ошибок.", true, "Заново", startLevel), 1500);
-                } else {
-                    wordIndex++;
-                    setTimeout(nextWord, 1500);
-                }
+                } else { wordIndex++; setTimeout(nextWord, 1500); }
             }
             updateStatsUI();
         }
@@ -335,65 +342,46 @@
         function openMistakes() {
             document.getElementById('game-container').style.display = 'none';
             document.getElementById('mistakes-screen').style.display = 'flex';
-            wordIndex = 0;
-            levelWords = shuffle([...mistakesDb]);
-            nextMistake();
+            wordIndex = 0; levelWords = shuffle([...mistakesDb]); nextMistake();
         }
 
         function nextMistake() {
-            if (wordIndex >= levelWords.length || mistakesDb.length === 0) {
-                closeMistakes();
-                return;
-            }
-            isWaiting = false;
-            const cur = levelWords[wordIndex];
+            if (wordIndex >= levelWords.length || mistakesDb.length === 0) { closeMistakes(); return; }
+            isWaiting = false; const cur = levelWords[wordIndex];
             document.getElementById('mistakes-header').innerText = `ОШИБКИ (${wordIndex + 1}/${levelWords.length})`;
-            
-            const wordEl = document.getElementById('m-word');
-            wordEl.innerText = cur.pl;
-            wordEl.dataset.text = cur.pl;
-
+            const wordEl = document.getElementById('m-word'); wordEl.innerText = cur.pl; wordEl.dataset.text = cur.pl;
             renderOptions('m-options-container', cur, 'ru', (btn, opt) => {
-                if (isWaiting) return;
-                isWaiting = true;
+                if (isWaiting) return; isWaiting = true;
                 if (opt === cur.ru) {
                     btn.classList.add('correct');
                     mistakesDb = mistakesDb.filter(m => m.pl !== cur.pl);
                     localStorage.setItem('polish_mistakes', JSON.stringify(mistakesDb));
-                    wordIndex++;
-                    setTimeout(nextMistake, 800);
-                } else {
-                    btn.classList.add('wrong');
-                    setTimeout(() => { btn.classList.remove('wrong'); isWaiting = false; }, 800);
-                }
+                    wordIndex++; setTimeout(nextMistake, 800);
+                } else { btn.classList.add('wrong'); setTimeout(() => { btn.classList.remove('wrong'); isWaiting = false; }, 800); }
                 updateStatsUI();
             });
         }
 
-        function closeMistakes() {
-            document.getElementById('mistakes-screen').style.display = 'none';
-            document.getElementById('game-container').style.display = 'flex';
-            startLevel();
-        }
+        function closeMistakes() { document.getElementById('mistakes-screen').style.display = 'none'; document.getElementById('game-container').style.display = 'flex'; startLevel(); }
 
         function renderOptions(id, cur, target, callback) {
-            const container = document.getElementById(id);
-            container.innerHTML = '';
+            const container = document.getElementById(id); container.innerHTML = '';
             let wr = shuffle(allWordsFlat.filter(w => w[target] !== cur[target])).slice(0, 2);
             let opts = shuffle([cur[target], wr[0][target], wr[1][target]]);
             opts.forEach(o => {
-                const b = document.createElement('button');
-                b.className = 'option-btn';
-                b.innerText = o;
-                b.onclick = () => callback(b, o);
-                container.appendChild(b);
+                const b = document.createElement('button'); b.className = 'option-btn'; b.innerText = o;
+                b.onclick = () => callback(b, o); container.appendChild(b);
             });
         }
 
+        function updateHeader() {
+            document.getElementById('stats-header').innerText = `УРОВЕНЬ ${currentLevel + 1} (${wordIndex}/${levelWords.length})`;
+            let hearts = ''; for(let i=0; i <= maxMistakes - mistakesMade; i++) hearts += '🤍';
+            document.getElementById('lives').innerText = hearts;
+        }
+
         function startSprint(cur, target) {
-            let start = Date.now();
-            let bar = document.getElementById('timer-bar');
-            clearInterval(timerInterval);
+            let start = Date.now(); let bar = document.getElementById('timer-bar'); clearInterval(timerInterval);
             timerInterval = setInterval(() => {
                 let p = 100 - ((Date.now() - start) / 7000 * 100);
                 bar.style.width = p + '%';
@@ -402,23 +390,15 @@
             }, 50);
         }
 
-        function showBadCat() {
-            const c = document.getElementById('cat-bad');
-            c.classList.add('show');
-            setTimeout(() => c.classList.remove('show'), 2500); // Показ 2.5 секунды
-        }
-
+        function showBadCat() { const c = document.getElementById('cat-bad'); c.classList.add('show'); setTimeout(() => c.classList.remove('show'), 2500); }
+        
         function showMsg(title, desc, btn, btnT, action) {
             document.getElementById('game-container').style.display = 'none';
             document.getElementById('mistakes-screen').style.display = 'none';
-            const s = document.getElementById('message-screen');
-            s.style.display = 'flex';
-            document.getElementById('msg-title').innerText = title;
-            document.getElementById('msg-desc').innerText = desc;
+            const s = document.getElementById('message-screen'); s.style.display = 'flex';
+            document.getElementById('msg-title').innerText = title; document.getElementById('msg-desc').innerText = desc;
             document.getElementById('cat-win').style.display = title.includes('пройден') ? 'block' : 'none';
-            const b = document.getElementById('msg-btn');
-            b.innerText = btnT;
-            window.nextAction = action;
+            const b = document.getElementById('msg-btn'); b.innerText = btnT; window.nextAction = action;
         }
 
         function resetProgress() { localStorage.clear(); location.reload(); }
