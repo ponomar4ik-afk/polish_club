@@ -28,149 +28,66 @@
             margin: 0;
             overflow: hidden;
             -webkit-tap-highlight-color: transparent;
+            background-image: url('bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            position: relative;
         }
 
-        .tabs {
-            display: flex;
-            width: 100%;
-            background: #0F172A;
-            border-bottom: 1px solid #1E293B;
-            position: fixed;
-            top: 0;
-            z-index: 10;
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(11, 15, 25, 0.85);
+            z-index: -1;
         }
 
-        .tab {
-            flex: 1;
-            padding: 16px 0;
-            text-align: center;
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: 0.2s;
-            border-bottom: 2px solid transparent;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+        .tabs { display: flex; width: 100%; background: #0F172A; border-bottom: 1px solid #1E293B; position: fixed; top: 0; z-index: 10; }
+        .tab { flex: 1; padding: 16px 0; text-align: center; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: 0.2s; border-bottom: 2px solid transparent; text-transform: uppercase; letter-spacing: 1px; }
+        .tab.active { color: var(--text-main); border-bottom: 2px solid var(--accent); }
 
-        .tab.active {
-            color: var(--text-main);
-            border-bottom: 2px solid var(--accent);
-        }
+        .container { width: 90%; max-width: 400px; text-align: center; margin-top: 80px; display: flex; flex-direction: column; justify-content: center; }
+        .header-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding: 0 10px; }
+        .stats { font-size: 0.75rem; color: var(--text-muted); letter-spacing: 2px; font-weight: 600; text-transform: uppercase; }
+        .lives { color: var(--error); font-size: 1.2rem; letter-spacing: 2px; }
 
-        .container {
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-            margin-top: 80px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
+        .word-card { background: var(--card-bg); padding: 40px 20px; border-radius: 20px; border: 1px solid #1E293B; margin-bottom: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .word-card h1 { margin: 0; font-size: 2.2rem; font-weight: 700; letter-spacing: -0.02em; cursor: pointer; }
 
-        .header-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            padding: 0 10px;
-        }
-
-        .stats {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            letter-spacing: 2px;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .lives {
-            color: var(--error);
-            font-size: 1.2rem;
-            letter-spacing: 2px;
-        }
-
-        .word-card {
-            background: var(--card-bg);
-            padding: 40px 20px;
-            border-radius: 20px;
-            border: 1px solid #1E293B;
-            margin-bottom: 30px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .word-card h1 {
-            margin: 0;
-            font-size: 2.2rem;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-            cursor: pointer;
-        }
-
-        .speaker-icon {
-            margin-top: 15px;
-            font-size: 1.5rem;
-            cursor: pointer;
-            opacity: 0.6;
-            transition: 0.2s;
-            background: #1E293B;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
+        .speaker-icon { margin-top: 15px; font-size: 1.5rem; cursor: pointer; opacity: 0.6; transition: 0.2s; background: #1E293B; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
         .speaker-icon:active { transform: scale(0.9); opacity: 1; }
 
-        .btn-group {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        button.option-btn {
-            border: 1px solid #1E293B;
-            padding: 18px 20px;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            background: var(--btn-bg);
-            color: #FFFFFF;
-            transition: transform 0.1s ease, background 0.2s, border-color 0.2s;
-            width: 100%;
-        }
-
+        .btn-group { display: flex; flex-direction: column; gap: 12px; }
+        button.option-btn { border: 1px solid #1E293B; padding: 18px 20px; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; background: var(--btn-bg); color: #FFFFFF; transition: transform 0.1s ease, background 0.2s, border-color 0.2s; width: 100%; }
         button.option-btn:active { transform: scale(0.96); }
 
-        .correct { 
-            background: rgba(16, 185, 129, 0.1) !important;
-            border-color: var(--correct) !important;
-            color: var(--correct) !important;
-        }
-        .wrong { 
-            animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both;
-            background: rgba(239, 68, 68, 0.1) !important;
-            border-color: var(--error) !important;
-            color: var(--error) !important;
-        }
+        .correct { background: rgba(16, 185, 129, 0.1) !important; border-color: var(--correct) !important; color: var(--correct) !important; }
+        .wrong { animation: shake 0.3s cubic-bezier(.36,.07,.19,.97) both; background: rgba(239, 68, 68, 0.1) !important; border-color: var(--error) !important; color: var(--error) !important; }
 
-        #message-screen {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 60vh;
+        .cat-bad-popup {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 110px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 10px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            border: 2px solid var(--error);
+            transform: translateY(150%);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 100;
         }
-        
+        .cat-bad-popup.show { transform: translateY(0); }
+        .cat-bad-popup img { width: 100%; border-radius: 10px; }
+        .cat-bad-popup p { margin: 8px 0 0; font-size: 0.9rem; font-weight: bold; color: var(--error); }
+
+        #message-screen { display: none; flex-direction: column; align-items: center; justify-content: center; height: 60vh; }
+        #msg-image { width: 160px; height: 160px; object-fit: cover; border-radius: 20px; margin-bottom: 20px; display: none; border: 3px solid var(--correct); box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2); }
         #message-screen h2 { font-size: 2rem; margin-bottom: 10px; }
-        #message-screen p { color: var(--text-muted); margin-bottom: 30px; }
+        #message-screen p { color: var(--text-muted); margin-bottom: 30px; text-align: center; }
         .action-btn { background: var(--accent); color: #fff; border: none; padding: 15px 30px; border-radius: 12px; font-weight: bold; font-size: 1.1rem; cursor: pointer; }
 
         @keyframes shake {
@@ -202,7 +119,13 @@
         <div class="btn-group" id="options-container"></div>
     </div>
 
+    <div class="cat-bad-popup" id="cat-bad">
+        <img src="bad.jpg" alt="bad cat" onerror="this.style.display='none'">
+        <p>Ай-я-яй!</p>
+    </div>
+
     <div class="container" id="message-screen">
+        <img id="msg-image" src="good.jpg" alt="good cat" onerror="this.style.display='none'">
         <h2 id="msg-title">Заголовок</h2>
         <p id="msg-desc">Описание</p>
         <button class="action-btn" onclick="startLevel()">Продолжить</button>
@@ -229,391 +152,8 @@
                 { pl: "Woda", ru: "Вода" }, { pl: "Jedzenie", ru: "Еда" }, { pl: "Chleb", ru: "Хлеб" }, { pl: "Mięso", ru: "Мясо" },
                 { pl: "Mleko", ru: "Молоко" }, { pl: "Kawa", ru: "Кофе" }, { pl: "Herbata", ru: "Чай" }, { pl: "Śniadanie", ru: "Завтрак" },
                 { pl: "Obiad", ru: "Обед" }, { pl: "Kolacja", ru: "Ужин" }, { pl: "Czas", ru: "Время" }, { pl: "Godzina", ru: "Час" }
-            ],
-            // Уровень 3: Семья и люди
-            [
-                { pl: "Rodzina", ru: "Семья" }, { pl: "Matka", ru: "Мать" }, { pl: "Ojciec", ru: "Отец" }, { pl: "Brat", ru: "Брат" },
-                { pl: "Siostra", ru: "Сестра" }, { pl: "Babcia", ru: "Бабушка" }, { pl: "Dziadek", ru: "Дедушка" }, { pl: "Wujek", ru: "Дядя" },
-                { pl: "Ciocia", ru: "Тетя" }, { pl: "Syn", ru: "Сын" }, { pl: "Córka", ru: "Дочь" }, { pl: "Przyjaciel", ru: "Друг" },
-                { pl: "Sąsiad", ru: "Сосед" }, { pl: "Chłopak", ru: "Парень" }, { pl: "Dziewczyna", ru: "Девушка" }, { pl: "Dziadkowie", ru: "Бабушка и дедушка" },
-                { pl: "Rodzice", ru: "Родители" }, { pl: "Kuzyn", ru: "Двоюродный брат" }, { pl: "Małżeństwo", ru: "Брак" }, { pl: "Ślub", ru: "Свадьба" }
-            ],
-            // Уровень 4: Базовые прилагательные
-            [
-                { pl: "Dobry", ru: "Хороший" }, { pl: "Zły", ru: "Плохой" }, { pl: "Duży", ru: "Большой" }, { pl: "Mały", ru: "Маленький" },
-                { pl: "Nowy", ru: "Новый" }, { pl: "Stary", ru: "Старый" }, { pl: "Gorący", ru: "Горячий" }, { pl: "Zimny", ru: "Холодный" },
-                { pl: "Szybki", ru: "Быстрый" }, { pl: "Wolny", ru: "Медленный / Свободный" }, { pl: "Drogi", ru: "Дорогой" }, { pl: "Tani", ru: "Дешевый" },
-                { pl: "Czysty", ru: "Чистый" }, { pl: "Brudny", ru: "Грязный" }, { pl: "Ładny", ru: "Красивый" }, { pl: "Brzydki", ru: "Уродливый" },
-                { pl: "Wysoki", ru: "Высокий" }, { pl: "Niski", ru: "Низкий" }, { pl: "Trudny", ru: "Трудный" }, { pl: "Łatwy", ru: "Легкий" }
-            ],
-            // Уровень 5: Базовые глаголы
-            [
-                { pl: "Robić", ru: "Делать" }, { pl: "Mówić", ru: "Говорить" }, { pl: "Widzieć", ru: "Видеть" }, { pl: "Słyszeć", ru: "Слышать" },
-                { pl: "Myśleć", ru: "Думать" }, { pl: "Wiedzieć", ru: "Знать (факт)" }, { pl: "Mieć", ru: "Иметь" }, { pl: "Być", ru: "Быть" },
-                { pl: "Chcieć", ru: "Хотеть" }, { pl: "Móc", ru: "Мочь" }, { pl: "Musieć", ru: "Должен" }, { pl: "Iść", ru: "Идти" },
-                { pl: "Jechać", ru: "Ехать" }, { pl: "Pracować", ru: "Работать" }, { pl: "Grać", ru: "Играть" }, { pl: "Czytać", ru: "Читать" },
-                { pl: "Pisać", ru: "Писать" }, { pl: "Pić", ru: "Пить" }, { pl: "Jeść", ru: "Есть (кушать)" }, { pl: "Spać", ru: "Спать" }
-            ],
-            // Уровень 6: Дом и быт
-            [
-                { pl: "Pokój", ru: "Комната" }, { pl: "Kuchnia", ru: "Кухня" }, { pl: "Łazienka", ru: "Ванная" }, { pl: "Sypialnia", ru: "Спальня" },
-                { pl: "Łóżko", ru: "Кровать" }, { pl: "Krzesło", ru: "Стул" }, { pl: "Stół", ru: "Стол" }, { pl: "Drzwi", ru: "Двери" },
-                { pl: "Ściana", ru: "Стена" }, { pl: "Podłoga", ru: "Пол" }, { pl: "Sufit", ru: "Потолок" }, { pl: "Lampa", ru: "Лампа" },
-                { pl: "Telewizor", ru: "Телевизор" }, { pl: "Komputer", ru: "Компьютер" }, { pl: "Telefon", ru: "Телефон" }, { pl: "Klucz", ru: "Ключ" },
-                { pl: "Torba", ru: "Сумка" }, { pl: "Zegarek", ru: "Часы" }, { pl: "Lustro", ru: "Зеркало" }, { pl: "Szafa", ru: "Шкаф" }
-            ],
-            // Уровень 7: Тело и здоровье
-            [
-                { pl: "Głowa", ru: "Голова" }, { pl: "Twarz", ru: "Лицо" }, { pl: "Oko", ru: "Глаз" }, { pl: "Ucho", ru: "Ухо" },
-                { pl: "Nos", ru: "Нос" }, { pl: "Usta", ru: "Рот / Губы" }, { pl: "Ząb", ru: "Зуб" }, { pl: "Ręka", ru: "Рука" },
-                { pl: "Noga", ru: "Нога" }, { pl: "Palec", ru: "Палец" }, { pl: "Włosy", ru: "Волосы" }, { pl: "Plecy", ru: "Спина" },
-                { pl: "Serce", ru: "Сердце" }, { pl: "Krew", ru: "Кровь" }, { pl: "Lekarz", ru: "Врач" }, { pl: "Apteka", ru: "Аптека" },
-                { pl: "Szpital", ru: "Больница" }, { pl: "Choroba", ru: "Болезнь" }, { pl: "Ból", ru: "Боль" }, { pl: "Zdrowie", ru: "Здоровье" }
-            ],
-            // Уровень 8: Природа и погода
-            [
-                { pl: "Niebo", ru: "Небо" }, { pl: "Gwiazda", ru: "Звезда" }, { pl: "Księżyc", ru: "Луна" }, { pl: "Chmura", ru: "Облако" },
-                { pl: "Deszcz", ru: "Дождь" }, { pl: "Śnieg", ru: "Снег" }, { pl: "Wiatr", ru: "Ветер" }, { pl: "Burza", ru: "Буря / Гроза" },
-                { pl: "Mgła", ru: "Туман" }, { pl: "Ziemia", ru: "Земля" }, { pl: "Góra", ru: "Гора" }, { pl: "Las", ru: "Лес" },
-                { pl: "Rzeka", ru: "Река" }, { pl: "Morze", ru: "Море" }, { pl: "Plaża", ru: "Пляж" }, { pl: "Zwierzę", ru: "Животное" },
-                { pl: "Pies", ru: "Собака" }, { pl: "Kot", ru: "Кот" }, { pl: "Ptak", ru: "Птица" }, { pl: "Ryba", ru: "Рыба" }
-            ],
-            // Уровень 9: Одежда и цвета
-            [
-                { pl: "Ubranie", ru: "Одежда" }, { pl: "Koszula", ru: "Рубашка" }, { pl: "Spodnie", ru: "Брюки" }, { pl: "Sukienka", ru: "Платье" },
-                { pl: "But", ru: "Ботинок" }, { pl: "Czapka", ru: "Шапка" }, { pl: "Kurtka", ru: "Куртка" }, { pl: "Skarpetka", ru: "Носок" },
-                { pl: "Płaszcz", ru: "Пальто" }, { pl: "Kolor", ru: "Цвет" }, { pl: "Biały", ru: "Белый" }, { pl: "Czarny", ru: "Черный" },
-                { pl: "Czerwony", ru: "Красный" }, { pl: "Niebieski", ru: "Синий" }, { pl: "Zielony", ru: "Зеленый" }, { pl: "Żółty", ru: "Желтый" },
-                { pl: "Szary", ru: "Серый" }, { pl: "Brązowy", ru: "Коричневый" }, { pl: "Różowy", ru: "Розовый" }, { pl: "Pomarańczowy", ru: "Оранжевый" }
-            ],
-            // Уровень 10: Город и транспорт (продолжение)
-            [
-                { pl: "Lotnisko", ru: "Аэропорт" }, { pl: "Samolot", ru: "Самолет" }, { pl: "Most", ru: "Мост" }, { pl: "Rondo", ru: "Кольцевая развязка" },
-                { pl: "Dworzec", ru: "Вокзал" }, { pl: "Przystanek", ru: "Остановка" }, { pl: "Rower", ru: "Велосипед" }, { pl: "Piesi", ru: "Пешеходы" },
-                { pl: "Chodnik", ru: "Тротуар" }, { pl: "Światła", ru: "Светофор" }, { pl: "Kierowca", ru: "Водитель" }, { pl: "Pasażer", ru: "Пассажир" },
-                { pl: "Droga", ru: "Дорога" }, { pl: "Kierunek", ru: "Направление" }, { pl: "Północ", ru: "Север" }, { pl: "Południe", ru: "Юг" },
-                { pl: "Wschód", ru: "Восток" }, { pl: "Zachód", ru: "Запад" }, { pl: "Mapa", ru: "Карта" }, { pl: "Podróż", ru: "Путешествие" }
-            ],
-            // Уровень 11: Работа и образование
-            [
-                { pl: "Szkoła", ru: "Школа" }, { pl: "Uniwersytet", ru: "Университет" }, { pl: "Nauczyciel", ru: "Учитель" }, { pl: "Student", ru: "Студент" },
-                { pl: "Lekcja", ru: "Урок" }, { pl: "Egzamin", ru: "Экзамен" }, { pl: "Biuro", ru: "Офис" }, { pl: "Szef", ru: "Начальник" },
-                { pl: "Kolega", ru: "Коллега" }, { pl: "Wynagrodzenie", ru: "Зарплата" }, { pl: "Emerytura", ru: "Пенсия" }, { pl: "Bezrobotny", ru: "Безработный" },
-                { pl: "Doświadczenie", ru: "Опыт" }, { pl: "Umiejętność", ru: "Навык" }, { pl: "Spotkanie", ru: "Встреча" }, { pl: "Dokument", ru: "Документ" },
-                { pl: "Podpis", ru: "Подпись" }, { pl: "Wiadomość", ru: "Сообщение" }, { pl: "Sukces", ru: "Успех" }, { pl: "Porażka", ru: "Провал" }
-            ],
-            // Уровень 12: Эмоции и качества
-            [
-                { pl: "Szczęśliwy", ru: "Счастливый" }, { pl: "Smutny", ru: "Грустный" }, { pl: "Wesoły", ru: "Веселый" }, { pl: "Zły", ru: "Злой" },
-                { pl: "Zmęczony", ru: "Уставший" }, { pl: "Głodny", ru: "Голодный" }, { pl: "Ciekawy", ru: "Интересный / Любопытный" }, { pl: "Ważny", ru: "Важный" },
-                { pl: "Mądry", ru: "Умный" }, { pl: "Głupi", ru: "Глупый" }, { pl: "Silny", ru: "Сильный" }, { pl: "Słaby", ru: "Слабый" },
-                { pl: "Bogaty", ru: "Богатый" }, { pl: "Biedny", ru: "Бедный" }, { pl: "Uczciwy", ru: "Честный" }, { pl: "Leniwy", ru: "Ленивый" },
-                { pl: "Dziwny", ru: "Странный" }, { pl: "Bezpieczny", ru: "Безопасный" }, { pl: "Niebezpieczny", ru: "Опасный" }, { pl: "Wolny", ru: "Свободный" }
-            ],
-            // Уровень 13: Календарь и время
-            [
-                { pl: "Poniedziałek", ru: "Понедельник" }, { pl: "Wtorek", ru: "Вторник" }, { pl: "Środa", ru: "Среда" }, { pl: "Czwartek", ru: "Четверг" },
-                { pl: "Piątek", ru: "Пятница" }, { pl: "Sobota", ru: "Суббота" }, { pl: "Niedziela", ru: "Воскресенье" }, { pl: "Tydzień", ru: "Неделя" },
-                { pl: "Miesiąc", ru: "Месяц" }, { pl: "Rok", ru: "Год" }, { pl: "Styczeń", ru: "Январь" }, { pl: "Luty", ru: "Февраль" },
-                { pl: "Marzec", ru: "Март" }, { pl: "Kwiecień", ru: "Апрель" }, { pl: "Maj", ru: "Май" }, { pl: "Czerwiec", ru: "Июнь" },
-                { pl: "Lipiec", ru: "Июль" }, { pl: "Sierpień", ru: "Август" }, { pl: "Wrzesień", ru: "Сентябрь" }, { pl: "Grudzień", ru: "Декабрь" }
-            ],
-            // Уровень 14: Кухня и приготовление
-            [
-                { pl: "Gotować", ru: "Готовить" }, { pl: "Smażyć", ru: "Жарить" }, { pl: "Piec", ru: "Печь" }, { pl: "Smaczny", ru: "Вкусный" },
-                { pl: "Sól", ru: "Соль" }, { pl: "Cukier", ru: "Сахар" }, { pl: "Pieprz", ru: "Перец" }, { pl: "Olej", ru: "Масло (раст.)" },
-                { pl: "Talerz", ru: "Тарелка" }, { pl: "Kubek", ru: "Кружка" }, { pl: "Sztućce", ru: "Столовые приборы" }, { pl: "Nóż", ru: "Нож" },
-                { pl: "Widelec", ru: "Вилка" }, { pl: "Łyżka", ru: "Ложка" }, { pl: "Patelnia", ru: "Сковорода" }, { pl: "Garnek", ru: "Кастрюля" },
-                { pl: "Lodówka", ru: "Холодильник" }, { pl: "Piekarnik", ru: "Духовка" }, { pl: "Warzywa", ru: "Овощи" }, { pl: "Owoce", ru: "Фрукты" }
-            ],
-            // Уровень 15: Технологии и коммуникации
-            [
-                { pl: "Internet", ru: "Интернет" }, { pl: "Strona", ru: "Страница / Сайт" }, { pl: "Hasło", ru: "Пароль" }, { pl: "Poczta", ru: "Почта" },
-                { pl: "Ekran", ru: "Экран" }, { pl: "Klawiatura", ru: "Клавиатура" }, { pl: "Myszka", ru: "Мышка" }, { pl: "Ładowarka", ru: "Зарядка" },
-                { pl: "Bateria", ru: "Батарея" }, { pl: "Sygnał", ru: "Сигнал" }, { pl: "Aplikacja", ru: "Приложение" }, { pl: "Plik", ru: "Файл" },
-                { pl: "Drukarka", ru: "Принтер" }, { pl: "Kamera", ru: "Камера" }, { pl: "Słuchawki", ru: "Наушники" }, { pl: "Głośnik", ru: "Динамик" },
-                { pl: "Pamięć", ru: "Память" }, { pl: "Przycisk", ru: "Кнопка" }, { pl: "Włączyć", ru: "Включить" }, { pl: "Wyłączyć", ru: "Выключить" }
-            ],
-            // Уровень 16: Путешествия и отель
-            [
-                { pl: "Wakacje", ru: "Отпуск" }, { pl: "Rezerwacja", ru: "Бронь" }, { pl: "Recepcja", ru: "Ресепшн" }, { pl: "Pokój", ru: "Номер / Комната" },
-                { pl: "Łóżko pojedyncze", ru: "Односпальная кровать" }, { pl: "Klimatyzacja", ru: "Кондиционер" }, { pl: "Winda", ru: "Лифт" }, { pl: "Klucz", ru: "Ключ" },
-                { pl: "Paszport", ru: "Паспорт" }, { pl: "Granica", ru: "Граница" }, { pl: "Wycieczka", ru: "Экскурсия" }, { pl: "Przewodnik", ru: "Гид" },
-                { pl: "Zwiedzać", ru: "Осматривать достопримечательности" }, { pl: "Zabytek", ru: "Памятник архитектуры" }, { pl: "Widok", ru: "Вид" }, { pl: "Morze", ru: "Море" },
-                { pl: "Góry", ru: "Горы" }, { pl: "Las", ru: "Лес" }, { pl: "Jezioro", ru: "Озеро" }, { pl: "Wyspa", ru: "Остров" }
-            ],
-            // Уровень 17: Абстрактные понятия
-            [
-                { pl: "Prawda", ru: "Правда" }, { pl: "Kłamstwo", ru: "Ложь" }, { pl: "Nadzieja", ru: "Надежда" }, { pl: "Wiara", ru: "Вера" },
-                { pl: "Sen", ru: "Сон" }, { pl: "Marzenie", ru: "Мечта" }, { pl: "Cel", ru: "Цель" }, { pl: "Wybór", ru: "Выбор" },
-                { pl: "Decyzja", ru: "Решение" }, { pl: "Problem", ru: "Проблема" }, { pl: "Rozwiązanie", ru: "Решение (задачи)" }, { pl: "Zmiana", ru: "Перемена" },
-                { pl: "Przyszłość", ru: "Будущее" }, { pl: "Przeszłość", ru: "Прошлое" }, { pl: "Teraźniejszość", ru: "Настоящее" }, { pl: "Wolność", ru: "Свобода" },
-                { pl: "Pokój", ru: "Мир (отсутствие войны)" }, { pl: "Wojna", ru: "Война" }, { pl: "Sprawiedliwość", ru: "Справедливость" }, { pl: "Siła", ru: "Сила" }
-            ],
-            // Уровень 18: Наречия времени и частоты
-            [
-                { pl: "Zawsze", ru: "Всегда" }, { pl: "Nigdy", ru: "Никогда" }, { pl: "Często", ru: "Часто" }, { pl: "Rzadko", ru: "Редко" },
-                { pl: "Czasami", ru: "Иногда" }, { pl: "Zwykle", ru: "Обычно" }, { pl: "Nagle", ru: "Вдруг" }, { pl: "Wcześnie", ru: "Рано" },
-                { pl: "Późno", ru: "Поздно" }, { pl: "Teraz", ru: "Сейчас" }, { pl: "Potem", ru: "Потом" }, { pl: "Zaraz", ru: "Сейчас / Скоро" },
-                { pl: "Wczoraj", ru: "Вчера" }, { pl: "Dzisiaj", ru: "Сегодня" }, { pl: "Jutro", ru: "Завтра" }, { pl: "Rano", ru: "Утром" },
-                { pl: "Wieczorem", ru: "Вечером" }, { pl: "W nocy", ru: "Ночью" }, { pl: "Dawno", ru: "Давно" }, { pl: "Niedawno", ru: "Недавно" }
-            ],
-            // Уровень 19: Здоровье и медицина (продвинутый)
-            [
-                { pl: "Recepta", ru: "Рецепт (врача)" }, { pl: "Lekarstwo", ru: "Лекарство" }, { pl: "Tabletka", ru: "Таблетка" }, { pl: "Zastrzyk", ru: "Укол" },
-                { pl: "Krew", ru: "Кровь" }, { pl: "Badanie", ru: "Исследование / Анализ" }, { pl: "Ciśnienie", ru: "Давление" }, { pl: "Gorączka", ru: "Температура / Жар" },
-                { pl: "Kaszel", ru: "Кашель" }, { pl: "Katar", ru: "Насморк" }, { pl: "Przeziębienie", ru: "Простуда" }, { pl: "Grypa", ru: "Грипп" },
-                { pl: "Rana", ru: "Рана" }, { pl: "Oparzenie", ru: "Ожог" }, { pl: "Złamanie", ru: "Перелом" }, { pl: "Ból głowy", ru: "Головная боль" },
-                { pl: "Apteczka", ru: "Аптечка" }, { pl: "Ratownik", ru: "Спасатель" }, { pl: "Karetka", ru: "Скорая помощь" }, { pl: "Zdrowieć", ru: "Выздоравливать" }
-            ],
-            // Уровень 20: Социум и взаимодействие
-            [
-                { pl: "Państwo", ru: "Государство" }, { pl: "Prawo", ru: "Закон" }, { pl: "Społeczeństwo", ru: "Общество" }, { pl: "Obywatel", ru: "Гражданин" },
-                { pl: "Polityka", ru: "Политика" }, { pl: "Wybory", ru: "Выборы" }, { pl: "Rząd", ru: "Правительство" }, { pl: "Podatek", ru: "Налог" },
-                { pl: "Kara", ru: "Наказание / Штраф" }, { pl: "Nagroda", ru: "Награда" }, { pl: "Pomoc", ru: "Помощь" }, { pl: "Wsparcie", ru: "Поддержка" },
-                { pl: "Zasada", ru: "Правило" }, { pl: "Obowiązek", ru: "Обязанность" }, { pl: "Odpowiedzialność", ru: "Ответственность" }, { pl: "Bezpieczeństwo", ru: "Безопасность" },
-                { pl: "Konflikt", ru: "Конфликт" }, { pl: "Pokój", ru: "Мир" }, { pl: "Umowa", ru: "Договор" }, { pl: "Współpraca", ru: "Сотрудничество" }
-            ],
-            // Уровень 21: Материалы и вещества
-            [
-                { pl: "Drewno", ru: "Дерево (материал)" }, { pl: "Metal", ru: "Металл" }, { pl: "Szkło", ru: "Стекло" }, { pl: "Plastik", ru: "Пластик" },
-                { pl: "Papier", ru: "Бумага" }, { pl: "Kamień", ru: "Камень" }, { pl: "Piasek", ru: "Песок" }, { pl: "Ziemia", ru: "Земля (грунт)" },
-                { pl: "Powietrze", ru: "Воздух" }, { pl: "Ogień", ru: "Огонь" }, { pl: "Lód", ru: "Лед" }, { pl: "Złoto", ru: "Золото" },
-                { pl: "Srebro", ru: "Серебро" }, { pl: "Żelazo", ru: "Железо" }, { pl: "Wełna", ru: "Шерсть" }, { pl: "Bawełna", ru: "Хлопок" },
-                { pl: "Skóra", ru: "Кожа" }, { pl: "Guma", ru: "Резина" }, { pl: "Węgiel", ru: "Уголь" }, { pl: "Olej", ru: "Масло (техническое)" }
-            ],
-            // Уровень 22: Продвинутые глаголы (Действия)
-            [
-                { pl: "Zaczynać", ru: "Начинать" }, { pl: "Kończyć", ru: "Заканчивать" }, { pl: "Szukać", ru: "Искать" }, { pl: "Znaleźć", ru: "Найти" },
-                { pl: "Otwierać", ru: "Открывать" }, { pl: "Zamykać", ru: "Закрывать" }, { pl: "Dawać", ru: "Давать" }, { pl: "Brać", ru: "Брать" },
-                { pl: "Kupować", ru: "Покупать" }, { pl: "Sprzedawać", ru: "Продавать" }, { pl: "Pytać", ru: "Спрашивать" }, { pl: "Odpowiadać", ru: "Отвечать" },
-                { pl: "Pomagać", ru: "Помогать" }, { pl: "Przeszkadzać", ru: "Мешать" }, { pl: "Zapominać", ru: "Забывать" }, { pl: "Pamiętać", ru: "Помнить" },
-                { pl: "Zgubić", ru: "Потерять" }, { pl: "Szanować", ru: "Уважать" }, { pl: "Nienawidzić", ru: "Ненавидеть" }, { pl: "Kochać", ru: "Любить" }
-            ],
-            // Уровень 23: Бизнес и офис
-            [
-                { pl: "Firma", ru: "Фирма / Компания" }, { pl: "Przedsiębiorstwo", ru: "Предприятие" }, { pl: "Biznes", ru: "Бизнес" }, { pl: "Umowa", ru: "Договор" },
-                { pl: "Projekt", ru: "Проект" }, { pl: "Klient", ru: "Клиент" }, { pl: "Pracownik", ru: "Сотрудник" }, { pl: "Zebranie", ru: "Собрание" },
-                { pl: "Cel", ru: "Цель" }, { pl: "Wynik", ru: "Результат" }, { pl: "Rynek", ru: "Рынок" }, { pl: "Konkurencja", ru: "Конкуренция" },
-                { pl: "Budżet", ru: "Бюджет" }, { pl: "Inwestycja", ru: "Инвестиция" }, { pl: "Koszt", ru: "Расход / Стоимость" }, { pl: "Zysk", ru: "Прибыль" },
-                { pl: "Strata", ru: "Убыток" }, { pl: "Zarząd", ru: "Правление" }, { pl: "Kariera", ru: "Карьера" }, { pl: "Awans", ru: "Повышение" }
-            ],
-            // Уровень 24: Важные союзы и предлоги (Связки)
-            [
-                { pl: "Ponieważ", ru: "Потому что" }, { pl: "Chociaż", ru: "Хотя" }, { pl: "Dlatego", ru: "Поэтому" }, { pl: "Jednak", ru: "Однако" },
-                { pl: "Podczas", ru: "Во время" }, { pl: "Zamiast", ru: "Вместо" }, { pl: "Oprócz", ru: "Кроме" }, { pl: "Według", ru: "Согласно / По" },
-                { pl: "Wzdłuż", ru: "Вдоль" }, { pl: "Wokół", ru: "Вокруг" }, { pl: "Obok", ru: "Рядом" }, { pl: "Pomiędzy", ru: "Между" },
-                { pl: "Naprzeciwko", ru: "Напротив" }, { pl: "Oraz", ru: "А также" }, { pl: "Żeby", ru: "Чтобы" }, { pl: "Jeżeli", ru: "Если" },
-                { pl: "Więc", ru: "Значит / Итак" }, { pl: "Albo", ru: "Или" }, { pl: "Ani", ru: "Ни" }, { pl: "Czy", ru: "Ли / Разве" }
-            ],
-            // Уровень 25: Закон и преступность
-            [
-                { pl: "Policja", ru: "Полиция" }, { pl: "Sąd", ru: "Суд" }, { pl: "Sędzia", ru: "Судья" }, { pl: "Prawnik", ru: "Юрист / Адвокат" },
-                { pl: "Wina", ru: "Вина" }, { pl: "Niewinność", ru: "Невиновность" }, { pl: "Przestępstwo", ru: "Преступление" }, { pl: "Morderstwo", ru: "Убийство" },
-                { pl: "Kradzież", ru: "Кража" }, { pl: "Złodziej", ru: "Вор" }, { pl: "Więzienie", ru: "Тюрьма" }, { pl: "Dowód", ru: "Доказательство" },
-                { pl: "Świadek", ru: "Свидетель" }, { pl: "Ofiara", ru: "Жертва" }, { pl: "Podejrzany", ru: "Подозреваемый" }, { pl: "Śledztwo", ru: "Расследование" },
-                { pl: "Nielegalny", ru: "Нелегальный" }, { pl: "Kara", ru: "Наказание" }, { pl: "Mandat", ru: "Штраф" }, { pl: "Obrona", ru: "Защита" }
-            ],
-            // Уровень 26: Продвинутые прилагательные (Свойства)
-            [
-                { pl: "Pełny", ru: "Полный" }, { pl: "Pusty", ru: "Пустой" }, { pl: "Głęboki", ru: "Глубокий" }, { pl: "Płytki", ru: "Мелкий (о глубине)" },
-                { pl: "Szeroki", ru: "Широкий" }, { pl: "Wąski", ru: "Узкий" }, { pl: "Gruby", ru: "Толстый" }, { pl: "Cienki", ru: "Тонкий" },
-                { pl: "Miękki", ru: "Мягкий" }, { pl: "Twardy", ru: "Твердый" }, { pl: "Gładki", ru: "Гладкий" }, { pl: "Szorstki", ru: "Шершавый" },
-                { pl: "Ostry", ru: "Острый" }, { pl: "Tępy", ru: "Тупой" }, { pl: "Jasny", ru: "Светлый / Ясный" }, { pl: "Ciemny", ru: "Темный" },
-                { pl: "Głośny", ru: "Громкий" }, { pl: "Cichy", ru: "Тихий" }, { pl: "Ciężki", ru: "Тяжелый" }, { pl: "Lekki", ru: "Легкий" }
-            ],
-            // Уровень 27: Искусство и медиа
-            [
-                { pl: "Sztuka", ru: "Искусство" }, { pl: "Obraz", ru: "Картина" }, { pl: "Rzeźba", ru: "Скульптура" }, { pl: "Wystawa", ru: "Выставка" },
-                { pl: "Galeria", ru: "Галерея" }, { pl: "Muzeum", ru: "Музей" }, { pl: "Teatr", ru: "Театр" }, { pl: "Kino", ru: "Кино" },
-                { pl: "Scena", ru: "Сцена" }, { pl: "Aktor", ru: "Актер" }, { pl: "Reżyser", ru: "Режиссер" }, { pl: "Widz", ru: "Зритель" },
-                { pl: "Gazeta", ru: "Газета" }, { pl: "Czasopismo", ru: "Журнал" }, { pl: "Artykuł", ru: "Статья" }, { pl: "Wywiad", ru: "Интервью" },
-                { pl: "Reklama", ru: "Реклама" }, { pl: "Dziennikarz", ru: "Журналист" }, { pl: "Plotka", ru: "Сплетня" }, { pl: "Recenzja", ru: "Отзыв / Рецензия" }
-            ],
-            // Уровень 28: Рутина и гигиена
-            [
-                { pl: "Budzić się", ru: "Просыпаться" }, { pl: "Wstawać", ru: "Вставать" }, { pl: "Myć się", ru: "Мыться" }, { pl: "Kąpać się", ru: "Купаться" },
-                { pl: "Ubierać się", ru: "Одеваться" }, { pl: "Czesać się", ru: "Расчесываться" }, { pl: "Golić się", ru: "Бриться" }, { pl: "Szczoteczka", ru: "Щетка" },
-                { pl: "Pasta", ru: "Паста" }, { pl: "Mydło", ru: "Мыло" }, { pl: "Ręcznik", ru: "Полотенце" }, { pl: "Szampon", ru: "Шампунь" },
-                { pl: "Krem", ru: "Крем" }, { pl: "Prysznic", ru: "Душ" }, { pl: "Wanna", ru: "Ванна" }, { pl: "Makijaż", ru: "Макияж" },
-                { pl: "Perfumy", ru: "Духи" }, { pl: "Zapach", ru: "Запах" }, { pl: "Grzebień", ru: "Гребень / Расческа" }, { pl: "Suszarka", ru: "Фен" }
-            ],
-            // Уровень 29: География и природа (расширенный)
-            [
-                { pl: "Świat", ru: "Мир (планета)" }, { pl: "Kontynent", ru: "Континент" }, { pl: "Kraj", ru: "Страна" }, { pl: "Stolica", ru: "Столица" },
-                { pl: "Granica", ru: "Граница" }, { pl: "Region", ru: "Регион" }, { pl: "Województwo", ru: "Воеводство" }, { pl: "Powiat", ru: "Уезд (повят)" },
-                { pl: "Gmina", ru: "Гмина (община)" }, { pl: "Półwysep", ru: "Полуостров" }, { pl: "Zatoka", ru: "Залив" }, { pl: "Ocean", ru: "Океан" },
-                { pl: "Pustynia", ru: "Пустыня" }, { pl: "Puszcza", ru: "Дремучий лес / Пуща" }, { pl: "Wulkan", ru: "Вулкан" }, { pl: "Jaskinia", ru: "Пещера" },
-                { pl: "Wodospad", ru: "Водопад" }, { pl: "Dolina", ru: "Долина" }, { pl: "Równina", ru: "Равнина" }, { pl: "Pagórek", ru: "Холм" }
-            ],
-            // Уровень 30: Понятия, вероятности и концепции
-            [
-                { pl: "Przypadek", ru: "Случай" }, { pl: "Powód", ru: "Причина" }, { pl: "Skutek", ru: "Следствие / Результат" }, { pl: "Szansa", ru: "Шанс" },
-                { pl: "Możliwość", ru: "Возможность" }, { pl: "Pewność", ru: "Уверенность" }, { pl: "Wątpliwość", ru: "Сомнение" }, { pl: "Zaleta", ru: "Достоинство / Плюс" },
-                { pl: "Wada", ru: "Недостаток / Минус" }, { pl: "Różnica", ru: "Разница" }, { pl: "Podobieństwo", ru: "Сходство" }, { pl: "Szczegół", ru: "Деталь" },
-                { pl: "Całość", ru: "Целое" }, { pl: "Połowa", ru: "Половина" }, { pl: "Reszta", ru: "Остаток / Сдача" }, { pl: "Początek", ru: "Начало" },
-                { pl: "Środek", ru: "Середина" }, { pl: "Koniec", ru: "Конец" }, { pl: "Błąd", ru: "Ошибка" }, { pl: "Racja", ru: "Правота" }
-            ],
-            // Уровень 31: Архитектура и город (продвинутый)
-            [
-                { pl: "Budynek", ru: "Здание" }, { pl: "Wieżowiec", ru: "Небоскреб" }, { pl: "Kamienica", ru: "Многоквартирный дом (старый)" }, { pl: "Osiedle", ru: "Жилой район / Поселок" },
-                { pl: "Ratusz", ru: "Ратуша" }, { pl: "Zamek", ru: "Замок" }, { pl: "Pałac", ru: "Дворец" }, { pl: "Kościół", ru: "Церковь / Костел" },
-                { pl: "Cmentarz", ru: "Кладбище" }, { pl: "Pomnik", ru: "Памятник" }, { pl: "Dzielnica", ru: "Район города" }, { pl: "Przedmieście", ru: "Пригород" },
-                { pl: "Krawężnik", ru: "Бордюр" }, { pl: "Skrzyżowanie", ru: "Перекресток" }, { pl: "Plac", ru: "Площадь" }, { pl: "Fontanna", ru: "Фонтан" },
-                { pl: "Ławka", ru: "Скамья" }, { pl: "Latarnia", ru: "Фонарь" }, { pl: "Śmietnik", ru: "Мусорка" }, { pl: "Zaułek", ru: "Переулок / Тупик" }
-            ],
-            // Уровень 32: Специфические глаголы (Движение и состояние)
-            [
-                { pl: "Biegać", ru: "Бегать" }, { pl: "Skakać", ru: "Прыгать" }, { pl: "Pływać", ru: "Плавать" }, { pl: "Latać", ru: "Летать" },
-                { pl: "Czołgać się", ru: "Ползать" }, { pl: "Wspinać się", ru: "Взбираться" }, { pl: "Pchać", ru: "Толкать" }, { pl: "Ciągnąć", ru: "Тянуть" },
-                { pl: "Rzucać", ru: "Бросать" }, { pl: "Łapać", ru: "Ловить" }, { pl: "Trzymać", ru: "Держать" }, { pl: "Puszczać", ru: "Отпускать" },
-                { pl: "Stać", ru: "Стоять" }, { pl: "Siedzieć", ru: "Сидеть" }, { pl: "Leżeć", ru: "Лежать" }, { pl: "Wisieć", ru: "Висеть" },
-                { pl: "Kłaść", ru: "Класть" }, { pl: "Stawiać", ru: "Ставить" }, { pl: "Siadać", ru: "Садиться" }, { pl: "Wstawać", ru: "Вставать" }
-            ],
-            // Уровень 33: Наука и исследования
-            [
-                { pl: "Nauka", ru: "Наука / Обучение" }, { pl: "Badanie", ru: "Исследование" }, { pl: "Naukowiec", ru: "Ученый" }, { pl: "Wynalazek", ru: "Изобретение" },
-                { pl: "Odkrycie", ru: "Открытие" }, { pl: "Teoria", ru: "Теория" }, { pl: "Praktyka", ru: "Практика" }, { pl: "Doświadczenie", ru: "Опыт (научный и жизненный)" },
-                { pl: "Eksperyment", ru: "Эксперимент" }, { pl: "Wniosek", ru: "Вывод" }, { pl: "Dowód", ru: "Доказательство" }, { pl: "Analiza", ru: "Анализ" },
-                { pl: "Chemia", ru: "Химия" }, { pl: "Fizyka", ru: "Физика" }, { pl: "Biologia", ru: "Биология" }, { pl: "Historia", ru: "История" },
-                { pl: "Geografia", ru: "География" }, { pl: "Matematyka", ru: "Математика" }, { pl: "Filozofia", ru: "Философия" }, { pl: "Psychologia", ru: "Психология" }
-            ],
-            // Уровень 34: Инструменты и механика
-            [
-                { pl: "Narzędzie", ru: "Инструмент" }, { pl: "Młotek", ru: "Молоток" }, { pl: "Śrubokręt", ru: "Отвертка" }, { pl: "Gwoźdź", ru: "Гвоздь" },
-                { pl: "Śruba", ru: "Винт / Болт" }, { pl: "Klucz", ru: "Ключ (гаечный)" }, { pl: "Piła", ru: "Пила" }, { pl: "Siekiera", ru: "Топор" },
-                { pl: "Wiertarka", ru: "Дрель" }, { pl: "Maszyna", ru: "Машина (механизм)" }, { pl: "Silnik", ru: "Двигатель" }, { pl: "Część", ru: "Часть / Деталь" },
-                { pl: "Naprawa", ru: "Ремонт" }, { pl: "Zepsuty", ru: "Сломанный" }, { pl: "Działać", ru: "Работать (о механизме)" }, { pl: "Koło", ru: "Колесо" },
-                { pl: "Przewód", ru: "Провод" }, { pl: "Prąd", ru: "Ток / Электричество" }, { pl: "Bateria", ru: "Батарейка" }, { pl: "Zasilanie", ru: "Питание (электрическое)" }
-            ],
-            // Уровень 35: Характер и психология
-            [
-                { pl: "Odważny", ru: "Смелый" }, { pl: "Tchórzliwy", ru: "Трусливый" }, { pl: "Cierpliwy", ru: "Терпеливый" }, { pl: "Niecierpliwy", ru: "Нетерпеливый" },
-                { pl: "Spokojny", ru: "Спокойный" }, { pl: "Nerwowy", ru: "Нервный" }, { pl: "Uprzejmy", ru: "Вежливый" }, { pl: "Bezczelny", ru: "Наглый" },
-                { pl: "Dumny", ru: "Гордый" }, { pl: "Skromny", ru: "Скромный" }, { pl: "Zazdrosny", ru: "Ревнивый / Завистливый" }, { pl: "Wierny", ru: "Верный" },
-                { pl: "Lojalny", ru: "Лояльный" }, { pl: "Samolubny", ru: "Эгоистичный" }, { pl: "Hojny", ru: "Щедрый" }, { pl: "Skąpy", ru: "Скупой" },
-                { pl: "Surowy", ru: "Строгий" }, { pl: "Łagodny", ru: "Мягкий (по характеру)" }, { pl: "Ambitny", ru: "Амбициозный" }, { pl: "Leniwy", ru: "Ленивый" }
-            ],
-            // Уровень 36: Экономика и финансы
-            [
-                { pl: "Gospodarka", ru: "Экономика" }, { pl: "Waluta", ru: "Валюта" }, { pl: "Gotówka", ru: "Наличные" }, { pl: "Karta", ru: "Карта (банковская)" },
-                { pl: "Konto", ru: "Счет" }, { pl: "Przelew", ru: "Перевод (денежный)" }, { pl: "Kredyt", ru: "Кредит" }, { pl: "Dług", ru: "Долг" },
-                { pl: "Rata", ru: "Взнос (при рассрочке)" }, { pl: "Podatek", ru: "Налог" }, { pl: "Cło", ru: "Пошлина" }, { pl: "Giełda", ru: "Биржа" },
-                { pl: "Akcja", ru: "Акция (ценная бумага)" }, { pl: "Inwestycja", ru: "Инвестиция" }, { pl: "Zysk", ru: "Прибыль" }, { pl: "Strata", ru: "Убыток" },
-                { pl: "Kryzys", ru: "Кризис" }, { pl: "Inflacja", ru: "Инфляция" }, { pl: "Cena", ru: "Цена" }, { pl: "Wartość", ru: "Ценность / Стоимость" }
-            ],
-            // Уровень 37: Политика и общество
-            [
-                { pl: "Wybory", ru: "Выборы" }, { pl: "Głosowanie", ru: "Голосование" }, { pl: "Kandydat", ru: "Кандидат" }, { pl: "Partia", ru: "Партия" },
-                { pl: "Kampania", ru: "Кампания" }, { pl: "Prezydent", ru: "Президент" }, { pl: "Premier", ru: "Премьер-министр" }, { pl: "Minister", ru: "Министр" },
-                { pl: "Sejm", ru: "Сейм (парламент)" }, { pl: "Senat", ru: "Сенат" }, { pl: "Ustawa", ru: "Закон (акт)" }, { pl: "Konstytucja", ru: "Конституция" },
-                { pl: "Prawa", ru: "Права" }, { pl: "Obowiązki", ru: "Обязанности" }, { pl: "Demokracja", ru: "Демократия" }, { pl: "Dyktatura", ru: "Диктатура" },
-                { pl: "Cenzura", ru: "Цензура" }, { pl: "Propaganda", ru: "Пропаганда" }, { pl: "Wolność", ru: "Свобода" }, { pl: "Debata", ru: "Дебаты" }
-            ],
-            // Уровень 38: Экология и катастрофы
-            [
-                { pl: "Środowisko", ru: "Окружающая среда" }, { pl: "Zanieczyszczenie", ru: "Загрязнение" }, { pl: "Ochrona", ru: "Охрана / Защита" }, { pl: "Klimat", ru: "Климат" },
-                { pl: "Katastrofa", ru: "Катастрофа" }, { pl: "Trzęsienie ziemi", ru: "Землетрясение" }, { pl: "Powódź", ru: "Наводнение" }, { pl: "Pożar", ru: "Пожар" },
-                { pl: "Huragan", ru: "Ураган" }, { pl: "Gatunek", ru: "Вид (биологический)" }, { pl: "Ekologia", ru: "Экология" }, { pl: "Odpady", ru: "Отходы" },
-                { pl: "Recykling", ru: "Переработка" }, { pl: "Surowce", ru: "Сырье" }, { pl: "Energia", ru: "Энергия" }, { pl: "Słoneczna", ru: "Солнечная (энергия)" },
-                { pl: "Wiatrowa", ru: "Ветровая (энергия)" }, { pl: "Zasoby", ru: "Ресурсы" }, { pl: "Susza", ru: "Засуха" }, { pl: "Śmieci", ru: "Мусор" }
-            ],
-            // Уровень 39: Философия и сознание
-            [
-                { pl: "Byt", ru: "Бытие" }, { pl: "Pustka", ru: "Пустота" }, { pl: "Nieskończoność", ru: "Бесконечность" }, { pl: "Wieczność", ru: "Вечность" },
-                { pl: "Przeznaczenie", ru: "Предназначение" }, { pl: "Los", ru: "Судьба" }, { pl: "Szczęście", ru: "Счастье / Удача" }, { pl: "Pech", ru: "Неудача" },
-                { pl: "Dusza", ru: "Душа" }, { pl: "Umysł", ru: "Разум" }, { pl: "Świadomość", ru: "Сознание" }, { pl: "Rozum", ru: "Ум / Интеллект" },
-                { pl: "Emocja", ru: "Эмоция" }, { pl: "Instynkt", ru: "Инстинкт" }, { pl: "Intuicja", ru: "Интуиция" }, { pl: "Sumienie", ru: "Совесть" },
-                { pl: "Moralność", ru: "Мораль" }, { pl: "Etyka", ru: "Этика" }, { pl: "Sens", ru: "Смысл" }, { pl: "Znaczenie", ru: "Значение" }
-            ],
-            // Уровень 40: Литература и Музыка
-            [
-                { pl: "Literatura", ru: "Литература" }, { pl: "Poezja", ru: "Поэзия" }, { pl: "Powieść", ru: "Роман" }, { pl: "Bajka", ru: "Сказка / Басня" },
-                { pl: "Autor", ru: "Автор" }, { pl: "Pisarz", ru: "Писатель" }, { pl: "Czytelnik", ru: "Читатель" }, { pl: "Wydawnictwo", ru: "Издательство" },
-                { pl: "Księgarnia", ru: "Книжный магазин" }, { pl: "Biblioteka", ru: "Библиотека" }, { pl: "Muzyka", ru: "Музыка" }, { pl: "Piosenka", ru: "Песня" },
-                { pl: "Zespół", ru: "Группа (музыкальная)" }, { pl: "Koncert", ru: "Концерт" }, { pl: "Instrument", ru: "Инструмент" }, { pl: "Gitara", ru: "Гитара" },
-                { pl: "Pianino", ru: "Пианино" }, { pl: "Taniec", ru: "Танец" }, { pl: "Rytm", ru: "Ритм" }, { pl: "Melodia", ru: "Мелодия" }
-            ],
-            // Уровень 41: Продвинутые глаголы (Мышление и коммуникация)
-            [
-                { pl: "Przewidywać", ru: "Предвидеть" }, { pl: "Udowadniać", ru: "Доказывать" }, { pl: "Rozwijać", ru: "Развивать" }, { pl: "Unikać", ru: "Избегать" },
-                { pl: "Narzekać", ru: "Жаловаться" }, { pl: "Podejrzewać", ru: "Подозревать" }, { pl: "Gwarantować", ru: "Гарантировать" }, { pl: "Oskarżać", ru: "Обвинять" },
-                { pl: "Przekonywać", ru: "Убеждать" }, { pl: "Ostrzegać", ru: "Предупреждать" }, { pl: "Wymagać", ru: "Требовать" }, { pl: "Zgadzać się", ru: "Соглашаться" },
-                { pl: "Zastanawiać się", ru: "Задумываться" }, { pl: "Przyznawać", ru: "Признавать" }, { pl: "Zaprzeczać", ru: "Отрицать" }, { pl: "Wspominać", ru: "Вспоминать / Упоминать" },
-                { pl: "Przesadzać", ru: "Преувеличивать" }, { pl: "Cierpieć", ru: "Страдать" }, { pl: "Osiągać", ru: "Достигать" }, { pl: "Rezygnować", ru: "Отказываться" }
-            ],
-            // Уровень 42: Общество и Культура
-            [
-                { pl: "Dziedzictwo", ru: "Наследие" }, { pl: "Obyczaj", ru: "Обычай" }, { pl: "Tradycja", ru: "Традиция" }, { pl: "Pokolenie", ru: "Поколение" },
-                { pl: "Mniejszość", ru: "Меньшинство" }, { pl: "Większość", ru: "Большинство" }, { pl: "Uprzedzenie", ru: "Предубеждение" }, { pl: "Tolerancja", ru: "Толерантность" },
-                { pl: "Dyskryminacja", ru: "Дискриминация" }, { pl: "Obywatelstwo", ru: "Гражданство" }, { pl: "Niepodległość", ru: "Независимость" }, { pl: "Suwerenność", ru: "Суверенитет" },
-                { pl: "Sojusz", ru: "Союз / Альянс" }, { pl: "Wyznanie", ru: "Вероисповедание" }, { pl: "Świątynia", ru: "Храм" }, { pl: "Rytuał", ru: "Ритуал" },
-                { pl: "Zwyczaj", ru: "Привычка / Обычай" }, { pl: "Przekonanie", ru: "Убеждение" }, { pl: "Wartość", ru: "Ценность" }, { pl: "Religia", ru: "Религия" }
-            ],
-            // Уровень 43: Наука и Природа (Макро-уровень)
-            [
-                { pl: "Środowisko", ru: "Среда обитания" }, { pl: "Zagrożenie", ru: "Угроза" }, { pl: "Zanieczyszczenie", ru: "Загрязнение" }, { pl: "Ocieplenie", ru: "Потепление" },
-                { pl: "Lodowiec", ru: "Ледник" }, { pl: "Trzęsienie", ru: "Землетрясение" }, { pl: "Żywioł", ru: "Стихия" }, { pl: "Przestrzeń", ru: "Пространство" },
-                { pl: "Wszechświat", ru: "Вселенная" }, { pl: "Grawitacja", ru: "Гравитация" }, { pl: "Próżnia", ru: "Вакуум" }, { pl: "Powierzchnia", ru: "Поверхность" },
-                { pl: "Głębia", ru: "Глубина" }, { pl: "Szczyt", ru: "Вершина" }, { pl: "Zbocze", ru: "Склон" }, { pl: "Przepaść", ru: "Пропасть" },
-                { pl: "Pustynia", ru: "Пустыня" }, { pl: "Dżungla", ru: "Джунгли" }, { pl: "Bagno", ru: "Болото" }, { pl: "Źródło", ru: "Источник" }
-            ],
-            // Уровень 44: Сложные эмоции и черты личности
-            [
-                { pl: "Zdesperowany", ru: "Отчаянный" }, { pl: "Niezależny", ru: "Независимый" }, { pl: "Odpowiedzialny", ru: "Ответственный" }, { pl: "Wrażliwy", ru: "Чувствительный" },
-                { pl: "Obojętny", ru: "Равнодушный" }, { pl: "Zaskoczony", ru: "Удивленный" }, { pl: "Przerażony", ru: "Напуганный" }, { pl: "Podekscytowany", ru: "Взволнованный" },
-                { pl: "Rozczarowany", ru: "Разочарованный" }, { pl: "Zadowolony", ru: "Довольный" }, { pl: "Uparty", ru: "Упрямый" }, { pl: "Naiwny", ru: "Наивный" },
-                { pl: "Przebiegły", ru: "Хитрый" }, { pl: "Złośliwy", ru: "Злобный" }, { pl: "Hojny", ru: "Щедрый" }, { pl: "Skąpy", ru: "Скупой" },
-                { pl: "Odważny", ru: "Смелый" }, { pl: "Tchórzliwy", ru: "Трусливый" }, { pl: "Zdolny", ru: "Способный" }, { pl: "Niezgrabny", ru: "Неуклюжий" }
-            ],
-            // Уровень 45: Экономика и Юриспруденция
-            [
-                { pl: "Konstytucja", ru: "Конституция" }, { pl: "Prawodawstwo", ru: "Законодательство" }, { pl: "Przepis", ru: "Предписание / Правило" }, { pl: "Wyrok", ru: "Приговор" },
-                { pl: "Oskarżony", ru: "Обвиняемый" }, { pl: "Powód", ru: "Истец / Причина" }, { pl: "Świadek", ru: "Свидетель" }, { pl: "Łapówka", ru: "Взятка" },
-                { pl: "Korupcja", ru: "Коррупция" }, { pl: "Przemyt", ru: "Контрабанда" }, { pl: "Giełda", ru: "Биржа" }, { pl: "Akcja", ru: "Акция" },
-                { pl: "Obligacja", ru: "Облигация" }, { pl: "Odsetki", ru: "Проценты (по кредиту)" }, { pl: "Kredyt", ru: "Кредит" }, { pl: "Hipoteka", ru: "Ипотека" },
-                { pl: "Bankructwo", ru: "Банкротство" }, { pl: "Gospodarka", ru: "Экономика" }, { pl: "Podaż", ru: "Предложение (на рынке)" }, { pl: "Popyt", ru: "Спрос" }
-            ],
-            // Уровень 46: Высшие абстрактные концепции
-            [
-                { pl: "Tożsamość", ru: "Идентичность" }, { pl: "Świadomość", ru: "Сознание" }, { pl: "Podświadomość", ru: "Подсознание" }, { pl: "Istnienie", ru: "Существование" },
-                { pl: "Rzeczywistość", ru: "Реальность" }, { pl: "Złudzenie", ru: "Иллюзия" }, { pl: "Wyobraźnia", ru: "Воображение" }, { pl: "Pamięć", ru: "Память" },
-                { pl: "Wspomnienie", ru: "Воспоминание" }, { pl: "Doświadczenie", ru: "Опыт" }, { pl: "Prawda", ru: "Правда" }, { pl: "Fałsz", ru: "Ложь" },
-                { pl: "Logika", ru: "Логика" }, { pl: "Absurd", ru: "Абсурд" }, { pl: "Paradoks", ru: "Парадокс" }, { pl: "Przyczyna", ru: "Причина" },
-                { pl: "Skutek", ru: "Следствие" }, { pl: "Cel", ru: "Цель" }, { pl: "Środek", ru: "Средство" }, { pl: "Znaczenie", ru: "Значение / Смысл" }
-            ],
-            // Уровень 47: Профессии и Роли
-            [
-                { pl: "Pielęgniarka", ru: "Медсестра" }, { pl: "Inżynier", ru: "Инженер" }, { pl: "Księgowy", ru: "Бухгалтер" }, { pl: "Prawnik", ru: "Юрист" },
-                { pl: "Sędzia", ru: "Судья" }, { pl: "Polityk", ru: "Политик" }, { pl: "Urzędnik", ru: "Чиновник" }, { pl: "Rzemieślnik", ru: "Ремесленник" },
-                { pl: "Rolnik", ru: "Фермер" }, { pl: "Przedsiębiorca", ru: "Предприниматель" }, { pl: "Naukowiec", ru: "Ученый" }, { pl: "Badacz", ru: "Исследователь" },
-                { pl: "Artysta", ru: "Художник / Артист" }, { pl: "Twórca", ru: "Творец / Создатель" }, { pl: "Pisarz", ru: "Писатель" }, { pl: "Dziennikarz", ru: "Журналист" },
-                { pl: "Tłumacz", ru: "Переводчик" }, { pl: "Kelner", ru: "Официант" }, { pl: "Kucharz", ru: "Повар" }, { pl: "Kierowca", ru: "Водитель" }
-            ],
-            // Уровень 48: Техника и Гаджеты (Продвинутый)
-            [
-                { pl: "Urządzenie", ru: "Устройство" }, { pl: "Sprzęt", ru: "Оборудование" }, { pl: "Narzędzie", ru: "Инструмент" }, { pl: "Wynalazek", ru: "Изобретение" },
-                { pl: "Odkrycie", ru: "Открытие" }, { pl: "Przewód", ru: "Провод" }, { pl: "Gniazdko", ru: "Розетка" }, { pl: "Wtyczka", ru: "Штекер / Вилка" },
-                { pl: "Przełącznik", ru: "Переключатель" }, { pl: "Żarówka", ru: "Лампочка" }, { pl: "Ekran", ru: "Экран" }, { pl: "Klawiatura", ru: "Клавиатура" },
-                { pl: "Drukarka", ru: "Принтер" }, { pl: "Ładowarka", ru: "Зарядка" }, { pl: "Słuchawki", ru: "Наушники" }, { pl: "Głośnik", ru: "Колонка / Динамик" },
-                { pl: "Odtwarzacz", ru: "Плеер" }, { pl: "Pilot", ru: "Пульт" }, { pl: "Bateria", ru: "Батарея" }, { pl: "Akumulator", ru: "Аккумулятор" }
-            ],
-            // Уровень 49: Наречия (Частота и Степень)
-            [
-                { pl: "Natychmiast", ru: "Немедленно" }, { pl: "Ostatecznie", ru: "В конечном итоге" }, { pl: "Prawdopodobnie", ru: "Вероятно" }, { pl: "Oczywiście", ru: "Конечно" },
-                { pl: "Całkowicie", ru: "Полностью" }, { pl: "Częściowo", ru: "Частично" }, { pl: "Znacznie", ru: "Значительно" }, { pl: "Niewiele", ru: "Немного" },
-                { pl: "Zbyt", ru: "Слишком" }, { pl: "Wystarczająco", ru: "Достаточно" }, { pl: "Niemal", ru: "Почти" }, { pl: "Ledwie", ru: "Едва" },
-                { pl: "Głównie", ru: "Главным образом" }, { pl: "Wyłącznie", ru: "Исключительно" }, { pl: "Szczególnie", ru: "Особенно" }, { pl: "Powszechnie", ru: "Повсеместно" },
-                { pl: "Zupełnie", ru: "Совершенно" }, { pl: "Nagminnie", ru: "Сплошь и рядом" }, { pl: "Stopniowo", ru: "Постепенно" }, { pl: "Zaraz", ru: "Сейчаc / Скоро" }
-            ],
-            // Уровень 50: ФИНАЛЬНЫЙ БОСС (Ложные друзья переводчика)
-            [
-                { pl: "Zapominać", ru: "Забывать (а не запоминать)" }, { pl: "Pamiętać", ru: "Помнить (а не память)" }, { pl: "Grzeczny", ru: "Вежливый (а не грешный)" }, { pl: "Uroda", ru: "Красота (а не уродство)" },
-                { pl: "Czaszka", ru: "Череп (а не чашка)" }, { pl: "Kubek", ru: "Кружка (а не кубок)" }, { pl: "Dworzec", ru: "Вокзал (а не дворец)" }, { pl: "Dywan", ru: "Ковер (а не диван)" },
-                { pl: "Sklep", ru: "Магазин (а не склеп)" }, { pl: "Krzesło", ru: "Стул (а не кресло)" }, { pl: "Fotel", ru: "Кресло (а не стул)" }, { pl: "Pensja", ru: "Зарплата (а не пенсия)" },
-                { pl: "Emerytura", ru: "Пенсия (а не увольнение)" }, { pl: "Krawat", ru: "Галстук (а не кровать)" }, { pl: "Łóżko", ru: "Кровать (а не ложка)" }, { pl: "Łyżka", ru: "Ложка" },
-                { pl: "Prosto", ru: "Прямо (а не просто)" }, { pl: "Zwykły", ru: "Обычный (а не привычный)" }, { pl: "Pukać", ru: "Стучать (а не пукать)" }, { pl: "Woń", ru: "Аромат (а не вонь)" }
             ]
+            // --- СЮДА ПОТОМ ВСТАВИШЬ УРОВНИ С 3 ПО 50 (через запятую) ---
         ];
 
         const allWordsFlat = levelsData.flat();
@@ -645,7 +185,7 @@
 
         function startLevel() {
             if (currentLevel >= levelsData.length) {
-                showMessage("Победа!", "Ты прошел все уровни! Настоящий поляк. Ждем апдейт словаря.", true, "Начать заново", resetProgress);
+                showMessage("Победа!", "Ты прошел все доступные уровни!", true, "Начать заново", resetProgress, true);
                 return;
             }
 
@@ -698,7 +238,7 @@
                 if (currentTab === 'play') {
                     currentLevel++;
                     localStorage.setItem('polish_level', currentLevel);
-                    showMessage(`Уровень ${currentLevel} пройден!`, "Отличная работа. Едем дальше.", true);
+                    showMessage(`Уровень ${currentLevel} пройден!`, "Мяу-мяу-мяу!", true, "Дальше", startLevel, true);
                 } else {
                     showMessage("Готово", "Ты повторил все сложные слова.", false);
                 }
@@ -757,6 +297,10 @@
                 btn.classList.add('wrong');
                 if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
                 
+                const badCat = document.getElementById('cat-bad');
+                badCat.classList.add('show');
+                setTimeout(() => badCat.classList.remove('show'), 1500);
+
                 document.querySelectorAll('.option-btn').forEach(b => {
                     if (b.innerText === currentWordObj[targetKey]) b.classList.add('correct');
                 });
@@ -771,17 +315,17 @@
                     updateHeader();
                     
                     if (mistakesMade > maxMistakes) {
-                        setTimeout(() => showMessage("Уровень провален", "Допущено слишком много ошибок. Начинаем уровень заново.", true, "Продолжить", startLevel), 1000);
+                        setTimeout(() => showMessage("Уровень провален", "Ай-я-яй! Начинаем уровень заново.", true, "Продолжить", startLevel, false), 1500);
                         return;
                     }
                 }
                 
                 wordIndex++;
-                setTimeout(nextWord, 1200);
+                setTimeout(nextWord, 1500);
             }
         }
 
-        function showMessage(title, desc, showBtn, btnText = "Продолжить", btnAction = startLevel) {
+        function showMessage(title, desc, showBtn, btnText = "Продолжить", btnAction = startLevel, isWin = false) {
             document.getElementById('game-container').style.display = 'none';
             const msgScreen = document.getElementById('message-screen');
             msgScreen.style.display = 'flex';
@@ -793,6 +337,9 @@
             btn.style.display = showBtn ? 'block' : 'none';
             btn.innerText = btnText;
             btn.onclick = btnAction;
+
+            const img = document.getElementById('msg-image');
+            img.style.display = isWin ? 'block' : 'none';
         }
 
         function speakWord() {
@@ -816,5 +363,7 @@
             return array;
         }
 
-        // Запуск
         switchTab('play');
+    </script>
+</body>
+</html>
