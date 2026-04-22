@@ -30,7 +30,6 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Вкладки */
         .tabs {
             display: flex;
             width: 100%;
@@ -70,7 +69,6 @@
             justify-content: center;
         }
 
-        /* Инфо-панель: Уровень и Жизни */
         .header-info {
             display: flex;
             justify-content: space-between;
@@ -93,7 +91,6 @@
             letter-spacing: 2px;
         }
 
-        /* Карточка */
         .word-card {
             background: var(--card-bg);
             padding: 40px 20px;
@@ -131,7 +128,6 @@
 
         .speaker-icon:active { transform: scale(0.9); opacity: 1; }
 
-        /* Кнопки */
         .btn-group {
             display: flex;
             flex-direction: column;
@@ -165,7 +161,6 @@
             color: var(--error) !important;
         }
 
-        /* Экран сообщения (победа/поражение) */
         #message-screen {
             display: none;
             flex-direction: column;
@@ -217,7 +212,6 @@
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        // База данных (Пока 2 уровня, по 20 слов)
         const levelsData = [
             // Уровень 1
             [
@@ -622,11 +616,9 @@
             ]
         ];
 
-        // Генерируем общий словарь для фейковых ответов
         const allWordsFlat = levelsData.flat();
 
-        // Состояние приложения
-        let currentTab = 'play'; // 'play' или 'mistakes'
+        let currentTab = 'play';
         let currentLevel = parseInt(localStorage.getItem('polish_level')) || 0; 
         let mistakesDb = JSON.parse(localStorage.getItem('polish_mistakes')) || [];
         
@@ -651,16 +643,9 @@
             }
         }
 
-function startLevel() {
+        function startLevel() {
             if (currentLevel >= levelsData.length) {
-                // Если уровни кончились, меняем текст и действие кнопки на ресет
-                showMessage(
-                    "Победа!", 
-                    "Ты прошел все уровни! Настоящий поляк. Ждем апдейт словаря.", 
-                    true, 
-                    "Начать заново", 
-                    resetProgress
-                );
+                showMessage("Победа!", "Ты прошел все уровни! Настоящий поляк. Ждем апдейт словаря.", true, "Начать заново", resetProgress);
                 return;
             }
 
@@ -677,7 +662,6 @@ function startLevel() {
             nextWord();
         }
 
-        // Функция полного сброса
         function resetProgress() {
             localStorage.removeItem('polish_level');
             localStorage.removeItem('polish_mistakes');
@@ -686,7 +670,117 @@ function startLevel() {
             startLevel();
         }
 
-        // Обновленная функция показа экранов, которая умеет менять текст и действие кнопки
+        function startMistakesTrain() {
+            if (mistakesDb.length === 0) {
+                showMessage("Всё чисто!", "У тебя нет слов с ошибками. Ты машина.", false);
+                return;
+            }
+            levelWords = shuffle([...mistakesDb]);
+            wordIndex = 0;
+            updateHeader();
+            nextWord();
+        }
+
+        function updateHeader() {
+            if (currentTab === 'play') {
+                document.getElementById('stats').innerText = `УРОВЕНЬ ${currentLevel + 1} (${wordIndex}/${levelWords.length})`;
+                let hearts = '';
+                for(let i=0; i <= maxMistakes - mistakesMade; i++) hearts += '🤍';
+                document.getElementById('lives').innerText = hearts;
+            } else {
+                document.getElementById('stats').innerText = `ОШИБКИ (${wordIndex}/${levelWords.length})`;
+                document.getElementById('lives').innerText = '🔥';
+            }
+        }
+
+        function nextWord() {
+            if (wordIndex >= levelWords.length) {
+                if (currentTab === 'play') {
+                    currentLevel++;
+                    localStorage.setItem('polish_level', currentLevel);
+                    showMessage(`Уровень ${currentLevel} пройден!`, "Отличная работа. Едем дальше.", true);
+                } else {
+                    showMessage("Готово", "Ты повторил все сложные слова.", false);
+                }
+                return;
+            }
+
+            isWaiting = false;
+            const currentWord = levelWords[wordIndex];
+            
+            const askRu = Math.random() > 0.5;
+            const mainText = askRu ? currentWord.ru : currentWord.pl;
+            const targetKey = askRu ? 'pl' : 'ru';
+
+            document.getElementById('word').innerText = mainText;
+            document.getElementById('word').dataset.lang = askRu ? 'ru-RU' : 'pl-PL';
+
+            let wrongOptions = allWordsFlat.filter(w => w[targetKey] !== currentWord[targetKey]);
+            wrongOptions = shuffle(wrongOptions).slice(0, 2);
+            
+            let options = shuffle([currentWord[targetKey], wrongOptions[0][targetKey], wrongOptions[1][targetKey]]);
+
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(btn, opt, currentWord, targetKey, askRu);
+                container.appendChild(btn);
+            });
+            
+            updateHeader();
+        }
+
+        function checkAnswer(btn, selected, currentWordObj, targetKey, wasRu) {
+            if (isWaiting) return;
+            isWaiting = true;
+
+            const isCorrect = selected === currentWordObj[targetKey];
+
+            if (isCorrect) {
+                btn.classList.add('correct');
+                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+                
+                if (wasRu) speakText(selected, 'pl-PL');
+
+                if (currentTab === 'mistakes') {
+                    mistakesDb = mistakesDb.filter(w => w.pl !== currentWordObj.pl);
+                    localStorage.setItem('polish_mistakes', JSON.stringify(mistakesDb));
+                }
+
+                wordIndex++;
+                setTimeout(nextWord, 800);
+            } else {
+                btn.classList.add('wrong');
+                if (tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+                
+                document.querySelectorAll('.option-btn').forEach(b => {
+                    if (b.innerText === currentWordObj[targetKey]) b.classList.add('correct');
+                });
+
+                if (!mistakesDb.some(w => w.pl === currentWordObj.pl)) {
+                    mistakesDb.push(currentWordObj);
+                    localStorage.setItem('polish_mistakes', JSON.stringify(mistakesDb));
+                }
+
+                if (currentTab === 'play') {
+                    mistakesMade++;
+                    updateHeader();
+                    
+                    if (mistakesMade > maxMistakes) {
+                        setTimeout(() => showMessage("Уровень провален", "Допущено слишком много ошибок. Начинаем уровень заново.", true, "Продолжить", startLevel), 1000);
+                        return;
+                    }
+                }
+                
+                wordIndex++;
+                setTimeout(nextWord, 1200);
+            }
+        }
+
         function showMessage(title, desc, showBtn, btnText = "Продолжить", btnAction = startLevel) {
             document.getElementById('game-container').style.display = 'none';
             const msgScreen = document.getElementById('message-screen');
@@ -698,8 +792,7 @@ function startLevel() {
             const btn = msgScreen.querySelector('button');
             btn.style.display = showBtn ? 'block' : 'none';
             btn.innerText = btnText;
-            btn.onclick = btnAction; // Назначаем, что делает кнопка
-        }
+            btn.onclick = btnAction;
         }
 
         function speakWord() {
@@ -725,6 +818,3 @@ function startLevel() {
 
         // Запуск
         switchTab('play');
-    </script>
-</body>
-</html>
