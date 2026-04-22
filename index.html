@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Polish Club Pro v2.0</title>
+    <title>Polish Club Pro v2.1</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
@@ -15,7 +15,7 @@
             --accent: #3B82F6;
             --correct: #10B981;
             --warning: #F59E0B;
-            --error: #EF4444;
+            --error: #FF3B30; /* Системный красный ТГ */
             --btn-bg: #1E293B;
         }
 
@@ -32,53 +32,71 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        /* Табы */
         .tabs { display: flex; width: 100%; background: #0F172A; border-bottom: 1px solid #1E293B; position: fixed; top: 0; z-index: 10; }
-        .tab { flex: 1; padding: 16px 0; text-align: center; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; text-transform: uppercase; }
-        .tab.active { color: var(--text-main); border-bottom: 2px solid var(--accent); }
+        .tab { flex: 1; padding: 18px 0; text-align: center; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: 0.2s; border-bottom: 3px solid transparent; text-transform: uppercase; }
+        .tab.active { color: var(--text-main); border-bottom: 3px solid var(--accent); }
 
-        .container { width: 92%; max-width: 450px; text-align: center; margin-top: 75px; display: flex; flex-direction: column; height: calc(100vh - 80px); padding-bottom: 20px; box-sizing: border-box; }
+        .container { width: 92%; max-width: 450px; text-align: center; margin-top: 80px; display: flex; flex-direction: column; height: calc(100vh - 85px); box-sizing: border-box; }
         
-        .mode-tabs { display: flex; width: 100%; gap: 5px; margin-bottom: 15px; }
-        .mode-btn { flex: 1; background: var(--btn-bg); color: var(--text-muted); border: 1px solid #1E293B; padding: 10px 2px; border-radius: 12px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.2s; }
+        .mode-tabs { display: flex; width: 100%; gap: 6px; margin-bottom: 20px; }
+        .mode-btn { flex: 1; background: var(--btn-bg); color: var(--text-muted); border: 1px solid #1E293B; padding: 12px 2px; border-radius: 12px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.2s; }
         .mode-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
-        .header-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .stats-label { font-size: 0.7rem; color: var(--text-muted); font-weight: bold; }
-        .lives { color: var(--error); font-size: 1.1rem; }
+        .header-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 0 5px; }
+        .stats-label { font-size: 0.75rem; color: var(--text-muted); font-weight: bold; letter-spacing: 1px; }
+        .lives { color: var(--error); font-size: 1.2rem; }
 
-        .word-card { background: var(--card-bg); padding: 25px 15px; border-radius: 20px; border: 1px solid #1E293B; margin-bottom: 15px; min-height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .word-card h1 { margin: 0; font-size: 1.6rem; font-weight: 700; line-height: 1.3; }
-        .speaker-icon { margin-top: 10px; font-size: 1.3rem; cursor: pointer; background: #1E293B; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        /* Таймер */
+        .timer-container { width: 100%; height: 6px; background: #0F172A; border-radius: 3px; overflow: hidden; margin-bottom: 20px; display: none; }
+        .timer-bar { height: 100%; width: 100%; background: var(--correct); transition: width 0.1s linear; }
 
-        /* Стили для конструктора фраз */
-        .sentence-slots { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; min-height: 45px; margin-bottom: 20px; padding: 10px; border-bottom: 2px dashed #1E293B; }
-        .tile { background: var(--btn-bg); border: 1px solid #334155; padding: 10px 14px; border-radius: 10px; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: 0.1s; user-select: none; }
-        .tile:active { transform: scale(0.95); }
-        .tile.used { opacity: 0.3; pointer-events: none; }
+        .word-card { background: var(--card-bg); padding: 35px 20px; border-radius: 24px; border: 1px solid #1E293B; margin-bottom: 20px; min-height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .word-card h1 { margin: 0; font-size: 1.8rem; font-weight: 700; line-height: 1.2; }
+        .speaker-icon { margin-top: 15px; font-size: 1.4rem; cursor: pointer; background: #1E293B; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+        /* Фразы и подсказки */
+        .sentence-slots { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; min-height: 50px; margin-bottom: 25px; padding: 12px; border-bottom: 2px dashed #1E293B; }
+        .tile { background: var(--btn-bg); border: 1px solid #334155; padding: 12px 16px; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; user-select: none; }
+        .tile.used { opacity: 0.2; pointer-events: none; }
         .tile.placed { background: var(--accent); border-color: var(--accent); }
+        
+        .correct-answer-hint { display: none; margin-top: 15px; padding: 15px; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--correct); border-radius: 12px; color: var(--correct); font-weight: 600; font-size: 0.9rem; text-align: center; animation: fadeIn 0.3s; }
 
-        .btn-group { display: flex; flex-direction: column; gap: 10px; }
-        button.option-btn { border: 1px solid #1E293B; padding: 15px; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; background: var(--btn-bg); color: #FFFFFF; width: 100%; }
-        .correct { background: rgba(16, 185, 129, 0.1) !important; border-color: var(--correct) !important; color: var(--correct) !important; }
-        .wrong { background: rgba(239, 68, 68, 0.1) !important; border-color: var(--error) !important; color: var(--error) !important; animation: shake 0.3s; }
+        /* Кнопки действий */
+        .btn-group { display: flex; flex-direction: column; gap: 12px; }
+        button.option-btn { border: 1px solid #1E293B; padding: 18px; border-radius: 15px; font-size: 1.1rem; font-weight: 600; cursor: pointer; background: var(--btn-bg); color: #FFFFFF; width: 100%; }
+        
+        .action-btn { background: var(--accent); color: #fff; border: none; padding: 22px 30px; border-radius: 16px; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: 0.2s; }
+        .action-btn:active { transform: scale(0.98); }
 
-        #stats-page { overflow-y: auto; display: none; }
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .stat-box { background: #1E293B; padding: 12px; border-radius: 15px; text-align: left; }
-        .stat-box h3 { margin: 0; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; }
-        .stat-box .value { font-size: 1.2rem; font-weight: bold; margin-top: 4px; }
+        /* Ошибки FAB */
+        .fab-mistakes { position: fixed; bottom: 25px; right: 20px; background: var(--error); color: #fff; padding: 16px 24px; border-radius: 35px; font-weight: 800; font-size: 0.9rem; cursor: pointer; z-index: 50; display: none; align-items: center; gap: 8px; box-shadow: 0 8px 25px rgba(255, 59, 48, 0.4); border: none; }
 
-        .leader-row { display: flex; justify-content: space-between; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 12px; margin-bottom: 6px; font-size: 0.85rem; }
+        /* Статистика */
+        #stats-page { overflow-y: auto; display: none; text-align: left; }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
+        .stat-box { background: #1E293B; padding: 15px; border-radius: 18px; }
+        .stat-box h3 { margin: 0; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .stat-box .value { font-size: 1.4rem; font-weight: 800; margin-top: 5px; color: #fff; }
+
+        .leaderboard-title { margin: 30px 0 80px 0; font-size: 1rem; color: var(--accent); text-transform: uppercase; font-weight: 900; text-align: center; letter-spacing: 2px; }
+        .leader-row { display: flex; justify-content: space-between; padding: 15px; background: rgba(255,255,255,0.04); border-radius: 14px; margin-bottom: 8px; font-size: 0.95rem; border: 1px solid transparent; }
         .leader-score { color: var(--correct); font-weight: bold; }
 
-        .cat-bad-popup { position: fixed; bottom: 85px; right: 20px; width: 165px; background: var(--card-bg); border-radius: 20px; padding: 10px; border: 2px solid var(--error); transform: translateY(250%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 100; }
+        .reset-btn { background: var(--error); padding: 28px; width: 100%; border-radius: 20px; font-size: 1.1rem; margin-top: 40px; margin-bottom: 40px; border: none; color: #fff; font-weight: 900; box-shadow: 0 10px 20px rgba(255, 59, 48, 0.2); }
+
+        /* Сообщения */
+        #message-screen { display: none; flex-direction: column; align-items: center; justify-content: center; }
+        .cat-good { width: 185px; border-radius: 25px; margin-bottom: 25px; border: 4px solid var(--correct); }
+
+        /* Кот */
+        .cat-bad-popup { position: fixed; bottom: 95px; right: 20px; width: 165px; background: var(--card-bg); border-radius: 25px; padding: 12px; border: 2px solid var(--error); transform: translateY(300%); transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 100; box-shadow: 0 15px 40px rgba(0,0,0,0.6); }
         .cat-bad-popup.show { transform: translateY(0); }
-        .cat-bad-popup img { width: 100%; border-radius: 12px; }
+        .cat-bad-popup img { width: 100%; border-radius: 15px; }
 
-        .timer-container { width: 100%; height: 5px; background: #0F172A; border-radius: 3px; overflow: hidden; margin-bottom: 15px; display: none; }
-        .timer-bar { height: 100%; width: 100%; background: var(--correct); }
-
-        @keyframes shake { 10%, 90% { transform: translateX(-2px); } 20%, 80% { transform: translateX(3px); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes shake { 10%, 90% { transform: translateX(-3px); } 20%, 80% { transform: translateX(4px); } }
     </style>
 </head>
 <body>
@@ -102,17 +120,25 @@
         <div class="timer-container" id="timer-container"><div class="timer-bar" id="timer-bar"></div></div>
         
         <div class="word-card">
-            <h1 id="word">Загрузка...</h1>
+            <h1 id="word">Учимся...</h1>
             <div class="speaker-icon" id="speak-btn" onclick="speakCurrent()">🔊</div>
         </div>
 
         <div id="phrase-builder-ui" style="display:none">
             <div class="sentence-slots" id="slots-container"></div>
-            <div class="btn-group" style="flex-direction:row; flex-wrap:wrap; justify-content:center" id="tiles-container"></div>
-            <button class="action-btn" id="check-phrase-btn" style="width:100%; margin-top:15px" onclick="checkSentence()">Проверить</button>
+            <div class="btn-group" style="flex-direction:row; flex-wrap:wrap; justify-content:center; gap:8px" id="tiles-container"></div>
+            <button class="action-btn" id="check-phrase-btn" style="width:100%; margin-top:20px" onclick="checkSentence()">Проверить</button>
+            <div class="correct-answer-hint" id="correct-hint"></div>
         </div>
 
         <div class="btn-group" id="options-container"></div>
+    </div>
+
+    <div class="container" id="mistakes-screen" style="display:none">
+        <div class="header-info"><div class="stats-label" id="mistakes-header">ОШИБКИ</div></div>
+        <div class="word-card"><h1 id="m-word">...</h1><div class="speaker-icon" onclick="speakMistake()">🔊</div></div>
+        <div class="btn-group" id="m-options-container"></div>
+        <button class="action-btn" style="background:#334155; margin-top:20px" onclick="closeMistakes()">Выйти</button>
     </div>
 
     <div class="container" id="stats-page">
@@ -124,10 +150,10 @@
         </div>
         <div class="leaderboard-title">ТОП ПШЕКОВ 🏆</div>
         <div id="leaderboard-list"></div>
-        <button class="action-btn" style="background:var(--error); margin-top:30px; font-size:0.7rem; opacity:0.4" onclick="resetProgress()">Сброс</button>
+        <button class="reset-btn" onclick="resetProgress()">СБРОСИТЬ ВЕСЬ ПРОГРЕСС</button>
     </div>
 
-    <div class="container" id="message-screen" style="display:none">
+    <div class="container" id="message-screen">
         <img id="cat-win" src="good.png" class="cat-good">
         <h2 id="msg-title"></h2>
         <p id="msg-desc"></p>
@@ -135,6 +161,7 @@
     </div>
 
     <div class="cat-bad-popup" id="cat-bad"><img src="bad.png"></div>
+    <div class="fab-mistakes" id="fab-mistakes" onclick="openMistakes()">🔥 Ошибки (<span id="fab-count">0</span>)</div>
 
     <script>
         const SUPABASE_URL = 'https://lftbwacoprombmrctcaq.supabase.co';
@@ -142,9 +169,9 @@
         const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         const tg = window.Telegram.WebApp;
+        tg.expand();
         const userName = tg.initDataUnsafe?.user?.first_name || "Панама";
 
-        // --- БАЗА СЛОВ ---
         const levelsData = [
             [ {pl:"Tak",ru:"Да"},{pl:"Nie",ru:"Нет"},{pl:"Proszę",ru:"Пожалуйста"},{pl:"Dziękuję",ru:"Спасибо"},{pl:"Przepraszam",ru:"Извините"},{pl:"Dzień dobry",ru:"Добрый день"},{pl:"Dobry wieczór",ru:"Добрый вечер"},{pl:"Dobranoc",ru:"Спокойной ночи"},{pl:"Cześć",ru:"Привет / Пока"},{pl:"Do widzenia",ru:"До свидания"},{pl:"Pan",ru:"Господин"},{pl:"Pani",ru:"Госпожа"},{pl:"Imię",ru:"Имя"},{pl:"Nazwisko",ru:"Фамилия"},{pl:"Człowiek",ru:"Человек"},{pl:"Kobieta",ru:"Женщина"},{pl:"Mężczyzna",ru:"Мужчина"},{pl:"Dziecko",ru:"Ребенок"},{pl:"Dom",ru:"Дом"},{pl:"Praca",ru:"Работа"} ],
             [ {pl:"Miasto",ru:"Город"},{pl:"Ulica",ru:"Улица"},{pl:"Samochód",ru:"Машина"},{pl:"Autobus",ru:"Автобус"},{pl:"Pociąg",ru:"Поезд"},{pl:"Bilet",ru:"Билет"},{pl:"Pieniądze",ru:"Деньги"},{pl:"Sklep",ru:"Магазин"},{pl:"Woda",ru:"Вода"},{pl:"Jedzenie",ru:"Еда"},{pl:"Chleb",ru:"Хлеб"},{pl:"Mięso",ru:"Мясо"},{pl:"Mleko",ru:"Молоко"},{pl:"Kawa",ru:"Кофе"},{pl:"Herbata",ru:"Чай"},{pl:"Śniadanie",ru:"Завтрак"},{pl:"Obiad",ru:"Обед"},{pl:"Kolacja",ru:"Ужин"},{pl:"Czas",ru:"Время"},{pl:"Godzina",ru:"Час"} ],
@@ -156,10 +183,8 @@
             [ {pl:"Niebo",ru:"Небо"},{pl:"Gwiazda",ru:"Звезда"},{pl:"Księżyc",ru:"Луна"},{pl:"Chmura",ru:"Облако"},{pl:"Deszcz",ru:"Дождь"},{pl:"Śnieг",ru:"Снег"},{pl:"Wiatr",ru:"Ветер"},{pl:"Burza",ru:"Буря"},{pl:"Mgła",ru:"Туман"},{pl:"Ziemia",ru:"Земля"},{pl:"Góra",ru:"Гора"},{pl:"Las",ru:"Лес"},{pl:"Rzeka",ru:"Река"},{pl:"Morze",ru:"Море"},{pl:"Plaża",ru:"Пляж"},{pl:"Zwierzę",ru:"Животное"},{pl:"Pies",ru:"Собака"},{pl:"Kot",ru:"Кот"},{pl:"Ptak",ru:"Птица"},{pl:"Ryba",ru:"Рыба"} ],
             [ {pl:"Ubranie",ru:"Одежда"},{pl:"Koszula",ru:"Рубашка"},{pl:"Spodnie",ru:"Брюки"},{pl:"Sukienka",ru:"Платье"},{pl:"But",ru:"Ботинок"},{pl:"Czapka",ru:"Шапка"},{pl:"Kurtka",ru:"Куртка"},{pl:"Skarpetka",ru:"Носок"},{pl:"Płaszcz",ru:"Пальто"},{pl:"Kolor",ru:"Цвет"},{pl:"Biały",ru:"Белый"},{pl:"Czarny",ru:"Черный"},{pl:"Czerwony",ru:"Красный"},{pl:"Niebieski",ru:"Синий"},{pl:"Zielony",ru:"Зеленый"},{pl:"Żółty",ru:"Желтый"},{pl:"Szary",ru:"Серый"},{pl:"Brązowy",ru:"Коричневый"},{pl:"Różowy",ru:"Розовый"},{pl:"Pomarańczowy",ru:"Оранжевый"} ],
             [ {pl:"Lotnisko",ru:"Аэропорт"},{pl:"Samolot",ru:"Самолет"},{pl:"Most",ru:"Мост"},{pl:"Rondo",ru:"Кольцо"},{pl:"Dworzec",ru:"Вокзал"},{pl:"Przystanek",ru:"Остановка"},{pl:"Rower",ru:"Велосипед"},{pl:"Piesi",ru:"Пешеходы"},{pl:"Chodnik",ru:"Тротуар"},{pl:"Światła",ru:"Светофор"},{pl:"Kierowca",ru:"Водитель"},{pl:"Pasażer",ru:"Пассажир"},{pl:"Droga",ru:"Дорога"},{pl:"Kierunek",ru:"Направление"},{pl:"Północ",ru:"Север"},{pl:"Poлudnie",ru:"Юг"},{pl:"Wschód",ru:"Восток"},{pl:"Zachód",ru:"Запад"},{pl:"Mapa",ru:"Карта"},{pl:"Podróż",ru:"Путешествие"} ]
-            // ... (пропущено для краткости, вставь остальные из своего файла)
         ];
 
-        // --- БАЗА ФРАЗ ---
         const sentencesData = [
             { ru: "Где я могу найти свежие овощи?", pl: "Gdzie mogę znaleźć świeże warzywa?" },
             { ru: "Можно мне пакет для покупок, пожалуйста?", pl: "Czy mogę prosić o torbę na zakupy?" },
@@ -170,42 +195,12 @@
             { ru: "Где здесь находится отдел с напитками?", pl: "Gdzie znajduje się dział z napojami?" },
             { ru: "Я хотел бы купить килограмм сахара.", pl: "Chciałbym kupić kilogram cukru." },
             { ru: "У вас есть свежие булочки?", pl: "Czy mają Państwo świeże bułki?" },
-            { ru: "Где я могу найти корзину для покупок?", pl: "Gdzie mogę znaleźć koszyk na zakupy?" },
-            { ru: "Я хотел бы оплатить картой, пожалуйста.", pl: "Chciałbym zapłacić kartą, poproszę." },
-            { ru: "Нужен ли вам чек за покупки?", pl: "Czy potrzebuje Pan paragon za zakupy?" },
-            { ru: "Можно ли заплатить за это телефоном?", pl: "Czy można za to zapłacić telefonem?" },
-            { ru: "У меня есть своя сумка для покупок.", pl: "Mam własną torbę na zakupy." },
-            { ru: "Пожалуйста, введите пин-код на терминале.", pl: "Proszę wpisać kod pin na terminalu." },
-            { ru: "Эта касса принимает наличные?", pl: "Czy ta kasa przyjmuje gotówkę?" },
-            { ru: "Я хотел бы вернуть этот товар.", pl: "Chciałbym zwrócić ten towar." },
-            { ru: "У вас есть карта постоянного клиента?", pl: "Czy ma Pan kartę stałego klienta?" },
-            { ru: "Я собираю наклейки за покупки.", pl: "Zbieram naklejki za zakupy." },
-            { ru: "Пожалуйста, пробейте этот товар дважды.", pl: "Proszę nabić ten towar dwa razy." },
-            { ru: "Десятый насос, до полного бака, пожалуйста.", pl: "Dystrybutor numer dziesięć, do pełna, poproszę." },
-            { ru: "Мне нужно заправить машину девяносто пятым бензином.", pl: "Muszę zatankować auto benzyną dziewięćdziesiąt pięć." },
-            { ru: "Где я могу проверить давление в шинах?", pl: "Gdzie mogę sprawdzić ciśnienie w oponach?" },
-            { ru: "Пожалуйста, один большой хот-дог с кепчупом.", pl: "Poproszę jednego dużego hot-doga z ketchupem." },
-            { ru: "Я хотел бы купить жидкость для омывателя.", pl: "Chciałbym kupić płyn do spryskiwaczy." },
-            { ru: "Где здесь туалет на этой заправке?", pl: "Gdzie jest toaleta na tej stacji?" },
-            { ru: "Можно мне кофе с молоком без сахара?", pl: "Czy mogę proсиć kawę z mlekiem bez cukru?" },
-            { ru: "Мне нужна фактура на компанию, пожалуйста.", pl: "Potrzebuję fakturę na firmę, poproszę." },
-            { ru: "Ваша автомойка сейчас работает?", pl: "Czy Państwa myjnia jest teraz otwarta?" },
-            { ru: "Какой номер у этого насоса?", pl: "Jaki jest numer tego dystrybutora?" },
-            { ru: "Я пришел подать документы на карту побыту.", pl: "Przyszedłem złożyć dokumenty na kartę pobytu." },
-            { ru: "Где я могу получить свой номер Песель?", pl: "Gdzie mogę odebrać swój numer PESEL?" },
-            { ru: "Нужно ли мне записываться на встречу заранее?", pl: "Czy muszę umówić się na spotkanie wcześniej?" },
-            { ru: "Пожалуйста, заполните этот бланк печатными буквами.", pl: "Proszę wypełnić ten formularz drukowanymi literami." },
-            { ru: "У меня есть оригинал и копия паспорта.", pl: "Mam oryginał i kopię paszportu." },
-            { ru: "Где здесь находится информационное окно?", pl: "Gdzie znajduje się okienko informacyjne?" },
-            { ru: "Мне нужно подтверждение моего адреса проживания.", pl: "Potrzebuję zaświadczenia o moim miejscu zamieszkania." },
-            { ru: "Как долго я должен ждать решения?", pl: "Jak długo muszę czekać na decyzję?" },
-            { ru: "Можно ли отправить эти документы почтой?", pl: "Czy można wysłać te dokumenty pocztą?" },
-            { ru: "Моя карта побыту уже готова к выдаче?", pl: "Czy moja karta pobytu jest gotowa do odbioru?" }
-            // ... (все 200 фраз здесь)
+            { ru: "Где я могу найти корзину для покупок?", pl: "Gdzie mogę znaleźć koszyk na zakupy?" }
         ];
 
         const allWordsFlat = levelsData.flat();
         let stats = JSON.parse(localStorage.getItem('pl_stats_v2')) || { xp: 0, words: 0, phrases: 0 };
+        let mistakesDb = JSON.parse(localStorage.getItem('pl_mistakes_v2')) || [];
         let currentLevel = parseInt(localStorage.getItem('pl_level')) || 0;
         let mistakesMade = 0;
         let wordIndex = 0;
@@ -213,6 +208,7 @@
         let levelItems = [];
         let selectedPhraseWords = [];
         let isWaiting = false;
+        let timerInterval;
 
         async function syncWithCloud() {
             try {
@@ -220,16 +216,45 @@
                     username: userName, 
                     xp: stats.xp, 
                     phrases_count: stats.phrases,
-                    score: stats.words, // для совместимости со старой колонкой
+                    score: stats.words,
                     level: currentLevel + 1 
                 }, { onConflict: 'username' });
             } catch (e) { console.log(e); }
+        }
+
+        function switchTab(tab) {
+            clearInterval(timerInterval);
+            document.getElementById('game-container').style.display = tab === 'play' ? 'flex' : 'none';
+            document.getElementById('stats-page').style.display = tab === 'stats' ? 'flex' : 'none';
+            document.getElementById('message-screen').style.display = 'none';
+            document.getElementById('mistakes-screen').style.display = 'none';
+            
+            // Дизайнерский фикс: переключаем класс active
+            document.getElementById('tab-play').classList.toggle('active', tab === 'play');
+            document.getElementById('tab-stats').classList.toggle('active', tab === 'stats');
+
+            if (tab === 'stats') {
+                updateStatsUI();
+                syncWithCloud().then(fetchLeaderboard);
+            } else {
+                startLevel();
+            }
+        }
+
+        function updateStatsUI() {
+            document.getElementById('st-xp').innerText = stats.xp + ' XP';
+            document.getElementById('st-level').innerText = currentLevel + 1;
+            document.getElementById('st-words').innerText = stats.words;
+            document.getElementById('st-phrases').innerText = stats.phrases;
+            document.getElementById('fab-count').innerText = mistakesDb.length;
+            document.getElementById('fab-mistakes').style.display = mistakesDb.length > 0 ? 'flex' : 'none';
         }
 
         function setMode(mode) {
             currentMode = mode;
             document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('btn-' + mode).classList.add('active');
+            document.getElementById('timer-container').style.display = mode === 'sprint' ? 'block' : 'none';
             startLevel();
         }
 
@@ -251,13 +276,13 @@
             if (wordIndex >= levelItems.length) {
                 currentLevel++;
                 localStorage.setItem('pl_level', currentLevel);
-                syncWithCloud();
-                showMsg("Уровень пройден!", `+${currentMode === 'phrases' ? 50 : 20} XP заработано!`, startLevel);
+                saveStats();
+                showMsg("Уровень пройден!", `+${currentMode === 'phrases' ? 50 : 20} XP!`, startLevel);
                 return;
             }
             isWaiting = false;
+            document.getElementById('correct-hint').style.display = 'none';
             const cur = levelItems[wordIndex];
-            const wordEl = document.getElementById('word');
             
             if (currentMode === 'phrases') {
                 renderPhrasesMode(cur);
@@ -269,9 +294,10 @@
 
         function renderWordsMode(cur) {
             const askRu = currentMode === 'audio' ? false : Math.random() > 0.5;
-            document.getElementById('word').innerText = currentMode === 'audio' ? '🎧' : (askRu ? cur.ru : cur.pl);
-            document.getElementById('word').dataset.val = (currentMode === 'audio' || !askRu) ? cur.pl : cur.ru;
-            document.getElementById('word').dataset.lang = (currentMode === 'audio' || !askRu) ? 'pl-PL' : 'ru-RU';
+            const wordEl = document.getElementById('word');
+            wordEl.innerText = currentMode === 'audio' ? '🎧' : (askRu ? cur.ru : cur.pl);
+            wordEl.dataset.val = (currentMode === 'audio' || !askRu) ? cur.pl : cur.ru;
+            wordEl.dataset.lang = (currentMode === 'audio' || !askRu) ? 'pl-PL' : 'ru-RU';
             if (currentMode === 'audio') speakCurrent();
             
             const container = document.getElementById('options-container');
@@ -284,23 +310,34 @@
                 const b = document.createElement('button');
                 b.className = 'option-btn';
                 b.innerText = o;
-                b.onclick = () => checkWordAnswer(b, o, cur[target]);
+                b.onclick = () => checkWordAnswer(b, o, cur[target], cur);
                 container.appendChild(b);
             });
+
+            if (currentMode === 'sprint') startSprintTimer(cur, target);
+        }
+
+        function startSprintTimer(cur, target) {
+            let start = Date.now();
+            let bar = document.getElementById('timer-bar');
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                let p = 100 - ((Date.now() - start) / 7000 * 100);
+                bar.style.width = p + '%';
+                if (p <= 0) { clearInterval(timerInterval); checkWordAnswer(null, '', target, cur); }
+            }, 50);
         }
 
         function renderPhrasesMode(cur) {
             document.getElementById('options-container').style.display = 'none';
             document.getElementById('phrase-builder-ui').style.display = 'block';
-            const isMissingWordMode = Math.random() > 0.6; // 40% на пропуски
+            const isMissingWordMode = Math.random() > 0.6;
             selectedPhraseWords = [];
-            
             const slots = document.getElementById('slots-container');
             const tiles = document.getElementById('tiles-container');
             slots.innerHTML = ''; tiles.innerHTML = '';
 
             const correctWords = cur.pl.replace(/[.?!,]/g, '').split(' ');
-            let displayWords = [...correctWords];
 
             if (isMissingWordMode) {
                 const idx = Math.floor(Math.random() * correctWords.length);
@@ -328,63 +365,106 @@
                 t.onclick = () => {
                     if (t.classList.contains('used')) return;
                     t.classList.add('used');
-                    addWordToSentence(w, t, correct);
+                    addWordToSentence(w, t);
                 };
                 container.appendChild(t);
             });
         }
 
-        function addWordToSentence(word, tileRef, correct) {
+        function addWordToSentence(word, tileRef) {
             const slots = document.getElementById('slots-container');
             const s = document.createElement('div');
             s.className = 'tile placed';
             s.innerText = word;
-            s.onclick = () => {
-                s.remove();
-                tileRef.classList.remove('used');
-                selectedPhraseWords = selectedPhraseWords.filter(x => x !== word);
-            };
+            s.onclick = () => { s.remove(); tileRef.classList.remove('used'); selectedPhraseWords = selectedPhraseWords.filter(x => x !== word); };
             slots.appendChild(s);
             selectedPhraseWords.push(word);
         }
 
         function checkSentence() {
-            if (isWaiting) return;
             const cur = levelItems[wordIndex];
             const result = selectedPhraseWords.join(' ').toLowerCase().replace(/[.?!,]/g, '');
             const target = cur.pl.toLowerCase().replace(/[.?!,]/g, '');
 
-            if (result === target || target.includes(result) && result.length > 3) {
+            if (result === target || (target.includes(result) && result.length > 5)) {
                 stats.xp += 5; stats.phrases++;
                 saveStats();
                 wordIndex++;
-                setTimeout(nextQuestion, 500);
+                setTimeout(nextQuestion, 600);
             } else {
                 showBadCat();
+                document.getElementById('correct-hint').innerText = "Правильно: " + cur.pl;
+                document.getElementById('correct-hint').style.display = 'block';
                 mistakesMade++;
-                if (mistakesMade > 2) showMsg("Провал", "Попробуй еще раз!", startLevel);
+                if (mistakesMade > 2) setTimeout(() => showMsg("Провал", "Попробуй еще раз!", startLevel), 2000);
             }
         }
 
-        function checkWordAnswer(btn, sel, target) {
+        function checkWordAnswer(btn, sel, target, curObj) {
             if (isWaiting) return; isWaiting = true;
+            clearInterval(timerInterval);
             if (sel === target) {
-                btn.classList.add('correct');
+                if (btn) btn.classList.add('correct');
                 stats.xp += 1; stats.words++;
                 saveStats();
                 wordIndex++; setTimeout(nextQuestion, 600);
             } else {
-                btn.classList.add('wrong');
+                if (btn) btn.classList.add('wrong');
                 showBadCat();
+                addMistake(curObj);
                 mistakesMade++;
-                if (mistakesMade > 1) setTimeout(() => showMsg("Провал", "Слишком много ошибок", startLevel), 600);
-                else { wordIndex++; setTimeout(nextQuestion, 1000); }
+                if (mistakesMade > 1) setTimeout(() => showMsg("Провал", "Слишком много ошибок", startLevel), 800);
+                else { wordIndex++; setTimeout(nextQuestion, 1200); }
             }
         }
 
+        function addMistake(item) {
+            if (!mistakesDb.some(m => m.pl === item.pl)) {
+                mistakesDb.push(item);
+                localStorage.setItem('pl_mistakes_v2', JSON.stringify(mistakesDb));
+                updateStatsUI();
+            }
+        }
+
+        function openMistakes() {
+            document.getElementById('game-container').style.display = 'none';
+            document.getElementById('mistakes-screen').style.display = 'flex';
+            wordIndex = 0; levelItems = shuffle([...mistakesDb]);
+            renderMistakeQuestion();
+        }
+
+        function renderMistakeQuestion() {
+            if (wordIndex >= levelItems.length || mistakesDb.length === 0) { closeMistakes(); return; }
+            isWaiting = false;
+            const cur = levelItems[wordIndex];
+            document.getElementById('m-word').innerText = cur.pl;
+            const container = document.getElementById('m-options-container');
+            container.innerHTML = '';
+            let wr = shuffle(allWordsFlat.filter(w => w.ru !== cur.ru)).slice(0, 2);
+            let opts = shuffle([cur.ru, wr[0].ru, wr[1].ru]);
+            opts.forEach(o => {
+                const b = document.createElement('button');
+                b.className = 'option-btn';
+                b.innerText = o;
+                b.onclick = () => {
+                    if (o === cur.ru) {
+                        b.classList.add('correct');
+                        mistakesDb = mistakesDb.filter(m => m.pl !== cur.pl);
+                        localStorage.setItem('pl_mistakes_v2', JSON.stringify(mistakesDb));
+                        wordIndex++; setTimeout(renderMistakeQuestion, 600);
+                    } else { b.classList.add('wrong'); }
+                    updateStatsUI();
+                };
+                container.appendChild(b);
+            });
+        }
+
+        function closeMistakes() { document.getElementById('mistakes-screen').style.display = 'none'; startLevel(); }
+
         function saveStats() {
             localStorage.setItem('pl_stats_v2', JSON.stringify(stats));
-            if (stats.xp % 10 === 0) syncWithCloud();
+            updateStatsUI();
+            if (stats.xp % 5 === 0) syncWithCloud();
         }
 
         function updateHeader() {
@@ -392,23 +472,10 @@
             document.getElementById('lives').innerText = mistakesMade === 0 ? '🤍🤍' : (mistakesMade === 1 ? '🤍' : '💔');
         }
 
-        async function switchTab(tab) {
-            document.getElementById('game-container').style.display = tab === 'play' ? 'flex' : 'none';
-            document.getElementById('stats-page').style.display = tab === 'stats' ? 'flex' : 'none';
-            if (tab === 'stats') {
-                document.getElementById('st-xp').innerText = stats.xp + ' XP';
-                document.getElementById('st-words').innerText = stats.words;
-                document.getElementById('st-phrases').innerText = stats.phrases;
-                document.getElementById('st-level').innerText = currentLevel + 1;
-                await syncWithCloud();
-                fetchLeaderboard();
-            }
-        }
-
         async function fetchLeaderboard() {
             const { data } = await sb.from('leaderboard').select('*').order('xp', { ascending: false }).limit(10);
             document.getElementById('leaderboard-list').innerHTML = data.map((u, i) => `
-                <div class="leader-row" style="${u.username === userName ? 'border:1px solid var(--accent)' : ''}">
+                <div class="leader-row" style="${u.username === userName ? 'border-color:var(--accent); background:rgba(59,130,246,0.1)' : ''}">
                     <span>${i+1}. ${u.username}</span>
                     <span class="leader-score">${u.xp || 0} XP</span>
                 </div>
@@ -437,10 +504,18 @@
             speechSynthesis.speak(u);
         }
 
+        function speakMistake() {
+            const t = document.getElementById('m-word').innerText;
+            const u = new SpeechSynthesisUtterance(t);
+            u.lang = 'pl-PL';
+            speechSynthesis.speak(u);
+        }
+
         function shuffle(a) { return a.sort(() => Math.random() - 0.5); }
-        function resetProgress() { localStorage.clear(); location.reload(); }
+        function resetProgress() { if(confirm("Точно сбросить всё?")) { localStorage.clear(); location.reload(); } }
 
         startLevel();
+        updateStatsUI();
     </script>
 </body>
 </html>
