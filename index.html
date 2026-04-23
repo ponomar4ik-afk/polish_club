@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Polish Club Pro v3.2</title>
+    <title>Polish Club Pro v3.3</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
@@ -33,7 +33,7 @@
             touch-action: manipulation;
         }
 
-        /* Навигация */
+        /* Табы */
         .tabs { display: flex; width: 100%; background: #0F172A; border-bottom: 1px solid #1E293B; position: fixed; top: 0; z-index: 100; }
         .tab { flex: 1; padding: 18px 0; text-align: center; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; text-transform: uppercase; }
         .tab.active { color: var(--text-main); border-bottom: 3px solid var(--accent); }
@@ -41,15 +41,20 @@
         .container { 
             width: 92%; max-width: 450px; text-align: center; margin-top: 80px; 
             display: flex; flex-direction: column; height: calc(100vh - 100px); 
-            box-sizing: border-box; padding-bottom: 70px;
+            box-sizing: border-box; padding-bottom: 80px;
         }
         
         .mode-tabs { display: flex; width: 100%; gap: 6px; margin-bottom: 15px; flex-shrink: 0; }
         .mode-btn { flex: 1; background: var(--btn-bg); color: var(--text-muted); border: 1px solid #1E293B; padding: 12px 2px; border-radius: 12px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; cursor: pointer; }
         .mode-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
-        /* ИНДИКАЦИЯ НАЖАТИЯ */
-        .is-pressed { box-shadow: inset 0 0 0 3px #FFFFFF !important; transform: scale(0.96); }
+        /* ЭФФЕКТ НАЖАТИЯ (БЕЛАЯ ОБВОДКА) */
+        .is-pressed { 
+            box-shadow: inset 0 0 0 3px #FFFFFF !important; 
+            transform: scale(0.96); 
+            transition: none !important;
+        }
+        
         .is-correct { border-color: var(--correct) !important; background: rgba(16, 185, 129, 0.2) !important; color: var(--correct) !important; }
         .is-wrong { border-color: var(--error) !important; background: rgba(255, 59, 48, 0.2) !important; color: var(--error) !important; animation: shake 0.3s; }
 
@@ -66,8 +71,8 @@
         .sentence-slots { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; min-height: 45px; margin-bottom: 15px; padding: 10px; border-bottom: 1px dashed #1E293B; }
         .tile { background: var(--btn-bg); border: 1px solid #334155; padding: 10px 14px; border-radius: 12px; font-size: 0.95rem; font-weight: 600; cursor: pointer; }
         .tile.used { opacity: 0.15; pointer-events: none; }
-        .tile.placed { background: var(--accent); border-color: var(--accent); }
-        .tile.placeholder { background: transparent !important; border: 2px dashed rgba(255,255,255,0.15) !important; min-width: 60px; color: transparent; }
+        .tile.placed { background: var(--accent); border-color: var(--accent); color: white; }
+        .tile.placeholder { background: transparent !important; border: 2px dashed rgba(255,255,255,0.15) !important; min-width: 70px; color: transparent; pointer-events: none; }
 
         .correct-hint-box { display: none; margin-bottom: 10px; padding: 12px; background: rgba(16, 185, 129, 0.15); border: 1px solid var(--correct); border-radius: 12px; color: var(--correct); font-weight: 600; font-size: 0.85rem; }
 
@@ -75,9 +80,15 @@
         button.option-btn { border: 1px solid #1E293B; padding: 18px; border-radius: 15px; font-size: 1.05rem; font-weight: 600; cursor: pointer; background: var(--btn-bg); color: #FFFFFF; width: 100%; transition: 0.1s; }
         
         .phrase-footer { margin-top: auto; width: 100%; padding-top: 10px; }
-        .action-btn { background: var(--accent); color: #fff; border: none; padding: 22px; border-radius: 18px; font-weight: 800; font-size: 1.1rem; cursor: pointer; width: 100%; }
+        .action-btn { background: var(--accent); color: #fff; border: none; padding: 22px 30px; border-radius: 18px; font-weight: 800; font-size: 1.1rem; cursor: pointer; width: 100%; }
 
-        .fab-mistakes { position: fixed; bottom: 20px; right: 20px; background: var(--error); color: #fff; padding: 14px 22px; border-radius: 30px; font-weight: 800; font-size: 0.85rem; cursor: pointer; z-index: 200; display: none; align-items: center; gap: 8px; box-shadow: 0 8px 20px rgba(255, 59, 48, 0.4); border: none; }
+        /* FAB ОШИБКИ */
+        .fab-mistakes { 
+            position: fixed; bottom: 20px; right: 20px; background: var(--error); color: #fff; 
+            padding: 14px 22px; border-radius: 30px; font-weight: 800; font-size: 0.85rem; 
+            cursor: pointer; z-index: 200; display: none; align-items: center; gap: 8px; 
+            box-shadow: 0 8px 20px rgba(255, 59, 48, 0.4); border: none; 
+        }
 
         #stats-page { overflow-y: auto; display: none; text-align: left; }
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
@@ -88,7 +99,11 @@
         .leaderboard-title { margin: 25px 0 40px 0; font-size: 1rem; color: var(--accent); text-transform: uppercase; font-weight: 900; text-align: center; }
         .leader-row { display: flex; justify-content: space-between; padding: 14px; background: rgba(255,255,255,0.04); border-radius: 14px; margin-bottom: 8px; }
 
-        #message-screen { display: none; flex-direction: column; align-items: center; justify-content: center; height: 100vh; position: fixed; top:0; left:0; width:100%; background: var(--bg-color); z-index: 1000; }
+        #message-screen { 
+            display: none; flex-direction: column; align-items: center; justify-content: center; 
+            height: 100vh; position: fixed; top:0; left:0; width:100%; 
+            background: var(--bg-color); z-index: 1000; 
+        }
         .msg-cat { width: 160px; border-radius: 25px; margin-bottom: 20px; }
 
         .timer-container { width: 100%; height: 6px; background: #0F172A; border-radius: 3px; overflow: hidden; margin-bottom: 10px; display: none; }
@@ -118,7 +133,7 @@
         <div class="timer-container" id="timer-container"><div class="timer-bar" id="timer-bar"></div></div>
         
         <div class="word-card">
-            <h1 id="word">Загрузка...</h1>
+            <h1 id="word">Учимся...</h1>
             <div class="speaker-icon" id="speak-btn" onclick="speakCurrent()">🔊</div>
         </div>
 
@@ -157,7 +172,7 @@
         <img id="msg-cat-img" src="good.png" class="msg-cat">
         <h2 id="msg-title"></h2>
         <p id="msg-desc"></p>
-        <button class="action-btn" style="width:80%" onclick="nextAction()">Продолжить</button>
+        <button class="action-btn" id="msg-btn" style="width:80%" onclick="handleMessageClick()">Продолжить</button>
     </div>
 
     <div class="fab-mistakes" id="fab-mistakes" onclick="openMistakes()">🔥 Ошибки (<span id="fab-count">0</span>)</div>
@@ -170,7 +185,6 @@
         const tg = window.Telegram.WebApp;
         const userName = tg.initDataUnsafe?.user?.first_name || "Панама";
 
-        // --- БАЗА СЛОВ ---
         const dictionary = [
             {pl:"Tak",ru:"Да"},{pl:"Nie",ru:"Нет"},{pl:"Proszę",ru:"Пожалуйста"},{pl:"Dziękuję",ru:"Спасибо"},{pl:"Przepraszam",ru:"Извините"},{pl:"Dzień dobry",ru:"Добрый день"},{pl:"Dobry wieczór",ru:"Добрый вечер"},{pl:"Dobranoc",ru:"Спокойной ночи"},{pl:"Cześć",ru:"Привет / Пока"},{pl:"Do widzenia",ru:"До свидания"},
             {pl:"Pan",ru:"Господин"},{pl:"Pani",ru:"Госпожа"},{pl:"Imię",ru:"Имя"},{pl:"Nazwisko",ru:"Фамилия"},{pl:"Człowiek",ru:"Человек"},{pl:"Kobieta",ru:"Женщина"},{pl:"Mężczyzna",ru:"Мужчина"},{pl:"Dziecko",ru:"Ребенок"},{pl:"Dom",ru:"Дом"},{pl:"Praca",ru:"Работа"},
@@ -180,13 +194,12 @@
             {pl:"Córka",ru:"Дочь"},{pl:"Przyjaciel",ru:"Друг"},{pl:"Sąsiad",ru:"Сосед"},{pl:"Chłopak",ru:"Парень"},{pl:"Dziewczyna",ru:"Девушка"},{pl:"Dziadkowie",ru:"Бабушка и дедушка"},{pl:"Rodzice",ru:"Родители"},{pl:"Kuzyn",ru:"Двоюродный брат"},{pl:"Małżeństwo",ru:"Брак"},{pl:"Ślub",ru:"Свадьба"},
             {pl:"Dobry",ru:"Хороший"},{pl:"Zły",ru:"Плохой"},{pl:"Duży",ru:"Большой"},{pl:"Mały",ru:"Маленький"},{pl:"Nowy",ru:"Новый"},{pl:"Stary",ru:"Старый"},{pl:"Gorący",ru:"Горячий"},{pl:"Zimny",ru:"Холодный"},{pl:"Szybki",ru:"Быстрый"},{pl:"Wolny",ru:"Медленный / Свободный"},
             {pl:"Drogi",ru:"Дорогой"},{pl:"Tani",ru:"Дешевый"},{pl:"Czysty",ru:"Чистый"},{pl:"Brudny",ru:"Грязный"},{pl:"Ładny",ru:"Красивый"},{pl:"Brzydki",ru:"Уродливый"},{pl:"Wysoki",ru:"Высокий"},{pl:"Niski",ru:"Низкий"},{pl:"Trudny",ru:"Трудный"},{pl:"Łatwy",ru:"Легкий"},
-            {pl:"Robić",ru:"Делать"},{pl:"Mówić",ru:"Говорить"},{pl:"Widzieć",ru:"Видеть"},{pl:"Słyszeć",ru:"Слышать"},{pl:"Myśleć",ru:"Думать"},{pl:"Wiedzieć",ru:"Знать"},{pl:"Mieć",ru:"Иметь"},{pl:"Być",ru:"Быть"},{pl:"Chcieć",ru:"Хотеть"},{pl:"Móc",ru:"Мочь"},
-            {pl:"Część", ru:"Часть"}, {pl:"Często", ru:"Часто"} // Для теста обманок
+            {pl:"Robić",ru:"Делать"},{pl:"Mówić",ru:"Говорить"},{pl:"Widzieć",ru:"Видеть"},{pl:"Słyszeć",ru:"Слышать"},{pl:"Myśleć",ru:"Думать"},{pl:"Wiedzieć",ru:"Знать"},{pl:"Mieć",ru:"Иметь"},{pl:"Być",ru:"Быть"},{pl:"Chcieć",ru:"Хотеть"},{pl:"Móc",ru:"Мочь"}
         ];
 
         const sentencesData = [
             { ru: "Где я могу найти свежие овощи?", pl: "Gdzie mogę znaleźć świeże warzywa?" },
-            { ru: "Можно мне пакет для покупок, пожалуйста?", pl: "Czy mogę prosić o torbę na zakupy?" }
+            { ru: "Можно мне пакет для покупок, пожалуйста?", pl: "Czy mogę prosić o torбę na zakupy?" }
         ];
 
         let stats = JSON.parse(localStorage.getItem('pl_stats_v2')) || { xp: 0, words: 0, phrases: 0 };
@@ -199,8 +212,9 @@
         let timerInterval;
         let missingWordIndex = -1;
         let selectedPhraseWords = [];
+        let nextActionFn = null;
 
-        // --- ГЛОБАЛЬНЫЙ ОБРАБОТЧИК НАЖАТИЙ ---
+        // ГЛОБАЛЬНЫЙ ОТКЛИК
         document.addEventListener('pointerdown', e => {
             const btn = e.target.closest('.option-btn, .tile, .mode-btn, .action-btn, .speaker-icon');
             if (btn) btn.classList.add('is-pressed');
@@ -209,34 +223,22 @@
             document.querySelectorAll('.is-pressed').forEach(el => el.classList.remove('is-pressed'));
         });
 
-        // --- ЛОГИКА ОБМАНОК (SIMILARITY) ---
+        // УМНЫЕ ОБМАНКИ
         function getSmartDistractors(correctWord, lang, count) {
             const others = dictionary.filter(w => w[lang] !== correctWord);
-            
-            // Считаем схожесть по буквам
             const sortedBySim = others.sort((a, b) => {
-                const simA = getSimilarity(correctWord, a[lang]);
-                const simB = getSimilarity(correctWord, b[lang]);
-                return simB - simA;
+                return getSimilarity(correctWord, b[lang]) - getSimilarity(correctWord, a[lang]);
             });
-
             return sortedBySim.slice(0, count).map(x => x[lang]);
         }
 
         function getSimilarity(s1, s2) {
-            let matches = 0;
-            const set1 = new Set(s1.toLowerCase().split(''));
-            const set2 = new Set(s2.toLowerCase().split(''));
-            set1.forEach(char => { if(set2.has(char)) matches++; });
-            return matches;
+            let m = 0; const set1 = new Set(s1.toLowerCase().split('')), set2 = new Set(s2.toLowerCase().split(''));
+            set1.forEach(c => { if(set2.has(c)) m++; }); return m;
         }
 
         async function syncWithCloud() {
-            try {
-                await sb.from('leaderboard').upsert({ 
-                    username: userName, xp: stats.xp, phrases_count: stats.phrases, score: stats.words, level: currentLevel + 1 
-                }, { onConflict: 'username' });
-            } catch (e) {}
+            try { await sb.from('leaderboard').upsert({ username: userName, xp: stats.xp, phrases_count: stats.phrases, score: stats.words, level: currentLevel + 1 }, { onConflict: 'username' }); } catch (e) {}
         }
 
         function switchTab(tab) {
@@ -270,16 +272,18 @@
         }
 
         function startLevel() {
+            // КРИТИЧЕСКИЙ ФИКС: Скрываем окно при старте
+            document.getElementById('message-screen').style.display = 'none';
+            document.getElementById('game-container').style.display = 'flex';
+            window.speechSynthesis.cancel(); 
+
             const isExam = (currentLevel + 1) % 10 === 0;
             if (currentMode === 'phrases') {
                 currentQueue = shuffle([...sentencesData]);
             } else if (isExam) {
-                // Срез: 20 слов из предыдущих 90
-                const end = currentLevel * 10;
-                const start = Math.max(0, end - 90);
+                const end = currentLevel * 10; const start = Math.max(0, end - 90);
                 currentQueue = shuffle(dictionary.slice(start, end)).slice(0, 20);
             } else {
-                // Обычный уровень: 10 новых слов
                 const start = currentLevel * 10;
                 currentQueue = shuffle(dictionary.slice(start, start + 10));
             }
@@ -288,9 +292,7 @@
 
         function nextQuestion() {
             if (currentQueue.length === 0) {
-                currentLevel++;
-                localStorage.setItem('pl_level', currentLevel);
-                saveStats();
+                currentLevel++; localStorage.setItem('pl_level', currentLevel); saveStats();
                 showMsg("Победа!", `Уровень пройден!`, startLevel, true);
                 return;
             }
@@ -307,32 +309,17 @@
         function renderWordsMode(cur, isExam) {
             document.getElementById('options-container').style.display = 'flex';
             document.getElementById('phrase-builder-ui').style.display = 'none';
-            
-            // В обычном режиме: PL -> RU. В экзамене: RU -> PL.
-            const askRu = !isExam; 
-            const targetLang = askRu ? 'ru' : 'pl';
-            const questionLang = askRu ? 'pl' : 'ru';
-
-            const wordEl = document.getElementById('word');
-            wordEl.innerText = currentMode === 'audio' ? '🎧' : cur[questionLang];
-            
-            // Озвучка сразу только если вопрос на польском
+            const askRu = !isExam; const targetLang = askRu ? 'ru' : 'pl'; const questionLang = askRu ? 'pl' : 'ru';
+            document.getElementById('word').innerText = currentMode === 'audio' ? '🎧' : cur[questionLang];
             if (questionLang === 'pl' || currentMode === 'audio') speakText(cur.pl, 'pl-PL');
             
-            const container = document.getElementById('options-container');
-            container.innerHTML = '';
-
-            // УМНЫЕ ОБМАНКИ
+            const container = document.getElementById('options-container'); container.innerHTML = '';
             let distractors = getSmartDistractors(cur[targetLang], targetLang, 2);
             let opts = shuffle([cur[targetLang], ...distractors]);
             
             opts.forEach(o => {
-                const b = document.createElement('button');
-                b.className = 'option-btn'; b.innerText = o;
-                b.onclick = () => {
-                    if (targetLang === 'pl') speakText(o, 'pl-PL');
-                    checkWordAnswer(b, o, cur[targetLang], cur);
-                };
+                const b = document.createElement('button'); b.className = 'option-btn'; b.innerText = o;
+                b.onclick = () => { if (targetLang === 'pl') speakText(o, 'pl-PL'); checkWordAnswer(b, o, cur[targetLang], cur); };
                 container.appendChild(b);
             });
             if (currentMode === 'sprint') startSprintTimer(cur, targetLang);
@@ -343,8 +330,7 @@
             document.getElementById('phrase-builder-ui').style.display = 'flex';
             const slots = document.getElementById('slots-container');
             const tiles = document.getElementById('tiles-container');
-            slots.innerHTML = ''; tiles.innerHTML = '';
-            selectedPhraseWords = [];
+            slots.innerHTML = ''; tiles.innerHTML = ''; selectedPhraseWords = [];
 
             const isMissing = Math.random() > 0.6;
             const words = cur.pl.replace(/[.?!,]/g, '').split(' ');
@@ -355,14 +341,12 @@
                 words.forEach((w, i) => {
                     const s = document.createElement('div');
                     s.className = (i === missingWordIndex) ? 'tile placeholder' : 'tile placed';
-                    s.innerText = (i === missingWordIndex) ? '___' : w;
-                    s.id = "slot-" + i;
-                    slots.appendChild(s);
+                    s.innerText = (i === missingWordIndex) ? ' ' : w;
+                    s.id = "slot-" + i; slots.appendChild(s);
                 });
                 renderTiles([words[missingWordIndex], ...getSmartDistractors(words[missingWordIndex], 'pl', 5)], true);
             } else {
-                missingWordIndex = -1;
-                document.getElementById('word').innerText = cur.ru;
+                missingWordIndex = -1; document.getElementById('word').innerText = cur.ru;
                 renderTiles([...words, ...shuffle(dictionary).slice(0, 4).map(x => x.pl)], false);
             }
         }
@@ -370,12 +354,10 @@
         function renderTiles(pool, isMissing) {
             const container = document.getElementById('tiles-container');
             shuffle(pool).forEach(w => {
-                const t = document.createElement('div');
-                t.className = 'tile'; t.innerText = w;
+                const t = document.createElement('div'); t.className = 'tile'; t.innerText = w;
                 t.onclick = () => {
                     if (t.classList.contains('used')) return;
-                    speakText(w, 'pl-PL');
-                    t.classList.add('used');
+                    speakText(w, 'pl-PL'); t.classList.add('used');
                     if (isMissing) fillMissingSlot(w, t); else addWordToSentence(w, t);
                 };
                 container.appendChild(t);
@@ -394,23 +376,18 @@
 
         function addWordToSentence(word, tileRef) {
             const slots = document.getElementById('slots-container');
-            const s = document.createElement('div');
-            s.className = 'tile placed'; s.innerText = word;
+            const s = document.createElement('div'); s.className = 'tile placed'; s.innerText = word;
             s.onclick = () => { s.remove(); tileRef.classList.remove('used'); selectedPhraseWords = selectedPhraseWords.filter(x => x !== word); };
             slots.appendChild(s); selectedPhraseWords.push(word);
         }
 
         function checkSentence() {
-            if (isWaiting) return;
-            const cur = currentQueue[0];
-            const targetRaw = cur.pl.replace(/[.?!,]/g, '').split(' ');
+            if (isWaiting) return; const cur = currentQueue[0]; const targetRaw = cur.pl.replace(/[.?!,]/g, '').split(' ');
             let isCorrect = false;
-
             if (missingWordIndex !== -1) {
                 if ((selectedPhraseWords[missingWordIndex] || "").toLowerCase() === targetRaw[missingWordIndex].toLowerCase()) isCorrect = true;
             } else {
-                const res = selectedPhraseWords.join(' ').toLowerCase();
-                const tar = targetRaw.join(' ').toLowerCase();
+                const res = selectedPhraseWords.join(' ').toLowerCase(); const tar = targetRaw.join(' ').toLowerCase();
                 if (res === tar || (tar.includes(res) && res.length > 5)) isCorrect = true;
             }
 
@@ -418,91 +395,63 @@
                 isWaiting = true; stats.xp += 5; stats.phrases++; saveStats(); currentQueue.shift();
                 setTimeout(nextQuestion, 300);
             } else {
-                const hint = document.getElementById('correct-hint');
-                hint.innerText = "Правильно: " + cur.pl; hint.style.display = 'block';
-                addMistake(cur);
-                const item = currentQueue.shift(); currentQueue.push(item);
+                const hint = document.getElementById('correct-hint'); hint.innerText = "Правильно: " + cur.pl; hint.style.display = 'block';
+                addMistake(cur); const item = currentQueue.shift(); currentQueue.push(item);
                 setTimeout(nextQuestion, 1200); 
             }
         }
 
         function checkWordAnswer(btn, sel, target, curObj) {
-            if (isWaiting) return; isWaiting = true;
-            clearInterval(timerInterval);
+            if (isWaiting) return; isWaiting = true; clearInterval(timerInterval);
             if (sel === target) {
-                if (btn) btn.classList.add('is-correct');
-                stats.xp += 1; stats.words++; saveStats(); currentQueue.shift();
+                if (btn) btn.classList.add('is-correct'); stats.xp += 1; stats.words++; saveStats(); currentQueue.shift();
                 setTimeout(nextQuestion, 300);
             } else {
-                if (btn) btn.classList.add('is-wrong');
-                addMistake(curObj);
+                if (btn) btn.classList.add('is-wrong'); addMistake(curObj);
                 const item = currentQueue.shift(); currentQueue.push(item);
                 setTimeout(nextQuestion, 1200);
             }
         }
 
         function addMistake(item) {
-            if (!mistakesDb.some(m => m.pl === item.pl)) {
-                mistakesDb.push(item); localStorage.setItem('pl_mistakes_v2', JSON.stringify(mistakesDb)); updateStatsUI();
-            }
+            if (!mistakesDb.some(m => m.pl === item.pl)) { mistakesDb.push(item); localStorage.setItem('pl_mistakes_v2', JSON.stringify(mistakesDb)); updateStatsUI(); }
         }
 
         function openMistakes() {
             document.getElementById('game-container').style.display = 'none';
             document.getElementById('mistakes-screen').style.display = 'flex';
-            currentQueue = shuffle([...mistakesDb]);
-            renderMistakeQuestion();
+            currentQueue = shuffle([...mistakesDb]); renderMistakeQuestion();
         }
 
         function renderMistakeQuestion() {
             if (currentQueue.length === 0 || mistakesDb.length === 0) { closeMistakes(); return; }
-            isWaiting = false;
-            const cur = currentQueue[0];
-            document.getElementById('m-word').innerText = cur.pl;
-            speakText(cur.pl, 'pl-PL');
-            const container = document.getElementById('m-options-container');
-            container.innerHTML = '';
+            isWaiting = false; const cur = currentQueue[0];
+            document.getElementById('m-word').innerText = cur.pl; speakText(cur.pl, 'pl-PL');
+            const container = document.getElementById('m-options-container'); container.innerHTML = '';
             let opts = shuffle([cur.ru, ...getSmartDistractors(cur.ru, 'ru', 2)]);
             opts.forEach(o => {
-                const b = document.createElement('button');
-                b.className = 'option-btn'; b.innerText = o;
+                const b = document.createElement('button'); b.className = 'option-btn'; b.innerText = o;
                 b.onclick = () => {
                     if (isWaiting) return; isWaiting = true;
-                    if (o === cur.ru) {
-                        b.classList.add('is-correct');
-                        mistakesDb = mistakesDb.filter(m => m.pl !== cur.pl);
-                        localStorage.setItem('pl_mistakes_v2', JSON.stringify(mistakesDb));
-                        currentQueue.shift(); setTimeout(renderMistakeQuestion, 400);
-                    } else { b.classList.add('is-wrong'); setTimeout(() => { b.classList.remove('is-wrong'); isWaiting = false; }, 600); }
+                    if (o === cur.ru) { b.classList.add('is-correct'); mistakesDb = mistakesDb.filter(m => m.pl !== cur.pl); localStorage.setItem('pl_mistakes_v2', JSON.stringify(mistakesDb)); currentQueue.shift(); setTimeout(renderMistakeQuestion, 400); }
+                    else { b.classList.add('is-wrong'); setTimeout(() => { b.classList.remove('is-wrong'); isWaiting = false; }, 600); }
                     updateStatsUI();
-                };
-                container.appendChild(b);
+                }; container.appendChild(b);
             });
         }
 
         function closeMistakes() { document.getElementById('mistakes-screen').style.display = 'none'; startLevel(); updateStatsUI(); }
         function saveStats() { localStorage.setItem('pl_stats_v2', JSON.stringify(stats)); updateStatsUI(); if (stats.xp % 5 === 0) syncWithCloud(); }
-        function updateHeader() { 
-            const isExam = (currentLevel + 1) % 10 === 0;
-            document.getElementById('stats-header').innerText = (isExam ? 'ЭКЗАМЕН' : `УРОВЕНЬ ${currentLevel + 1}`) + ` (ОСТАЛОСЬ: ${currentQueue.length})`; 
-        }
+        function updateHeader() { const isExam = (currentLevel + 1) % 10 === 0; document.getElementById('stats-header').innerText = (isExam ? 'ЭКЗАМЕН' : `УРОВЕНЬ ${currentLevel + 1}`) + ` (ОСТАЛОСЬ: ${currentQueue.length})`; }
 
         async function fetchLeaderboard() {
             const { data } = await sb.from('leaderboard').select('*').order('xp', { ascending: false }).limit(10);
-            document.getElementById('leaderboard-list').innerHTML = (data || []).map((u, i) => `
-                <div class="leader-row" style="${u.username === userName ? 'border-color:var(--accent); background:rgba(59,130,246,0.1)' : ''}">
-                    <span>${i+1}. ${u.username}</span><span class="leader-score">${u.xp || 0} XP</span>
-                </div>`).join('');
+            document.getElementById('leaderboard-list').innerHTML = (data || []).map((u, i) => `<div class="leader-row" style="${u.username === userName ? 'border-color:var(--accent); background:rgba(59,130,246,0.1)' : ''}"><span>${i+1}. ${u.username}</span><span class="leader-score">${u.xp || 0} XP</span></div>`).join('');
         }
 
         function startSprintTimer(cur, target) {
-            let start = Date.now(); let bar = document.getElementById('timer-bar');
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                let p = 100 - ((Date.now() - start) / 7000 * 100);
-                bar.style.width = p + '%';
-                if (p <= 0) { clearInterval(timerInterval); checkWordAnswer(null, '', target, cur); }
-            }, 50);
+            let start = Date.now(); let bar = document.getElementById('timer-bar'); clearInterval(timerInterval);
+            timerInterval = setInterval(() => { let p = 100 - ((Date.now() - start) / 7000 * 100); bar.style.width = p + '%'; if (p <= 0) { clearInterval(timerInterval); checkWordAnswer(null, '', target, cur); } }, 50);
         }
 
         function showMsg(t, d, action, isWin) {
@@ -510,19 +459,23 @@
             const m = document.getElementById('message-screen'); m.style.display = 'flex';
             document.getElementById('msg-title').innerText = t; document.getElementById('msg-desc').innerText = d;
             document.getElementById('msg-cat-img').src = isWin ? 'good.png' : 'bad.png';
-            window.nextAction = action;
+            nextActionFn = action;
         }
 
-        function speakText(t, l) {
-            window.speechSynthesis.cancel();
-            const u = new SpeechSynthesisUtterance(t); u.lang = l; u.rate = 0.95; window.speechSynthesis.speak(u);
+        function handleMessageClick() {
+            if (nextActionFn) {
+                document.getElementById('message-screen').style.display = 'none';
+                nextActionFn();
+            }
         }
 
+        function speakCurrent() { const el = document.getElementById('word'); speakText(el.dataset.val || el.innerText, el.dataset.lang || 'pl-PL'); }
+        function speakMistake() { speakText(document.getElementById('m-word').innerText, 'pl-PL'); }
+        function speakText(t, l) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = l; u.rate = 0.95; window.speechSynthesis.speak(u); }
         function shuffle(a) { return a.sort(() => Math.random() - 0.5); }
         function resetProgress() { if(confirm("Сбросить всё?")) { localStorage.clear(); location.reload(); } }
 
-        startLevel();
-        updateStatsUI();
+        startLevel(); updateStatsUI();
     </script>
 </body>
 </html>
