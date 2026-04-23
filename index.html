@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Polish Club Pro v2.9</title>
+    <title>Polish Club Pro v3.0</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
@@ -31,6 +31,7 @@
             overflow: hidden;
             -webkit-tap-highlight-color: transparent;
             user-select: none;
+            touch-action: manipulation;
         }
 
         /* Табы */
@@ -51,14 +52,14 @@
         }
         
         .mode-tabs { display: flex; width: 100%; gap: 6px; margin-bottom: 15px; flex-shrink: 0; }
-        .mode-btn { flex: 1; background: var(--btn-bg); color: var(--text-muted); border: 1px solid #1E293B; padding: 12px 2px; border-radius: 12px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; cursor: pointer; }
+        .mode-btn { flex: 1; background: var(--btn-bg); color: var(--text-muted); border: 1px solid #1E293B; padding: 12px 2px; border-radius: 12px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; cursor: pointer; position: relative; }
         .mode-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
-        /* ЭФФЕКТ НАЖАТИЯ: Только белая обводка, без смены фона */
-        .pressed { 
-            outline: 2px solid #FFFFFF !important;
-            transform: scale(0.96) !important;
-            transition: transform 0.05s linear;
+        /* ГЛАВНЫЙ ЭФФЕКТ НАЖАТИЯ (БЕЛАЯ ОБВОДКА) */
+        .is-pressed {
+            transform: scale(0.95) !important;
+            box-shadow: inset 0 0 0 3px #FFFFFF !important;
+            transition: none !important;
         }
 
         .header-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-shrink: 0; }
@@ -74,7 +75,14 @@
         .tile { background: var(--btn-bg); border: 1px solid #334155; padding: 12px 16px; border-radius: 12px; font-size: 0.95rem; font-weight: 600; cursor: pointer; }
         .tile.used { opacity: 0.15; pointer-events: none; }
         .tile.placed { background: var(--accent); border-color: var(--accent); color: white; }
-        .tile.placeholder { background: rgba(255, 255, 255, 0.02); border: 2px dashed #475569; color: transparent; min-width: 70px; }
+        
+        /* Прозрачный слот для пропусков */
+        .tile.placeholder { 
+            background: transparent !important; 
+            border: 2px dashed rgba(255,255,255,0.2) !important; 
+            color: transparent !important;
+            min-width: 70px;
+        }
 
         .correct-hint-box { display: none; margin-top: 16px; margin-bottom: 16px; padding: 15px; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--correct); border-radius: 12px; color: var(--correct); font-weight: 600; font-size: 0.85rem; text-align: center; }
 
@@ -93,17 +101,23 @@
         .stat-box h3 { margin: 0; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; }
         .stat-box .value { font-size: 1.3rem; font-weight: 800; margin-top: 4px; }
 
+        /* Исправленный отступ */
         .leaderboard-title { margin: 30px 0 40px 0; font-size: 1rem; color: var(--accent); text-transform: uppercase; font-weight: 900; text-align: center; letter-spacing: 2px; }
-        .leader-row { display: flex; justify-content: space-between; padding: 15px; background: rgba(255,255,255,0.04); border-radius: 14px; margin-bottom: 8px; }
+        .leader-row { display: flex; justify-content: space-between; padding: 15px; background: rgba(255,255,255,0.04); border-radius: 14px; margin-bottom: 8px; border: 1px solid transparent; }
+        
+        .reset-btn { background: var(--error); padding: 28px; width: 100%; border-radius: 20px; font-size: 1.1rem; margin: 40px 0; border: none; color: #fff; font-weight: 900; }
+
+        #message-screen { display: none; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        .msg-cat { width: 180px; border-radius: 25px; margin-bottom: 20px; }
+
+        .cat-bad-popup { position: fixed; bottom: 95px; right: 20px; width: 165px; background: var(--card-bg); border-radius: 25px; padding: 12px; border: 2px solid var(--error); transform: translateY(350%); transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 100; pointer-events: none; }
+        .cat-bad-popup.show { transform: translateY(0); }
+        .cat-bad-popup img { width: 100%; border-radius: 15px; }
 
         .timer-container { width: 100%; height: 6px; background: #0F172A; border-radius: 3px; overflow: hidden; margin-bottom: 15px; display: none; }
         .timer-bar { height: 100%; width: 100%; background: var(--correct); }
 
-        #message-screen { display: none; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
-        .msg-cat { width: 180px; border-radius: 25px; margin-bottom: 20px; }
-        .cat-bad-popup { position: fixed; bottom: 95px; right: 20px; width: 165px; background: var(--card-bg); border-radius: 25px; padding: 12px; border: 2px solid var(--error); transform: translateY(350%); transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 100; pointer-events: none; }
-        .cat-bad-popup.show { transform: translateY(0); }
-        .cat-bad-popup img { width: 100%; border-radius: 15px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -128,6 +142,7 @@
         
         <div class="word-card">
             <h1 id="word">Учимся...</h1>
+            <div class="speaker-icon" id="speak-btn" onclick="speakCurrent()">🔊</div>
         </div>
 
         <div id="phrase-builder-ui" style="display:none; flex-grow: 1; display: flex; flex-direction: column;">
@@ -143,6 +158,13 @@
         <div class="btn-group" id="options-container"></div>
     </div>
 
+    <div class="container" id="mistakes-screen" style="display:none">
+        <div class="header-info"><div class="stats-label">ОТРАБОТКА ОШИБОК</div></div>
+        <div class="word-card"><h1 id="m-word">...</h1><div class="speaker-icon" onclick="speakMistake()">🔊</div></div>
+        <div class="btn-group" id="m-options-container"></div>
+        <button class="action-btn" style="background:#334155; margin-top:20px" onclick="closeMistakes()">Выйти</button>
+    </div>
+
     <div class="container" id="stats-page">
         <div class="stat-grid">
             <div class="stat-box"><h3>Опыт</h3><p id="st-xp" class="value">0 XP</p></div>
@@ -152,6 +174,7 @@
         </div>
         <div class="leaderboard-title">ТОП ПШЕКОВ 🏆</div>
         <div id="leaderboard-list"></div>
+        <button class="reset-btn" onclick="resetProgress()">СБРОСИТЬ ВЕСЬ ПРОГРЕСС</button>
     </div>
 
     <div class="container" id="message-screen">
@@ -170,11 +193,15 @@
         const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         const tg = window.Telegram.WebApp;
+        tg.expand();
         const userName = tg.initDataUnsafe?.user?.first_name || "Панама";
 
         const levelsData = [
-            [ {pl:"Tak",ru:"Да"},{pl:"Nie",ru:"Нет"},{pl:"Proszę",ru:"Пожалуйста"},{pl:"Dziękuję",ru:"Спасибо"},{pl:"Przepraszam",ru:"Извините"},{pl:"Dzień dobry",ru:"Добрый день"},{pl:"Dobry wieczór",ru:"Добрый вечер"},{pl:"Dobranoc",ru:"Спокойной ночи"},{pl:"Cześć",ru:"Привет / Пока"},{pl:"Do widzenia",ru:"До свидания"},{pl:"Pan",ru:"Господин"},{pl:"Pani",ru:"Госпожа"},{pl:"Imię",ru:"Имя"},{pl:"Nazwisko",ru:"Фамилия"},{pl:"Człowiek",ru:"Человек"},{pl:"Kobieta",ru:"Женщина"},{pl:"Mężczyzna",ru:"Мужчина"},{pl:"Dziecko",ru:"Ребенок"},{pl:"Dom",ru:"Дом"},{pl:"Praca",ru:"Работа"} ],
-            [ {pl:"Miasto",ru:"Город"},{pl:"Ulica",ru:"Улица"},{pl:"Samochód",ru:"Машина"},{pl:"Autobus",ru:"Автобус"},{pl:"Pociąg",ru:"Поезд"},{pl:"Bilet",ru:"Билет"},{pl:"Pieniądze",ru:"Деньги"},{pl:"Sklep",ru:"Магазин"},{pl:"Woda",ru:"Вода"},{pl:"Jedzenie",ru:"Еда"},{pl:"Chleb",ru:"Хлеб"},{pl:"Mięso",ru:"Мясо"},{pl:"Mleko",ru:"Молоко"},{pl:"Kawa",ru:"Кофе"},{pl:"Herbata",ru:"Чай"},{pl:"Śniadanie",ru:"Завтрак"},{pl:"Obiad",ru:"Обед"},{pl:"Kolacja",ru:"Ужин"},{pl:"Czas",ru:"Время"},{pl:"Godzina",ru:"Час"} ]
+            [ {pl:"Tak",ru:"Да"},{pl:"Nie",ru:"Нет"},{pl:"Proszę",ru:"Пожалуйста"},{pl:"Dziękuję",ru:"Спасибо"},{pl:"Przepraszam",ru:"Извините"},{pl:"Dzień dobry",ru:"Добрый день"},{pl:"Dobry wieczór",ru:"Добрый вечер"},{pl:"Dobranoc",ru:"Спокойной ночи"},{pl:"Cześć",ru:"Привет / Пока"},{pl:"Do widzenia",ru:"До свидания"},{pl:"Pan",ru:"Господин"},{pl:"Pani",ru:"Госпожа"},{pl:"Imię",ru:"Имя"},{pl:"Nazwisko",ru:"Фамилия"},{pl:"Człowieк",ru:"Человек"},{pl:"Kobieta",ru:"Женщина"},{pl:"Mężczyzna",ru:"Мужчина"},{pl:"Dziecko",ru:"Ребенок"},{pl:"Dom",ru:"Дом"},{pl:"Praca",ru:"Работа"} ],
+            [ {pl:"Miasto",ru:"Город"},{pl:"Ulica",ru:"Улица"},{pl:"Samochód",ru:"Машина"},{pl:"Autobus",ru:"Автобус"},{pl:"Pociąg",ru:"Поезд"},{pl:"Bilet",ru:"Билет"},{pl:"Pieniądze",ru:"Деньги"},{pl:"Sklep",ru:"Магазин"},{pl:"Woda",ru:"Вода"},{pl:"Jedzenie",ru:"Еда"},{pl:"Chleb",ru:"Хлеб"},{pl:"Mięso",ru:"Мясо"},{pl:"Mleko",ru:"Молоко"},{pl:"Kawa",ru:"Кофе"},{pl:"Herbata",ru:"Чай"},{pl:"Śniadanie",ru:"Завтрак"},{pl:"Obiad",ru:"Обед"},{pl:"Kolacja",ru:"Ужин"},{pl:"Czas",ru:"Время"},{pl:"Godzina",ru:"Час"} ],
+            [ {pl:"Rodzina",ru:"Семья"},{pl:"Matka",ru:"Мать"},{pl:"Ojciec",ru:"Отец"},{pl:"Brat",ru:"Брат"},{pl:"Siostra",ru:"Сестра"},{pl:"Babcia",ru:"Бабушка"},{pl:"Dziadek",ru:"Дедушка"},{pl:"Wujek",ru:"Дядя"},{pl:"Ciocia",ru:"Тетя"},{pl:"Syn",ru:"Сын"},{pl:"Córka",ru:"Дочь"},{pl:"Przyjaciel",ru:"Друг"},{pl:"Sąsiad",ru:"Сосед"},{pl:"Chłopak",ru:"Парень"},{pl:"Dziewczyna",ru:"Девушка"},{pl:"Dziadkowie",ru:"Бабушка и дедушка"},{pl:"Rodzice",ru:"Родители"},{pl:"Kuzyn",ru:"Двоюродный брат"},{pl:"Małżeństwo",ru:"Брак"},{pl:"Ślub",ru:"Свадьба"} ],
+            [ {pl:"Dobry",ru:"Хороший"},{pl:"Zły",ru:"Плохой"},{pl:"Duży",ru:"Большой"},{pl:"Mały",ru:"Маленький"},{pl:"Nowy",ru:"Новый"},{pl:"Stary",ru:"Старый"},{pl:"Gorący",ru:"Горячий"},{pl:"Zimny",ru:"Холодный"},{pl:"Szybki",ru:"Быстрый"},{pl:"Wolny",ru:"Медленный / Свободный"},{pl:"Drogi",ru:"Дорогой"},{pl:"Tani",ru:"Дешевый"},{pl:"Czysty",ru:"Чистый"},{pl:"Brudny",ru:"Грязный"},{pl:"Ładny",ru:"Красивый"},{pl:"Brzydki",ru:"Уродливый"},{pl:"Wysoki",ru:"Высокий"},{pl:"Niski",ru:"Низкий"},{pl:"Trudny",ru:"Трудный"},{pl:"Łatwy",ru:"Легкий"} ],
+            [ {pl:"Robić",ru:"Делать"},{pl:"Mówić",ru:"Говорить"},{pl:"Widzieć",ru:"Видеть"},{pl:"Słyszeć",ru:"Слышать"},{pl:"Myśleć",ru:"Думать"},{pl:"Wiedzieć",ru:"Знать"},{pl:"Mieć",ru:"Иметь"},{pl:"Być",ru:"Быть"},{pl:"Chcieć",ru:"Хотеть"},{pl:"Móc",ru:"Мочь"},{pl:"Musieć",ru:"Должен"},{pl:"Iść",ru:"Идти"},{pl:"Jechać",ru:"Ехать"},{pl:"Pracować",ru:"Работать"},{pl:"Grać",ru:"Играть"},{pl:"Czytać",ru:"Читать"},{pl:"Pisać",ru:"Писать"},{pl:"Pić",ru:"Пить"},{pl:"Jeść",ru:"Есть (кушать)"},{pl:"Spać",ru:"Спать"} ]
         ];
 
         const sentencesData = [
@@ -193,18 +220,26 @@
         let levelItems = [];
         let selectedPhraseWords = [];
         let isWaiting = false;
+        let timerInterval;
         let missingWordIndex = -1;
 
-        // ГАРАНТИРОВАННЫЙ ОТКЛИК (БЕЗ СИНЕВЫ)
-        function attachFeedback(el) {
-            const press = () => el.classList.add('pressed');
-            const release = () => el.classList.remove('pressed');
-            el.addEventListener('touchstart', press);
-            el.addEventListener('touchend', release);
-            el.addEventListener('mousedown', press);
-            el.addEventListener('mouseup', release);
-            el.addEventListener('mouseleave', release);
-        }
+        // --- ГЛОБАЛЬНЫЙ ОБРАБОТЧИК НАЖАТИЙ (ДЛЯ ХОВЕРА) ---
+        const interactiveSelectors = '.option-btn, .tile, .mode-btn, .action-btn, .speaker-icon';
+        
+        document.addEventListener('pointerdown', (e) => {
+            const target = e.target.closest(interactiveSelectors);
+            if (target) target.classList.add('is-pressed');
+        });
+        
+        document.addEventListener('pointerup', (e) => {
+            const target = e.target.closest(interactiveSelectors);
+            if (target) target.classList.remove('is-pressed');
+        });
+
+        document.addEventListener('pointercancel', (e) => {
+            const target = e.target.closest(interactiveSelectors);
+            if (target) target.classList.remove('is-pressed');
+        });
 
         async function syncWithCloud() {
             try {
@@ -215,10 +250,15 @@
         }
 
         function switchTab(tab) {
+            clearInterval(timerInterval);
             document.getElementById('game-container').style.display = tab === 'play' ? 'flex' : 'none';
             document.getElementById('stats-page').style.display = tab === 'stats' ? 'flex' : 'none';
-            document.getElementById('tab-play').className = tab === 'play' ? 'tab active' : 'tab';
-            document.getElementById('tab-stats').className = tab === 'stats' ? 'tab active' : 'tab';
+            document.getElementById('message-screen').style.display = 'none';
+            document.getElementById('mistakes-screen').style.display = 'none';
+            
+            document.getElementById('tab-play').classList.toggle('active', tab === 'play');
+            document.getElementById('tab-stats').classList.toggle('active', tab === 'stats');
+
             if (tab === 'stats') { updateStatsUI(); syncWithCloud().then(fetchLeaderboard); }
             else { startLevel(); }
         }
@@ -229,13 +269,15 @@
             document.getElementById('st-words').innerText = stats.words;
             document.getElementById('st-phrases').innerText = stats.phrases;
             document.getElementById('fab-count').innerText = mistakesDb.length;
-            document.getElementById('fab-mistakes').style.display = (mistakesDb.length > 0 && document.getElementById('stats-page').style.display !== 'flex') ? 'flex' : 'none';
+            const isStatsOpen = document.getElementById('stats-page').style.display === 'flex';
+            document.getElementById('fab-mistakes').style.display = (mistakesDb.length > 0 && !isStatsOpen) ? 'flex' : 'none';
         }
 
         function setMode(mode) {
             currentMode = mode;
-            document.querySelectorAll('.mode-btn').forEach(b => { b.classList.remove('active'); attachFeedback(b); });
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
             document.getElementById('btn-' + mode).classList.add('active');
+            document.getElementById('timer-container').style.display = mode === 'sprint' ? 'block' : 'none';
             startLevel();
         }
 
@@ -272,9 +314,7 @@
             
             opts.forEach(o => {
                 const b = document.createElement('button');
-                b.className = 'option-btn';
-                b.innerText = o;
-                attachFeedback(b);
+                b.className = 'option-btn'; b.innerText = o;
                 b.onclick = () => {
                     if (target === 'pl') speakText(o, 'pl-PL');
                     checkWordAnswer(b, o, cur[target], cur);
@@ -287,7 +327,6 @@
             document.getElementById('options-container').style.display = 'none';
             document.getElementById('phrase-builder-ui').style.display = 'flex';
             document.getElementById('word').classList.add('small-font');
-            attachFeedback(document.getElementById('check-phrase-btn'));
 
             const isMissingMode = Math.random() > 0.6;
             selectedPhraseWords = [];
@@ -299,11 +338,13 @@
 
             if (isMissingMode) {
                 missingWordIndex = Math.floor(Math.random() * words.length);
-                document.getElementById('word').innerText = "Вставь пропущенное:";
                 words.forEach((w, i) => {
                     const s = document.createElement('div');
-                    s.className = (i === missingWordIndex) ? 'tile placeholder' : 'tile placed';
-                    s.innerText = (i === missingWordIndex) ? '___' : w;
+                    if (i === missingWordIndex) {
+                        s.className = 'tile placeholder'; s.innerText = ' ';
+                    } else {
+                        s.className = 'tile placed'; s.innerText = w;
+                    }
                     s.id = "slot-" + i;
                     slots.appendChild(s);
                 });
@@ -320,7 +361,6 @@
             shuffle(pool).forEach(w => {
                 const t = document.createElement('div');
                 t.className = 'tile'; t.innerText = w;
-                attachFeedback(t);
                 t.onclick = () => {
                     if (t.classList.contains('used')) return;
                     speakText(w, 'pl-PL');
@@ -368,7 +408,7 @@
 
             if (isCorrect) {
                 isWaiting = true; stats.xp += 5; stats.phrases++; saveStats(); wordIndex++;
-                setTimeout(nextQuestion, 400); // ГОРЯЧЕЕ ПЕРЕКЛЮЧЕНИЕ
+                setTimeout(nextQuestion, 1800); // 1.8с
             } else {
                 showBadCat();
                 const hint = document.getElementById('correct-hint');
@@ -383,12 +423,12 @@
             if (sel === target) {
                 if (btn) btn.classList.add('correct');
                 stats.xp += 1; stats.words++; saveStats(); wordIndex++;
-                setTimeout(nextQuestion, 400); // ГОРЯЧЕЕ ПЕРЕКЛЮЧЕНИЕ
+                setTimeout(nextQuestion, 1800); // 1.8с
             } else {
                 if (btn) btn.classList.add('wrong');
                 showBadCat(); mistakesMade++;
                 if (mistakesMade > 1) setTimeout(() => showMsg("Провал", "Слишком много ошибок", startLevel, false), 800);
-                else { wordIndex++; setTimeout(nextQuestion, 1800); } // ЗАДЕРЖКА ПРИ ОШИБКЕ
+                else { wordIndex++; setTimeout(nextQuestion, 1800); }
             }
         }
 
