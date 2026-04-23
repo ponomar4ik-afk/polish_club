@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Polish Club Pro v3.0</title>
+    <title>Polish Club Pro v3.1</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
@@ -14,7 +14,6 @@
             --text-muted: #64748B;
             --accent: #3B82F6;
             --correct: #10B981;
-            --warning: #F59E0B;
             --error: #FF3B30; 
             --btn-bg: #1E293B;
         }
@@ -35,89 +34,73 @@
         }
 
         /* Табы */
-        .tabs { display: flex; width: 100%; background: #0F172A; border-bottom: 1px solid #1E293B; position: fixed; top: 0; z-index: 10; }
+        .tabs { display: flex; width: 100%; background: #0F172A; border-bottom: 1px solid #1E293B; position: fixed; top: 0; z-index: 100; }
         .tab { flex: 1; padding: 18px 0; text-align: center; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; text-transform: uppercase; }
         .tab.active { color: var(--text-main); border-bottom: 3px solid var(--accent); }
 
         .container { 
-            width: 92%; 
-            max-width: 450px; 
-            text-align: center; 
-            margin-top: 80px; 
-            display: flex; 
-            flex-direction: column; 
-            height: calc(100vh - 100px); 
-            box-sizing: border-box;
-            padding-bottom: 80px;
+            width: 92%; max-width: 450px; text-align: center; margin-top: 80px; 
+            display: flex; flex-direction: column; height: calc(100vh - 100px); 
+            box-sizing: border-box; padding-bottom: 70px;
         }
         
         .mode-tabs { display: flex; width: 100%; gap: 6px; margin-bottom: 15px; flex-shrink: 0; }
-        .mode-btn { flex: 1; background: var(--btn-bg); color: var(--text-muted); border: 1px solid #1E293B; padding: 12px 2px; border-radius: 12px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; cursor: pointer; position: relative; }
+        .mode-btn { flex: 1; background: var(--btn-bg); color: var(--text-muted); border: 1px solid #1E293B; padding: 12px 2px; border-radius: 12px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; cursor: pointer; }
         .mode-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
-        /* ГЛАВНЫЙ ЭФФЕКТ НАЖАТИЯ (БЕЛАЯ ОБВОДКА) */
-        .is-pressed {
-            transform: scale(0.95) !important;
-            box-shadow: inset 0 0 0 3px #FFFFFF !important;
-            transition: none !important;
-        }
+        /* ИНДИКАЦИЯ НАЖАТИЯ */
+        .is-pressed { box-shadow: inset 0 0 0 3px #FFFFFF !important; transform: scale(0.96); }
+        .is-correct { border-color: var(--correct) !important; background: rgba(16, 185, 129, 0.2) !important; color: var(--correct) !important; }
+        .is-wrong { border-color: var(--error) !important; background: rgba(255, 59, 48, 0.2) !important; color: var(--error) !important; animation: shake 0.3s; }
 
         .header-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-shrink: 0; }
         .stats-label { font-size: 0.7rem; color: var(--text-muted); font-weight: bold; }
         .lives { color: var(--error); font-size: 1.1rem; }
 
-        .word-card { background: var(--card-bg); padding: 30px 20px; border-radius: 24px; border: 1px solid #1E293B; margin-bottom: 15px; min-height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; }
-        .word-card h1 { margin: 0; font-size: 1.8rem; font-weight: 700; line-height: 1.2; }
-        .word-card h1.small-font { font-size: 1.4rem; }
-
-        /* Фразы */
-        .sentence-slots { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; min-height: 50px; margin-bottom: 20px; padding: 10px; border-bottom: 2px dashed #1E293B; }
-        .tile { background: var(--btn-bg); border: 1px solid #334155; padding: 12px 16px; border-radius: 12px; font-size: 0.95rem; font-weight: 600; cursor: pointer; }
-        .tile.used { opacity: 0.15; pointer-events: none; }
-        .tile.placed { background: var(--accent); border-color: var(--accent); color: white; }
+        .word-card { background: var(--card-bg); padding: 25px 20px; border-radius: 24px; border: 1px solid #1E293B; margin-bottom: 15px; min-height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; }
+        .word-card h1 { margin: 0; font-size: 1.7rem; font-weight: 700; }
         
-        /* Прозрачный слот для пропусков */
-        .tile.placeholder { 
-            background: transparent !important; 
-            border: 2px dashed rgba(255,255,255,0.2) !important; 
-            color: transparent !important;
-            min-width: 70px;
-        }
+        .speaker-icon { margin-top: 10px; font-size: 1.2rem; cursor: pointer; background: #1E293B; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 
-        .correct-hint-box { display: none; margin-top: 16px; margin-bottom: 16px; padding: 15px; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--correct); border-radius: 12px; color: var(--correct); font-weight: 600; font-size: 0.85rem; text-align: center; }
+        /* ФРАЗЫ */
+        .sentence-slots { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; min-height: 45px; margin-bottom: 15px; padding: 10px; border-bottom: 1px dashed #1E293B; }
+        .tile { background: var(--btn-bg); border: 1px solid #334155; padding: 10px 14px; border-radius: 12px; font-size: 0.95rem; font-weight: 600; cursor: pointer; }
+        .tile.used { opacity: 0.1; pointer-events: none; }
+        .tile.placed { background: var(--accent); border-color: var(--accent); }
+        .tile.placeholder { background: transparent !important; border: 2px dashed rgba(255,255,255,0.15) !important; min-width: 60px; color: transparent; }
 
-        .btn-group { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; }
-        button.option-btn { border: 1px solid #1E293B; padding: 18px; border-radius: 15px; font-size: 1.05rem; font-weight: 600; cursor: pointer; background: var(--btn-bg); color: #FFFFFF; width: 100%; }
+        .correct-hint-box { display: none; margin-bottom: 10px; padding: 12px; background: rgba(16, 185, 129, 0.15); border: 1px solid var(--correct); border-radius: 12px; color: var(--correct); font-weight: 600; font-size: 0.85rem; }
+
+        .btn-group { display: flex; flex-direction: column; gap: 10px; flex-grow: 1; }
+        button.option-btn { border: 1px solid #1E293B; padding: 18px; border-radius: 15px; font-size: 1.05rem; font-weight: 600; cursor: pointer; background: var(--btn-bg); color: #FFFFFF; width: 100%; transition: 0.1s; }
         
         .phrase-footer { margin-top: auto; width: 100%; padding-top: 10px; }
-        .action-btn { background: var(--accent); color: #fff; border: none; padding: 22px 30px; border-radius: 18px; font-weight: 800; font-size: 1.2rem; cursor: pointer; width: 100%; }
+        .action-btn { background: var(--accent); color: #fff; border: none; padding: 22px; border-radius: 18px; font-weight: 800; font-size: 1.1rem; cursor: pointer; width: 100%; }
 
-        .fab-mistakes { position: fixed; bottom: 16px; right: 20px; background: var(--error); color: #fff; padding: 16px 24px; border-radius: 35px; font-weight: 800; font-size: 0.9rem; cursor: pointer; z-index: 50; display: none; align-items: center; gap: 8px; box-shadow: 0 8px 25px rgba(255, 59, 48, 0.4); border: none; }
+        /* FAB ОШИБКИ */
+        .fab-mistakes { 
+            position: fixed; bottom: 20px; right: 20px; background: var(--error); color: #fff; 
+            padding: 14px 22px; border-radius: 30px; font-weight: 800; font-size: 0.85rem; 
+            cursor: pointer; z-index: 200; display: none; align-items: center; gap: 8px; 
+            box-shadow: 0 8px 20px rgba(255, 59, 48, 0.4); border: none; 
+        }
 
-        /* Статистика */
         #stats-page { overflow-y: auto; display: none; text-align: left; }
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .stat-box { background: #1E293B; padding: 15px; border-radius: 18px; }
         .stat-box h3 { margin: 0; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; }
         .stat-box .value { font-size: 1.3rem; font-weight: 800; margin-top: 4px; }
 
-        /* Исправленный отступ */
-        .leaderboard-title { margin: 30px 0 40px 0; font-size: 1rem; color: var(--accent); text-transform: uppercase; font-weight: 900; text-align: center; letter-spacing: 2px; }
-        .leader-row { display: flex; justify-content: space-between; padding: 15px; background: rgba(255,255,255,0.04); border-radius: 14px; margin-bottom: 8px; border: 1px solid transparent; }
-        
-        .reset-btn { background: var(--error); padding: 28px; width: 100%; border-radius: 20px; font-size: 1.1rem; margin: 40px 0; border: none; color: #fff; font-weight: 900; }
+        .leaderboard-title { margin: 25px 0 40px 0; font-size: 1rem; color: var(--accent); text-transform: uppercase; font-weight: 900; text-align: center; }
+        .leader-row { display: flex; justify-content: space-between; padding: 14px; background: rgba(255,255,255,0.04); border-radius: 14px; margin-bottom: 8px; }
 
-        #message-screen { display: none; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
-        .msg-cat { width: 180px; border-radius: 25px; margin-bottom: 20px; }
+        #message-screen { display: none; flex-direction: column; align-items: center; justify-content: center; height: 100vh; position: fixed; top:0; left:0; width:100%; background: var(--bg-color); z-index: 1000; }
+        .msg-cat { width: 160px; border-radius: 25px; margin-bottom: 20px; }
 
-        .cat-bad-popup { position: fixed; bottom: 95px; right: 20px; width: 165px; background: var(--card-bg); border-radius: 25px; padding: 12px; border: 2px solid var(--error); transform: translateY(350%); transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 100; pointer-events: none; }
-        .cat-bad-popup.show { transform: translateY(0); }
-        .cat-bad-popup img { width: 100%; border-radius: 15px; }
-
-        .timer-container { width: 100%; height: 6px; background: #0F172A; border-radius: 3px; overflow: hidden; margin-bottom: 15px; display: none; }
+        .timer-container { width: 100%; height: 6px; background: #0F172A; border-radius: 3px; overflow: hidden; margin-bottom: 10px; display: none; }
         .timer-bar { height: 100%; width: 100%; background: var(--correct); }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes shake { 10%, 90% { transform: translateX(-2px); } 20%, 80% { transform: translateX(3px); } }
     </style>
 </head>
 <body>
@@ -141,14 +124,13 @@
         <div class="timer-container" id="timer-container"><div class="timer-bar" id="timer-bar"></div></div>
         
         <div class="word-card">
-            <h1 id="word">Учимся...</h1>
+            <h1 id="word">Загрузка...</h1>
             <div class="speaker-icon" id="speak-btn" onclick="speakCurrent()">🔊</div>
         </div>
 
-        <div id="phrase-builder-ui" style="display:none; flex-grow: 1; display: flex; flex-direction: column;">
+        <div id="phrase-builder-ui" style="display:none; flex-direction: column; flex-grow:1;">
             <div class="sentence-slots" id="slots-container"></div>
-            <div class="btn-group" style="flex-direction:row; flex-wrap:wrap; justify-content:center; gap:8px" id="tiles-container"></div>
-            
+            <div class="btn-group" style="flex-direction:row; flex-wrap:wrap; justify-content:center; gap:8px; align-content: flex-start;" id="tiles-container"></div>
             <div class="phrase-footer">
                 <div class="correct-hint-box" id="correct-hint"></div>
                 <button class="action-btn" id="check-phrase-btn" onclick="checkSentence()">Проверить</button>
@@ -158,8 +140,8 @@
         <div class="btn-group" id="options-container"></div>
     </div>
 
-    <div class="container" id="mistakes-screen" style="display:none">
-        <div class="header-info"><div class="stats-label">ОТРАБОТКА ОШИБОК</div></div>
+    <div class="container" id="mistakes-screen" style="display:none; position:fixed; top:80px; background:var(--bg-color); z-index:150; height: calc(100vh - 80px);">
+        <div class="header-info"><div class="stats-label" id="m-header">ОШИБКИ</div></div>
         <div class="word-card"><h1 id="m-word">...</h1><div class="speaker-icon" onclick="speakMistake()">🔊</div></div>
         <div class="btn-group" id="m-options-container"></div>
         <button class="action-btn" style="background:#334155; margin-top:20px" onclick="closeMistakes()">Выйти</button>
@@ -174,17 +156,16 @@
         </div>
         <div class="leaderboard-title">ТОП ПШЕКОВ 🏆</div>
         <div id="leaderboard-list"></div>
-        <button class="reset-btn" onclick="resetProgress()">СБРОСИТЬ ВЕСЬ ПРОГРЕСС</button>
+        <button class="action-btn" style="background:var(--error); margin-top:40px; opacity:0.3; font-size:0.7rem" onclick="resetProgress()">Сбросить прогресс</button>
     </div>
 
-    <div class="container" id="message-screen">
+    <div id="message-screen">
         <img id="msg-cat-img" src="good.png" class="msg-cat">
         <h2 id="msg-title"></h2>
         <p id="msg-desc"></p>
-        <button class="action-btn" onclick="nextAction()">Продолжить</button>
+        <button class="action-btn" style="width:80%" onclick="nextAction()">Продолжить</button>
     </div>
 
-    <div class="cat-bad-popup" id="cat-bad"><img src="bad.png"></div>
     <div class="fab-mistakes" id="fab-mistakes" onclick="openMistakes()">🔥 Ошибки (<span id="fab-count">0</span>)</div>
 
     <script>
@@ -193,15 +174,14 @@
         const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         const tg = window.Telegram.WebApp;
-        tg.expand();
         const userName = tg.initDataUnsafe?.user?.first_name || "Панама";
 
         const levelsData = [
-            [ {pl:"Tak",ru:"Да"},{pl:"Nie",ru:"Нет"},{pl:"Proszę",ru:"Пожалуйста"},{pl:"Dziękuję",ru:"Спасибо"},{pl:"Przepraszam",ru:"Извините"},{pl:"Dzień dobry",ru:"Добрый день"},{pl:"Dobry wieczór",ru:"Добрый вечер"},{pl:"Dobranoc",ru:"Спокойной ночи"},{pl:"Cześć",ru:"Привет / Пока"},{pl:"Do widzenia",ru:"До свидания"},{pl:"Pan",ru:"Господин"},{pl:"Pani",ru:"Госпожа"},{pl:"Imię",ru:"Имя"},{pl:"Nazwisko",ru:"Фамилия"},{pl:"Człowieк",ru:"Человек"},{pl:"Kobieta",ru:"Женщина"},{pl:"Mężczyzna",ru:"Мужчина"},{pl:"Dziecko",ru:"Ребенок"},{pl:"Dom",ru:"Дом"},{pl:"Praca",ru:"Работа"} ],
+            [ {pl:"Tak",ru:"Да"},{pl:"Nie",ru:"Нет"},{pl:"Proszę",ru:"Пожалуйста"},{pl:"Dziękuję",ru:"Спасибо"},{pl:"Przepraszam",ru:"Извините"},{pl:"Dzień dobry",ru:"Добрый день"},{pl:"Dobry wieczór",ru:"Добрый вечер"},{pl:"Dobranoc",ru:"Спокойной ночи"},{pl:"Cześć",ru:"Привет / Пока"},{pl:"Do widzenia",ru:"До свидания"},{pl:"Pan",ru:"Господин"},{pl:"Pani",ru:"Госпожа"},{pl:"Imię",ru:"Имя"},{pl:"Nazwisko",ru:"Фамилия"},{pl:"Człowiek",ru:"Человек"},{pl:"Kobieta",ru:"Женщина"},{pl:"Mężczyzna",ru:"Мужчина"},{pl:"Dziecko",ru:"Ребенок"},{pl:"Dom",ru:"Дом"},{pl:"Praca",ru:"Работа"} ],
             [ {pl:"Miasto",ru:"Город"},{pl:"Ulica",ru:"Улица"},{pl:"Samochód",ru:"Машина"},{pl:"Autobus",ru:"Автобус"},{pl:"Pociąg",ru:"Поезд"},{pl:"Bilet",ru:"Билет"},{pl:"Pieniądze",ru:"Деньги"},{pl:"Sklep",ru:"Магазин"},{pl:"Woda",ru:"Вода"},{pl:"Jedzenie",ru:"Еда"},{pl:"Chleb",ru:"Хлеб"},{pl:"Mięso",ru:"Мясо"},{pl:"Mleko",ru:"Молоко"},{pl:"Kawa",ru:"Кофе"},{pl:"Herbata",ru:"Чай"},{pl:"Śniadanie",ru:"Завтрак"},{pl:"Obiad",ru:"Обед"},{pl:"Kolacja",ru:"Ужин"},{pl:"Czas",ru:"Время"},{pl:"Godzina",ru:"Час"} ],
             [ {pl:"Rodzina",ru:"Семья"},{pl:"Matka",ru:"Мать"},{pl:"Ojciec",ru:"Отец"},{pl:"Brat",ru:"Брат"},{pl:"Siostra",ru:"Сестра"},{pl:"Babcia",ru:"Бабушка"},{pl:"Dziadek",ru:"Дедушка"},{pl:"Wujek",ru:"Дядя"},{pl:"Ciocia",ru:"Тетя"},{pl:"Syn",ru:"Сын"},{pl:"Córka",ru:"Дочь"},{pl:"Przyjaciel",ru:"Друг"},{pl:"Sąsiad",ru:"Сосед"},{pl:"Chłopak",ru:"Парень"},{pl:"Dziewczyna",ru:"Девушка"},{pl:"Dziadkowie",ru:"Бабушка и дедушка"},{pl:"Rodzice",ru:"Родители"},{pl:"Kuzyn",ru:"Двоюродный брат"},{pl:"Małżeństwo",ru:"Брак"},{pl:"Ślub",ru:"Свадьба"} ],
-            [ {pl:"Dobry",ru:"Хороший"},{pl:"Zły",ru:"Плохой"},{pl:"Duży",ru:"Большой"},{pl:"Mały",ru:"Маленький"},{pl:"Nowy",ru:"Новый"},{pl:"Stary",ru:"Старый"},{pl:"Gorący",ru:"Горячий"},{pl:"Zimny",ru:"Холодный"},{pl:"Szybki",ru:"Быстрый"},{pl:"Wolny",ru:"Медленный / Свободный"},{pl:"Drogi",ru:"Дорогой"},{pl:"Tani",ru:"Дешевый"},{pl:"Czysty",ru:"Чистый"},{pl:"Brudny",ru:"Грязный"},{pl:"Ładny",ru:"Красивый"},{pl:"Brzydki",ru:"Уродливый"},{pl:"Wysoki",ru:"Высокий"},{pl:"Niski",ru:"Низкий"},{pl:"Trudny",ru:"Трудный"},{pl:"Łatwy",ru:"Легкий"} ],
-            [ {pl:"Robić",ru:"Делать"},{pl:"Mówić",ru:"Говорить"},{pl:"Widzieć",ru:"Видеть"},{pl:"Słyszeć",ru:"Слышать"},{pl:"Myśleć",ru:"Думать"},{pl:"Wiedzieć",ru:"Знать"},{pl:"Mieć",ru:"Иметь"},{pl:"Być",ru:"Быть"},{pl:"Chcieć",ru:"Хотеть"},{pl:"Móc",ru:"Мочь"},{pl:"Musieć",ru:"Должен"},{pl:"Iść",ru:"Идти"},{pl:"Jechać",ru:"Ехать"},{pl:"Pracować",ru:"Работать"},{pl:"Grać",ru:"Играть"},{pl:"Czytać",ru:"Читать"},{pl:"Pisać",ru:"Писать"},{pl:"Pić",ru:"Пить"},{pl:"Jeść",ru:"Есть (кушать)"},{pl:"Spać",ru:"Спать"} ]
+            [ {pl:"Dobry",ru:"Хороший"},{pl:"Zły",ru:"Плохой"},{pl:"Duży",ru:"Большой"},{pl:"Maлы",ru:"Маленький"},{pl:"Nowy",ru:"Новый"},{pl:"Stary",ru:"Старый"},{pl:"Gorący",ru:"Горячий"},{pl:"Zimny",ru:"Холодный"},{pl:"Szybki",ru:"Быстрый"},{pl:"Wolny",ru:"Медленный / Свободный"},{pl:"Drogi",ru:"Дорогой"},{pl:"Tani",ru:"Дешевый"},{pl:"Czysty",ru:"Чистый"},{pl:"Brudny",ru:"Грязный"},{pl:"Ładny",ru:"Красивый"},{pl:"Brzydki",ru:"Уродливый"},{pl:"Wysoki",ru:"Высокий"},{pl:"Niski",ru:"Низкий"},{pl:"Trudny",ru:"Трудный"},{pl:"Łatwy",ru:"Легкий"} ],
+            [ {pl:"Robić",ru:"Делать"},{pl:"Mówić",ru:"Говорить"},{pl:"Widzieć",ru:"Видеть"},{pl:"Słyszeć",ru:"Слышать"},{pl:"Myśleć",ru:"Думать"},{pl:"Wiedzieć",ru:"Знать"},{pl:"Mieć",ru:"Иметь"},{pl:"Być",ru:"Быть"},{pl:"Chcieć",ru:"Хотеть"},{pl:"Móc",ru:"Мочь"},{pl:"Musieć",ru:"Должен"},{pl:"Iść",ru:"Идти"},{pl:"Jechać",ru:"Ехать"},{pl:"Pracować",ru:"Работать"},{pl:"Grać",ru:"Играть"},{pl:"Czyтать",ru:"Читать"},{pl:"Pisać",ru:"Писать"},{pl:"Pić",ru:"Пить"},{pl:"Jeść",ru:"Есть (кушать)"},{pl:"Spać",ru:"Спать"} ]
         ];
 
         const sentencesData = [
@@ -214,31 +194,22 @@
         let stats = JSON.parse(localStorage.getItem('pl_stats_v2')) || { xp: 0, words: 0, phrases: 0 };
         let mistakesDb = JSON.parse(localStorage.getItem('pl_mistakes_v2')) || [];
         let currentLevel = parseInt(localStorage.getItem('pl_level')) || 0;
+        
         let mistakesMade = 0;
-        let wordIndex = 0;
+        let currentQueue = []; // Очередь вопросов для текущего круга
         let currentMode = 'classic';
-        let levelItems = [];
-        let selectedPhraseWords = [];
         let isWaiting = false;
         let timerInterval;
         let missingWordIndex = -1;
+        let selectedPhraseWords = [];
 
-        // --- ГЛОБАЛЬНЫЙ ОБРАБОТЧИК НАЖАТИЙ (ДЛЯ ХОВЕРА) ---
-        const interactiveSelectors = '.option-btn, .tile, .mode-btn, .action-btn, .speaker-icon';
-        
-        document.addEventListener('pointerdown', (e) => {
-            const target = e.target.closest(interactiveSelectors);
-            if (target) target.classList.add('is-pressed');
+        // ТАКТИЛЬНЫЙ ОТКЛИК ЧЕРЕЗ ДЕЛЕГИРОВАНИЕ
+        document.addEventListener('pointerdown', e => {
+            const btn = e.target.closest('.option-btn, .tile, .mode-btn, .action-btn, .speaker-icon');
+            if (btn) btn.classList.add('is-pressed');
         });
-        
-        document.addEventListener('pointerup', (e) => {
-            const target = e.target.closest(interactiveSelectors);
-            if (target) target.classList.remove('is-pressed');
-        });
-
-        document.addEventListener('pointercancel', (e) => {
-            const target = e.target.closest(interactiveSelectors);
-            if (target) target.classList.remove('is-pressed');
+        document.addEventListener('pointerup', e => {
+            document.querySelectorAll('.is-pressed').forEach(el => el.classList.remove('is-pressed'));
         });
 
         async function syncWithCloud() {
@@ -255,10 +226,8 @@
             document.getElementById('stats-page').style.display = tab === 'stats' ? 'flex' : 'none';
             document.getElementById('message-screen').style.display = 'none';
             document.getElementById('mistakes-screen').style.display = 'none';
-            
             document.getElementById('tab-play').classList.toggle('active', tab === 'play');
             document.getElementById('tab-stats').classList.toggle('active', tab === 'stats');
-
             if (tab === 'stats') { updateStatsUI(); syncWithCloud().then(fetchLeaderboard); }
             else { startLevel(); }
         }
@@ -269,8 +238,8 @@
             document.getElementById('st-words').innerText = stats.words;
             document.getElementById('st-phrases').innerText = stats.phrases;
             document.getElementById('fab-count').innerText = mistakesDb.length;
-            const isStatsOpen = document.getElementById('stats-page').style.display === 'flex';
-            document.getElementById('fab-mistakes').style.display = (mistakesDb.length > 0 && !isStatsOpen) ? 'flex' : 'none';
+            const inStats = document.getElementById('stats-page').style.display === 'flex';
+            document.getElementById('fab-mistakes').style.display = (mistakesDb.length > 0 && !inStats) ? 'flex' : 'none';
         }
 
         function setMode(mode) {
@@ -282,35 +251,45 @@
         }
 
         function startLevel() {
-            wordIndex = 0; mistakesMade = 0;
-            levelItems = currentMode === 'phrases' ? shuffle([...sentencesData]).slice(0, 10) : shuffle([...levelsData[currentLevel]]);
-            document.getElementById('phrase-builder-ui').style.display = 'none';
-            document.getElementById('options-container').style.display = 'flex';
+            mistakesMade = 0;
+            const baseData = currentMode === 'phrases' ? sentencesData : levelsData[currentLevel];
+            currentQueue = shuffle([...baseData]);
             document.getElementById('message-screen').style.display = 'none';
             document.getElementById('game-container').style.display = 'flex';
             nextQuestion();
         }
 
         function nextQuestion() {
+            if (currentQueue.length === 0) {
+                currentLevel++;
+                localStorage.setItem('pl_level', currentLevel);
+                saveStats();
+                showMsg("Победа!", `Уровень пройден! +${currentMode === 'phrases' ? 50 : 20} XP`, startLevel, true);
+                return;
+            }
             isWaiting = false;
             document.getElementById('correct-hint').style.display = 'none';
-            const cur = levelItems[wordIndex];
+            const cur = currentQueue[0];
+            
             if (currentMode === 'phrases') renderPhrasesMode(cur);
             else renderWordsMode(cur);
             updateHeader();
         }
 
         function renderWordsMode(cur) {
+            document.getElementById('options-container').style.display = 'flex';
+            document.getElementById('phrase-builder-ui').style.display = 'none';
             const askRu = currentMode === 'audio' ? false : Math.random() > 0.5;
             const wordEl = document.getElementById('word');
             wordEl.innerText = currentMode === 'audio' ? '🎧' : (askRu ? cur.ru : cur.pl);
+            wordEl.dataset.val = (currentMode === 'audio' || !askRu) ? cur.pl : cur.ru;
+            wordEl.dataset.lang = (currentMode === 'audio' || !askRu) ? 'pl-PL' : 'ru-RU';
             if (currentMode === 'audio' || !askRu) speakText(cur.pl, 'pl-PL');
             
             const container = document.getElementById('options-container');
             container.innerHTML = '';
             let target = askRu ? 'pl' : 'ru';
-            let wr = shuffle(allWordsFlat.filter(w => w[target] !== cur[target])).slice(0, 2);
-            let opts = shuffle([cur[target], wr[0][target], wr[1][target]]);
+            let opts = shuffle([cur[target], ...shuffle(allWordsFlat.filter(w => w[target] !== cur[target])).slice(0, 2).map(x => x[target])]);
             
             opts.forEach(o => {
                 const b = document.createElement('button');
@@ -321,30 +300,28 @@
                 };
                 container.appendChild(b);
             });
+            if (currentMode === 'sprint') startSprintTimer(cur, target);
         }
 
         function renderPhrasesMode(cur) {
             document.getElementById('options-container').style.display = 'none';
-            document.getElementById('phrase-builder-ui').style.display = 'flex';
-            document.getElementById('word').classList.add('small-font');
-
-            const isMissingMode = Math.random() > 0.6;
-            selectedPhraseWords = [];
+            const ui = document.getElementById('phrase-builder-ui');
+            ui.style.display = 'flex';
             const slots = document.getElementById('slots-container');
             const tiles = document.getElementById('tiles-container');
             slots.innerHTML = ''; tiles.innerHTML = '';
+            selectedPhraseWords = [];
 
+            const isMissing = Math.random() > 0.6;
             const words = cur.pl.replace(/[.?!,]/g, '').split(' ');
 
-            if (isMissingMode) {
+            if (isMissing) {
                 missingWordIndex = Math.floor(Math.random() * words.length);
+                document.getElementById('word').innerText = "Вставь слово:";
                 words.forEach((w, i) => {
                     const s = document.createElement('div');
-                    if (i === missingWordIndex) {
-                        s.className = 'tile placeholder'; s.innerText = ' ';
-                    } else {
-                        s.className = 'tile placed'; s.innerText = w;
-                    }
+                    s.className = (i === missingWordIndex) ? 'tile placeholder' : 'tile placed';
+                    s.innerText = (i === missingWordIndex) ? '___' : w;
                     s.id = "slot-" + i;
                     slots.appendChild(s);
                 });
@@ -365,8 +342,7 @@
                     if (t.classList.contains('used')) return;
                     speakText(w, 'pl-PL');
                     t.classList.add('used');
-                    if (isMissing) fillMissingSlot(w, t);
-                    else addWordToSentence(w, t);
+                    if (isMissing) fillMissingSlot(w, t); else addWordToSentence(w, t);
                 };
                 container.appendChild(t);
             });
@@ -378,8 +354,7 @@
                 const old = selectedPhraseWords[missingWordIndex];
                 document.querySelectorAll('.tile.used').forEach(tile => { if(tile.innerText === old) tile.classList.remove('used'); });
             }
-            slot.innerText = word;
-            slot.classList.remove('placeholder'); slot.classList.add('placed');
+            slot.innerText = word; slot.classList.remove('placeholder'); slot.classList.add('placed');
             selectedPhraseWords[missingWordIndex] = word;
         }
 
@@ -388,13 +363,12 @@
             const s = document.createElement('div');
             s.className = 'tile placed'; s.innerText = word;
             s.onclick = () => { s.remove(); tileRef.classList.remove('used'); selectedPhraseWords = selectedPhraseWords.filter(x => x !== word); };
-            slots.appendChild(s);
-            selectedPhraseWords.push(word);
+            slots.appendChild(s); selectedPhraseWords.push(word);
         }
 
         function checkSentence() {
             if (isWaiting) return;
-            const cur = levelItems[wordIndex];
+            const cur = currentQueue[0];
             const targetRaw = cur.pl.replace(/[.?!,]/g, '').split(' ');
             let isCorrect = false;
 
@@ -407,43 +381,97 @@
             }
 
             if (isCorrect) {
-                isWaiting = true; stats.xp += 5; stats.phrases++; saveStats(); wordIndex++;
-                setTimeout(nextQuestion, 1800); // 1.8с
+                isWaiting = true; stats.xp += 5; stats.phrases++; saveStats(); currentQueue.shift();
+                setTimeout(nextQuestion, 300); // Турбо-переход
             } else {
-                showBadCat();
                 const hint = document.getElementById('correct-hint');
                 hint.innerText = "Правильно: " + cur.pl; hint.style.display = 'block';
-                mistakesMade++;
-                if (mistakesMade > 2) setTimeout(() => showMsg("Провал", "Попробуй еще раз!", startLevel, false), 1500);
+                addMistake(cur);
+                const item = currentQueue.shift(); currentQueue.push(item); // В конец очереди
+                setTimeout(nextQuestion, 1500); 
             }
         }
 
         function checkWordAnswer(btn, sel, target, curObj) {
             if (isWaiting) return; isWaiting = true;
+            clearInterval(timerInterval);
             if (sel === target) {
-                if (btn) btn.classList.add('correct');
-                stats.xp += 1; stats.words++; saveStats(); wordIndex++;
-                setTimeout(nextQuestion, 1800); // 1.8с
+                if (btn) btn.classList.add('is-correct');
+                stats.xp += 1; stats.words++; saveStats(); currentQueue.shift();
+                setTimeout(nextQuestion, 300); // Турбо-переход
             } else {
-                if (btn) btn.classList.add('wrong');
-                showBadCat(); mistakesMade++;
-                if (mistakesMade > 1) setTimeout(() => showMsg("Провал", "Слишком много ошибок", startLevel, false), 800);
-                else { wordIndex++; setTimeout(nextQuestion, 1800); }
+                if (btn) btn.classList.add('is-wrong');
+                addMistake(curObj);
+                const item = currentQueue.shift(); currentQueue.push(item); // В конец очереди
+                setTimeout(nextQuestion, 1200); // Ошибка — чуть медленнее
             }
         }
 
+        function addMistake(item) {
+            if (!mistakesDb.some(m => m.pl === item.pl)) {
+                mistakesDb.push(item); localStorage.setItem('pl_mistakes_v2', JSON.stringify(mistakesDb)); updateStatsUI();
+            }
+        }
+
+        function openMistakes() {
+            document.getElementById('game-container').style.display = 'none';
+            const screen = document.getElementById('mistakes-screen');
+            screen.style.display = 'flex';
+            currentQueue = shuffle([...mistakesDb]);
+            renderMistakeQuestion();
+        }
+
+        function renderMistakeQuestion() {
+            if (currentQueue.length === 0 || mistakesDb.length === 0) { closeMistakes(); return; }
+            isWaiting = false;
+            const cur = currentQueue[0];
+            document.getElementById('m-word').innerText = cur.pl;
+            speakText(cur.pl, 'pl-PL');
+            const container = document.getElementById('m-options-container');
+            container.innerHTML = '';
+            let opts = shuffle([cur.ru, ...shuffle(allWordsFlat.filter(w => w.ru !== cur.ru)).slice(0, 2).map(x => x.ru)]);
+            opts.forEach(o => {
+                const b = document.createElement('button');
+                b.className = 'option-btn'; b.innerText = o;
+                b.onclick = () => {
+                    if (isWaiting) return; isWaiting = true;
+                    if (o === cur.ru) {
+                        b.classList.add('is-correct');
+                        mistakesDb = mistakesDb.filter(m => m.pl !== cur.pl);
+                        localStorage.setItem('pl_mistakes_v2', JSON.stringify(mistakesDb));
+                        currentQueue.shift(); setTimeout(renderMistakeQuestion, 400);
+                    } else { b.classList.add('is-wrong'); setTimeout(() => { b.classList.remove('is-wrong'); isWaiting = false; }, 600); }
+                    updateStatsUI();
+                };
+                container.appendChild(b);
+            });
+        }
+
+        function closeMistakes() { document.getElementById('mistakes-screen').style.display = 'none'; startLevel(); updateStatsUI(); }
         function saveStats() { localStorage.setItem('pl_stats_v2', JSON.stringify(stats)); updateStatsUI(); if (stats.xp % 5 === 0) syncWithCloud(); }
-        function updateHeader() { document.getElementById('stats-header').innerText = `УРОВЕНЬ ${currentLevel + 1} (${wordIndex}/${levelItems.length})`; document.getElementById('lives').innerText = mistakesMade === 0 ? '🤍🤍' : (mistakesMade === 1 ? '🤍' : '💔'); }
+        function updateHeader() { 
+            const total = currentMode === 'phrases' ? sentencesData.length : levelsData[currentLevel].length;
+            document.getElementById('stats-header').innerText = `УРОВЕНЬ ${currentLevel + 1} (ОСТАЛОСЬ: ${currentQueue.length})`; 
+        }
 
         async function fetchLeaderboard() {
             const { data } = await sb.from('leaderboard').select('*').order('xp', { ascending: false }).limit(10);
             document.getElementById('leaderboard-list').innerHTML = (data || []).map((u, i) => `
-                <div class="leader-row" style="${u.username === userName ? 'border:1.5px solid var(--accent)' : ''}">
+                <div class="leader-row" style="${u.username === userName ? 'border-color:var(--accent); background:rgba(59,130,246,0.1)' : ''}">
                     <span>${i+1}. ${u.username}</span><span class="leader-score">${u.xp || 0} XP</span>
                 </div>`).join('');
         }
 
-        function showBadCat() { const c = document.getElementById('cat-bad'); c.classList.add('show'); setTimeout(() => c.classList.remove('show'), 2000); }
+        function startSprintTimer(cur, target) {
+            let start = Date.now(); let bar = document.getElementById('timer-bar');
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                let p = 100 - ((Date.now() - start) / 7000 * 100);
+                bar.style.width = p + '%';
+                if (p <= 0) { clearInterval(timerInterval); checkWordAnswer(null, '', target, cur); }
+            }, 50);
+        }
+
         function showMsg(t, d, action, isWin) {
             document.getElementById('game-container').style.display = 'none';
             const m = document.getElementById('message-screen'); m.style.display = 'flex';
@@ -452,13 +480,14 @@
             window.nextAction = action;
         }
 
-        function speakText(t, l) {
-            window.speechSynthesis.cancel();
-            const u = new SpeechSynthesisUtterance(t); u.lang = l; u.rate = 0.9; window.speechSynthesis.speak(u);
-        }
-
+        function speakCurrent() { const el = document.getElementById('word'); speakText(el.dataset.val || el.innerText, el.dataset.lang || 'pl-PL'); }
+        function speakMistake() { speakText(document.getElementById('m-word').innerText, 'pl-PL'); }
+        function speakText(t, l) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = l; u.rate = 0.95; window.speechSynthesis.speak(u); }
         function shuffle(a) { return a.sort(() => Math.random() - 0.5); }
-        startLevel(); updateStatsUI();
+        function resetProgress() { if(confirm("Сбросить всё?")) { localStorage.clear(); location.reload(); } }
+
+        startLevel();
+        updateStatsUI();
     </script>
 </body>
 </html>
