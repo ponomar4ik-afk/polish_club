@@ -3,53 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Panamket Pro v3.9</title>
+    <title>Polish Club Pro v3.3</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
         :root {
-            --bg-color: #0B0F19; --card-bg: #151A27; --text-main: #FFFFFF;
-            --text-muted: #64748B; --accent: #3B82F6; --correct: #10B981;
-            --error: #FF3B30; --btn-bg: #1E293B;
+            --bg-color: #0B0F19;
+            --card-bg: #151A27;
+            --text-main: #FFFFFF;
+            --text-muted: #64748B;
+            --accent: #3B82F6;
+            --correct: #10B981;
+            --error: #FF3B30; 
+            --btn-bg: #1E293B;
         }
+
         body {
-            font-family: -apple-system, system-ui, sans-serif;
-            background-color: var(--bg-color); color: var(--text-main);
-            display: flex; flex-direction: column; align-items: center;
-            height: 100vh; margin: 0; overflow: hidden;
-            -webkit-tap-highlight-color: transparent; user-select: none;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            touch-action: manipulation;
         }
+
+        /* Табы */
         .tabs { display: flex; width: 100%; background: #0F172A; border-bottom: 1px solid #1E293B; position: fixed; top: 0; z-index: 100; }
-        .tab { flex: 1; padding: 18px 0; text-align: center; font-size: 0.8rem; font-weight: 600; color: var(--text-muted); border-bottom: 3px solid transparent; text-transform: uppercase; }
+        .tab { flex: 1; padding: 18px 0; text-align: center; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; text-transform: uppercase; }
         .tab.active { color: var(--text-main); border-bottom: 3px solid var(--accent); }
 
-        .container { width: 92%; max-width: 450px; text-align: center; margin-top: 80px; display: flex; flex-direction: column; height: calc(100vh - 80px); box-sizing: border-box; padding-bottom: 40px; }
-        .mode-tabs { display: flex; width: 100%; gap: 6px; margin-bottom: 15px; }
-        .mode-btn { flex: 1; background: var(--btn-bg); color: var(--text-muted); border: 1px solid #1E293B; padding: 12px 2px; border-radius: 12px; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; }
+        .container { 
+            width: 92%; max-width: 450px; text-align: center; margin-top: 80px; 
+            display: flex; flex-direction: column; height: calc(100vh - 100px); 
+            box-sizing: border-box; padding-bottom: 80px;
+        }
+        
+        .mode-tabs { display: flex; width: 100%; gap: 6px; margin-bottom: 15px; flex-shrink: 0; }
+        .mode-btn { flex: 1; background: var(--btn-bg); color: var(--text-muted); border: 1px solid #1E293B; padding: 12px 2px; border-radius: 12px; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; cursor: pointer; }
         .mode-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
-        .word-card { background: var(--card-bg); padding: 25px; border-radius: 24px; border: 1px solid #1E293B; margin-bottom: 15px; }
-        .word-card h1 { margin: 0; font-size: 1.7rem; }
+        /* ЭФФЕКТ НАЖАТИЯ (БЕЛАЯ ОБВОДКА) */
+        .is-pressed { 
+            box-shadow: inset 0 0 0 3px #FFFFFF !important; 
+            transform: scale(0.96); 
+            transition: none !important;
+        }
         
-        .interest-item { display: flex; align-items: center; background: var(--card-bg); padding: 15px; border-radius: 15px; margin-bottom: 10px; border: 1px solid #1E293B; width: 100%; box-sizing: border-box; }
-        .interest-item input { width: 22px; height: 22px; margin-right: 15px; }
+        .is-correct { border-color: var(--correct) !important; background: rgba(16, 185, 129, 0.2) !important; color: var(--correct) !important; }
+        .is-wrong { border-color: var(--error) !important; background: rgba(255, 59, 48, 0.2) !important; color: var(--error) !important; animation: shake 0.3s; }
+
+        .header-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-shrink: 0; }
+        .stats-label { font-size: 0.7rem; color: var(--text-muted); font-weight: bold; }
+        .lives { color: var(--error); font-size: 1.1rem; }
+
+        .word-card { background: var(--card-bg); padding: 25px 20px; border-radius: 24px; border: 1px solid #1E293B; margin-bottom: 15px; min-height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; }
+        .word-card h1 { margin: 0; font-size: 1.7rem; font-weight: 700; }
         
-        .btn-group { display: flex; flex-direction: column; gap: 10px; width: 100%; }
-        .option-btn { border: 1px solid #1E293B; padding: 18px; border-radius: 15px; font-size: 1rem; font-weight: 600; background: var(--btn-bg); color: #FFF; }
-        .is-correct { border-color: var(--correct)!important; background: rgba(16,185,129,0.2)!important; }
-        .is-wrong { border-color: var(--error)!important; background: rgba(255,59,48,0.2)!important; }
+        .speaker-icon { margin-top: 10px; font-size: 1.2rem; cursor: pointer; background: #1E293B; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+        /* ФРАЗЫ */
+        .sentence-slots { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; min-height: 45px; margin-bottom: 15px; padding: 10px; border-bottom: 1px dashed #1E293B; }
+        .tile { background: var(--btn-bg); border: 1px solid #334155; padding: 10px 14px; border-radius: 12px; font-size: 0.95rem; font-weight: 600; cursor: pointer; }
+        .tile.used { opacity: 0.15; pointer-events: none; }
+        .tile.placed { background: var(--accent); border-color: var(--accent); color: white; }
+        .tile.placeholder { background: transparent !important; border: 2px dashed rgba(255,255,255,0.15) !important; min-width: 70px; color: transparent; pointer-events: none; }
+
+        .correct-hint-box { display: none; margin-bottom: 10px; padding: 12px; background: rgba(16, 185, 129, 0.15); border: 1px solid var(--correct); border-radius: 12px; color: var(--correct); font-weight: 600; font-size: 0.85rem; }
+
+        .btn-group { display: flex; flex-direction: column; gap: 10px; flex-grow: 1; }
+        button.option-btn { border: 1px solid #1E293B; padding: 18px; border-radius: 15px; font-size: 1.05rem; font-weight: 600; cursor: pointer; background: var(--btn-bg); color: #FFFFFF; width: 100%; transition: 0.1s; }
         
-        .action-btn { background: var(--accent); color: #fff; border: none; padding: 20px; border-radius: 18px; font-weight: 800; font-size: 1.1rem; width: 100%; margin-top: 10px; }
-        
-        #message-screen { display: none; flex-direction: column; align-items: center; justify-content: center; height: 100vh; position: fixed; top:0; left:0; width:100%; background: var(--bg-color); z-index: 1000; }
+        .phrase-footer { margin-top: auto; width: 100%; padding-top: 10px; }
+        .action-btn { background: var(--accent); color: #fff; border: none; padding: 22px 30px; border-radius: 18px; font-weight: 800; font-size: 1.1rem; cursor: pointer; width: 100%; }
+
+        /* FAB ОШИБКИ */
+        .fab-mistakes { 
+            position: fixed; bottom: 20px; right: 20px; background: var(--error); color: #fff; 
+            padding: 14px 22px; border-radius: 30px; font-weight: 800; font-size: 0.85rem; 
+            cursor: pointer; z-index: 200; display: none; align-items: center; gap: 8px; 
+            box-shadow: 0 8px 20px rgba(255, 59, 48, 0.4); border: none; 
+        }
+
+        #stats-page { overflow-y: auto; display: none; text-align: left; }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .stat-box { background: #1E293B; padding: 15px; border-radius: 18px; }
+        .stat-box h3 { margin: 0; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; }
+        .stat-box .value { font-size: 1.3rem; font-weight: 800; margin-top: 4px; }
+
+        .leaderboard-title { margin: 25px 0 40px 0; font-size: 1rem; color: var(--accent); text-transform: uppercase; font-weight: 900; text-align: center; }
+        .leader-row { display: flex; justify-content: space-between; padding: 14px; background: rgba(255,255,255,0.04); border-radius: 14px; margin-bottom: 8px; }
+
+        #message-screen { 
+            display: none; flex-direction: column; align-items: center; justify-content: center; 
+            height: 100vh; position: fixed; top:0; left:0; width:100%; 
+            background: var(--bg-color); z-index: 1000; 
+        }
+        .msg-cat { width: 160px; border-radius: 25px; margin-bottom: 20px; }
+
+        .timer-container { width: 100%; height: 6px; background: #0F172A; border-radius: 3px; overflow: hidden; margin-bottom: 10px; display: none; }
+        .timer-bar { height: 100%; width: 100%; background: var(--correct); }
+
         @keyframes shake { 10%, 90% { transform: translateX(-2px); } 20%, 80% { transform: translateX(3px); } }
     </style>
 </head>
 <body>
 
     <div class="tabs">
-        <div class="tab active" onclick="location.reload()">Прогресс</div>
-        <div class="tab" style="opacity: 0.5">Статистика</div>
+        <div class="tab active" id="tab-play" onclick="switchTab('play')">Прогресс</div>
+        <div class="tab" id="tab-stats" onclick="switchTab('stats')">Статистика</div>
     </div>
 
     <div class="container" id="game-container">
@@ -57,117 +124,358 @@
             <button class="mode-btn active" id="btn-classic" onclick="setMode('classic')">Слова</button>
             <button class="mode-btn" id="btn-phrases" onclick="setMode('phrases')">Фразы</button>
             <button class="mode-btn" id="btn-audio" onclick="setMode('audio')">Аудио</button>
-            <button class="mode-btn" style="background: rgba(59, 130, 246, 0.2);" id="btn-interests" onclick="setMode('interests')">🎯 Темы</button>
+            <button class="mode-btn" id="btn-sprint" onclick="setMode('sprint')">Спринт</button>
+        </div>
+        <div class="header-info">
+            <div class="stats-label" id="stats-header">УРОВЕНЬ 1</div>
+            <div class="lives" id="lives">🤍🤍</div>
+        </div>
+        <div class="timer-container" id="timer-container"><div class="timer-bar" id="timer-bar"></div></div>
+        
+        <div class="word-card">
+            <h1 id="word">Учимся...</h1>
+            <div class="speaker-icon" id="speak-btn" onclick="speakCurrent()">🔊</div>
         </div>
 
-        <div id="main-game-ui">
-            <div style="display:flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.7rem; color: var(--text-muted);">
-                <div id="stats-header">ЗАГРУЗКА...</div>
-                <div>🤍🤍</div>
+        <div id="phrase-builder-ui" style="display:none; flex-direction: column; flex-grow:1;">
+            <div class="sentence-slots" id="slots-container"></div>
+            <div class="btn-group" style="flex-direction:row; flex-wrap:wrap; justify-content:center; gap:8px; align-content: flex-start;" id="tiles-container"></div>
+            <div class="phrase-footer">
+                <div class="correct-hint-box" id="correct-hint"></div>
+                <button class="action-btn" id="check-phrase-btn" onclick="checkSentence()">Проверить</button>
             </div>
-            <div class="word-card">
-                <h1 id="word">...</h1>
-                <div onclick="speakCurrent()" style="margin-top:15px; cursor:pointer; background:#1E293B; width:40px; height:40px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;">🔊</div>
-            </div>
-            <div class="btn-group" id="options-container"></div>
-            <button id="exit-interests-btn" onclick="setMode('interests')" style="display:none; background:none; border:none; color:var(--text-muted); margin-top:20px; font-weight:bold;">← К ВЫБОРУ ТЕМ</button>
         </div>
 
-        <div id="interests-setup" style="display:none; flex-direction:column; width:100%;">
-            <h2 style="font-size:1.1rem">Выбери темы сленга:</h2>
-            <div class="interest-item"><input type="checkbox" id="cat-auto"><label for="cat-auto">🏎 Автоспорт (100 слов)</label></div>
-            <div class="interest-item"><input type="checkbox" id="cat-mma"><label for="cat-mma">🥊 Бои (MMA)</label></div>
-            <button class="action-btn" onclick="saveAndStartInterests()">Начать обучение 🚀</button>
+        <div class="btn-group" id="options-container"></div>
+    </div>
+
+    <div class="container" id="mistakes-screen" style="display:none; position:fixed; top:80px; background:var(--bg-color); z-index:150; height: calc(100vh - 80px);">
+        <div class="header-info"><div class="stats-label">ОТРАБОТКА ОШИБОК</div></div>
+        <div class="word-card"><h1 id="m-word">...</h1><div class="speaker-icon" onclick="speakMistake()">🔊</div></div>
+        <div class="btn-group" id="m-options-container"></div>
+        <button class="action-btn" style="background:#334155; margin-top:20px" onclick="closeMistakes()">Выйти</button>
+    </div>
+
+    <div class="container" id="stats-page">
+        <div class="stat-grid">
+            <div class="stat-box"><h3>Опыт</h3><p id="st-xp" class="value">0 XP</p></div>
+            <div class="stat-box"><h3>Уровень</h3><p id="st-level" class="value">1</p></div>
+            <div class="stat-box"><h3>Слов</h3><p id="st-words" class="value">0</p></div>
+            <div class="stat-box"><h3>Фраз</h3><p id="st-phrases" class="value">0</p></div>
         </div>
+        <div class="leaderboard-title">ТОП ПШЕКОВ 🏆</div>
+        <div id="leaderboard-list"></div>
+        <button class="action-btn" style="background:var(--error); margin-top:40px; opacity:0.3; font-size:0.7rem" onclick="resetProgress()">Сбросить прогресс</button>
     </div>
 
     <div id="message-screen">
-        <h2 id="msg-title">Победа!</h2>
-        <button class="action-btn" style="width:80%" onclick="location.reload()">Дальше</button>
+        <img id="msg-cat-img" src="good.png" class="msg-cat">
+        <h2 id="msg-title"></h2>
+        <p id="msg-desc"></p>
+        <button class="action-btn" id="msg-btn" style="width:80%" onclick="handleMessageClick()">Продолжить</button>
     </div>
 
+    <div class="fab-mistakes" id="fab-mistakes" onclick="openMistakes()">🔥 Ошибки (<span id="fab-count">0</span>)</div>
+
     <script>
+        const SUPABASE_URL = 'https://lftbwacoprombmrctcaq.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_6G6vug4fg8regvaZm0wnpQ_aCcjqtfs';
+        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
         const tg = window.Telegram.WebApp;
-        tg.ready();
-        tg.expand();
+        const userName = tg.initDataUnsafe?.user?.first_name || "Панама";
 
         const dictionary = [
-            {pl:"Tak",ru:"Да"},{pl:"Nie",ru:"Нет"},{pl:"Dziękuję",ru:"Спасибо"},
-            {pl:"Gleba", ru:"Заниженная подвеска", cat:"auto"}, {pl:"Upalać", ru:"Наваливать", cat:"auto"}, {pl:"Marchewy", ru:"Пламя из выхлопа", cat:"auto"},
-            {pl:"Nokaut", ru:"Нокаут", cat:"mma"}, {pl:"Garda", ru:"Защита", cat:"mma"}
+            {pl:"Tak",ru:"Да"},{pl:"Nie",ru:"Нет"},{pl:"Proszę",ru:"Пожалуйста"},{pl:"Dziękuję",ru:"Спасибо"},{pl:"Przepraszam",ru:"Извините"},{pl:"Dzień dobry",ru:"Добрый день"},{pl:"Dobry wieczór",ru:"Добрый вечер"},{pl:"Dobranoc",ru:"Спокойной ночи"},{pl:"Cześć",ru:"Привет / Пока"},{pl:"Do widzenia",ru:"До свидания"},
+            {pl:"Pan",ru:"Господин"},{pl:"Pani",ru:"Госпожа"},{pl:"Imię",ru:"Имя"},{pl:"Nazwisko",ru:"Фамилия"},{pl:"Człowiek",ru:"Человек"},{pl:"Kobieta",ru:"Женщина"},{pl:"Mężczyzna",ru:"Мужчина"},{pl:"Dziecko",ru:"Ребенок"},{pl:"Dom",ru:"Дом"},{pl:"Praca",ru:"Работа"},
+            {pl:"Miasto",ru:"Город"},{pl:"Ulica",ru:"Улица"},{pl:"Samochód",ru:"Машина"},{pl:"Autobus",ru:"Автобус"},{pl:"Pociąg",ru:"Поезд"},{pl:"Bilet",ru:"Билет"},{pl:"Pieniądze",ru:"Деньги"},{pl:"Sklep",ru:"Магазин"},{pl:"Woda",ru:"Вода"},{pl:"Jedzenie",ru:"Еда"},
+            {pl:"Chleb",ru:"Хлеб"},{pl:"Mięso",ru:"Мясо"},{pl:"Mleko",ru:"Молоко"},{pl:"Kawa",ru:"Кофе"},{pl:"Herbata",ru:"Чай"},{pl:"Śniadanie",ru:"Завтрак"},{pl:"Obiad",ru:"Обед"},{pl:"Kolacja",ru:"Ужин"},{pl:"Czas",ru:"Время"},{pl:"Godzina",ru:"Час"},
+            {pl:"Rodzina",ru:"Семья"},{pl:"Matka",ru:"Мать"},{pl:"Ojciec",ru:"Отец"},{pl:"Brat",ru:"Брат"},{pl:"Siostra",ru:"Сестра"},{pl:"Babcia",ru:"Бабушка"},{pl:"Dziadek",ru:"Дедушка"},{pl:"Wujek",ru:"Дядя"},{pl:"Ciocia",ru:"Тетя"},{pl:"Syn",ru:"Сын"},
+            {pl:"Córka",ru:"Дочь"},{pl:"Przyjaciel",ru:"Друг"},{pl:"Sąsiad",ru:"Сосед"},{pl:"Chłopak",ru:"Парень"},{pl:"Dziewczyna",ru:"Девушка"},{pl:"Dziadkowie",ru:"Бабушка и дедушка"},{pl:"Rodzice",ru:"Родители"},{pl:"Kuzyn",ru:"Двоюродный брат"},{pl:"Małżeństwo",ru:"Брак"},{pl:"Ślub",ru:"Свадьба"},
+            {pl:"Dobry",ru:"Хороший"},{pl:"Zły",ru:"Плохой"},{pl:"Duży",ru:"Большой"},{pl:"Mały",ru:"Маленький"},{pl:"Nowy",ru:"Новый"},{pl:"Stary",ru:"Старый"},{pl:"Gorący",ru:"Горячий"},{pl:"Zimny",ru:"Холодный"},{pl:"Szybki",ru:"Быстрый"},{pl:"Wolny",ru:"Медленный / Свободный"},
+            {pl:"Drogi",ru:"Дорогой"},{pl:"Tani",ru:"Дешевый"},{pl:"Czysty",ru:"Чистый"},{pl:"Brudny",ru:"Грязный"},{pl:"Ładny",ru:"Красивый"},{pl:"Brzydki",ru:"Уродливый"},{pl:"Wysoki",ru:"Высокий"},{pl:"Niski",ru:"Низкий"},{pl:"Trudny",ru:"Трудный"},{pl:"Łatwy",ru:"Легкий"},
+            {pl:"Robić",ru:"Делать"},{pl:"Mówić",ru:"Говорить"},{pl:"Widzieć",ru:"Видеть"},{pl:"Słyszeć",ru:"Слышать"},{pl:"Myśleć",ru:"Думать"},{pl:"Wiedzieć",ru:"Знать"},{pl:"Mieć",ru:"Иметь"},{pl:"Być",ru:"Быть"},{pl:"Chcieć",ru:"Хотеть"},{pl:"Móc",ru:"Мочь"}
         ];
 
+        const sentencesData = [
+            { ru: "Где я могу найти свежие овощи?", pl: "Gdzie mogę znaleźć świeże warzywa?" },
+            { ru: "Можно мне пакет для покупок, пожалуйста?", pl: "Czy mogę prosić o torбę na zakupy?" }
+        ];
+
+        let stats = JSON.parse(localStorage.getItem('pl_stats_v2')) || { xp: 0, words: 0, phrases: 0 };
+        let mistakesDb = JSON.parse(localStorage.getItem('pl_mistakes_v2')) || [];
+        let currentLevel = parseInt(localStorage.getItem('pl_level')) || 0;
+        
         let currentQueue = [];
         let currentMode = 'classic';
-        let isInterestMode = false;
-        let selectedCats = [];
         let isWaiting = false;
+        let timerInterval;
+        let missingWordIndex = -1;
+        let selectedPhraseWords = [];
+        let nextActionFn = null;
+
+        // ГЛОБАЛЬНЫЙ ОТКЛИК
+        document.addEventListener('pointerdown', e => {
+            const btn = e.target.closest('.option-btn, .tile, .mode-btn, .action-btn, .speaker-icon');
+            if (btn) btn.classList.add('is-pressed');
+        });
+        document.addEventListener('pointerup', e => {
+            document.querySelectorAll('.is-pressed').forEach(el => el.classList.remove('is-pressed'));
+        });
+
+        // УМНЫЕ ОБМАНКИ
+        function getSmartDistractors(correctWord, lang, count) {
+            const others = dictionary.filter(w => w[lang] !== correctWord);
+            const sortedBySim = others.sort((a, b) => {
+                return getSimilarity(correctWord, b[lang]) - getSimilarity(correctWord, a[lang]);
+            });
+            return sortedBySim.slice(0, count).map(x => x[lang]);
+        }
+
+        function getSimilarity(s1, s2) {
+            let m = 0; const set1 = new Set(s1.toLowerCase().split('')), set2 = new Set(s2.toLowerCase().split(''));
+            set1.forEach(c => { if(set2.has(c)) m++; }); return m;
+        }
+
+        async function syncWithCloud() {
+            try { await sb.from('leaderboard').upsert({ username: userName, xp: stats.xp, phrases_count: stats.phrases, score: stats.words, level: currentLevel + 1 }, { onConflict: 'username' }); } catch (e) {}
+        }
+
+        function switchTab(tab) {
+            clearInterval(timerInterval);
+            document.getElementById('game-container').style.display = tab === 'play' ? 'flex' : 'none';
+            document.getElementById('stats-page').style.display = tab === 'stats' ? 'flex' : 'none';
+            document.getElementById('message-screen').style.display = 'none';
+            document.getElementById('mistakes-screen').style.display = 'none';
+            document.getElementById('tab-play').classList.toggle('active', tab === 'play');
+            document.getElementById('tab-stats').classList.toggle('active', tab === 'stats');
+            if (tab === 'stats') { updateStatsUI(); syncWithCloud().then(fetchLeaderboard); }
+            else { startLevel(); }
+        }
+
+        function updateStatsUI() {
+            document.getElementById('st-xp').innerText = stats.xp + ' XP';
+            document.getElementById('st-level').innerText = currentLevel + 1;
+            document.getElementById('st-words').innerText = stats.words;
+            document.getElementById('st-phrases').innerText = stats.phrases;
+            document.getElementById('fab-count').innerText = mistakesDb.length;
+            const inStats = document.getElementById('stats-page').style.display === 'flex';
+            document.getElementById('fab-mistakes').style.display = (mistakesDb.length > 0 && !inStats) ? 'flex' : 'none';
+        }
 
         function setMode(mode) {
-            if (mode === 'interests') {
-                document.getElementById('main-game-ui').style.display = 'none';
-                document.getElementById('interests-setup').style.display = 'flex';
-                return;
-            }
             currentMode = mode;
-            document.getElementById('interests-setup').style.display = 'none';
-            document.getElementById('main-game-ui').style.display = 'block';
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-' + mode).classList.add('active');
+            document.getElementById('timer-container').style.display = mode === 'sprint' ? 'block' : 'none';
             startLevel();
         }
 
-        function saveAndStartInterests() {
-            selectedCats = [];
-            if(document.getElementById('cat-auto').checked) selectedCats.push('auto');
-            if(document.getElementById('cat-mma').checked) selectedCats.push('mma');
-            if(selectedCats.length === 0) { alert("Выбери тему!"); return; }
-            isInterestMode = true;
-            document.getElementById('exit-interests-btn').style.display = 'block';
-            setMode('classic');
-        }
-
         function startLevel() {
-            let pool = isInterestMode ? dictionary.filter(i => selectedCats.includes(i.cat)) : dictionary.slice(0, 5);
-            currentQueue = pool.sort(() => Math.random() - 0.5);
+            // КРИТИЧЕСКИЙ ФИКС: Скрываем окно при старте
+            document.getElementById('message-screen').style.display = 'none';
+            document.getElementById('game-container').style.display = 'flex';
+            window.speechSynthesis.cancel(); 
+
+            const isExam = (currentLevel + 1) % 10 === 0;
+            if (currentMode === 'phrases') {
+                currentQueue = shuffle([...sentencesData]);
+            } else if (isExam) {
+                const end = currentLevel * 10; const start = Math.max(0, end - 90);
+                currentQueue = shuffle(dictionary.slice(start, end)).slice(0, 20);
+            } else {
+                const start = currentLevel * 10;
+                currentQueue = shuffle(dictionary.slice(start, start + 10));
+            }
             nextQuestion();
         }
 
         function nextQuestion() {
             if (currentQueue.length === 0) {
-                document.getElementById('main-game-ui').style.display = 'none';
-                document.getElementById('message-screen').style.display = 'flex';
+                currentLevel++; localStorage.setItem('pl_level', currentLevel); saveStats();
+                showMsg("Победа!", `Уровень пройден!`, startLevel, true);
                 return;
             }
             isWaiting = false;
+            document.getElementById('correct-hint').style.display = 'none';
             const cur = currentQueue[0];
-            document.getElementById('word').innerText = cur.pl;
-            document.getElementById('stats-header').innerText = isInterestMode ? "СЛЕНГ РЕЖИМ" : "УРОВЕНЬ 1";
+            const isExam = (currentLevel + 1) % 10 === 0;
+
+            if (currentMode === 'phrases') renderPhrasesMode(cur);
+            else renderWordsMode(cur, isExam);
+            updateHeader();
+        }
+
+        function renderWordsMode(cur, isExam) {
+            document.getElementById('options-container').style.display = 'flex';
+            document.getElementById('phrase-builder-ui').style.display = 'none';
+            const askRu = !isExam; const targetLang = askRu ? 'ru' : 'pl'; const questionLang = askRu ? 'pl' : 'ru';
+            document.getElementById('word').innerText = currentMode === 'audio' ? '🎧' : cur[questionLang];
+            if (questionLang === 'pl' || currentMode === 'audio') speakText(cur.pl, 'pl-PL');
             
-            const container = document.getElementById('options-container');
-            container.innerHTML = '';
-            let opts = [cur.ru, "Ошибка 1", "Ошибка 2"].sort(() => Math.random() - 0.5);
+            const container = document.getElementById('options-container'); container.innerHTML = '';
+            let distractors = getSmartDistractors(cur[targetLang], targetLang, 2);
+            let opts = shuffle([cur[targetLang], ...distractors]);
             
             opts.forEach(o => {
-                const b = document.createElement('button');
-                b.className = 'option-btn';
-                b.innerText = o;
-                b.onclick = () => {
-                    if(isWaiting) return; isWaiting = true;
-                    if(o === cur.ru) { b.classList.add('is-correct'); currentQueue.shift(); setTimeout(nextQuestion, 500); }
-                    else { b.classList.add('is-wrong'); setTimeout(() => { b.classList.remove('is-wrong'); isWaiting = false; }, 800); }
-                };
+                const b = document.createElement('button'); b.className = 'option-btn'; b.innerText = o;
+                b.onclick = () => { if (targetLang === 'pl') speakText(o, 'pl-PL'); checkWordAnswer(b, o, cur[targetLang], cur); };
                 container.appendChild(b);
+            });
+            if (currentMode === 'sprint') startSprintTimer(cur, targetLang);
+        }
+
+        function renderPhrasesMode(cur) {
+            document.getElementById('options-container').style.display = 'none';
+            document.getElementById('phrase-builder-ui').style.display = 'flex';
+            const slots = document.getElementById('slots-container');
+            const tiles = document.getElementById('tiles-container');
+            slots.innerHTML = ''; tiles.innerHTML = ''; selectedPhraseWords = [];
+
+            const isMissing = Math.random() > 0.6;
+            const words = cur.pl.replace(/[.?!,]/g, '').split(' ');
+
+            if (isMissing) {
+                missingWordIndex = Math.floor(Math.random() * words.length);
+                document.getElementById('word').innerText = "Вставь слово:";
+                words.forEach((w, i) => {
+                    const s = document.createElement('div');
+                    s.className = (i === missingWordIndex) ? 'tile placeholder' : 'tile placed';
+                    s.innerText = (i === missingWordIndex) ? ' ' : w;
+                    s.id = "slot-" + i; slots.appendChild(s);
+                });
+                renderTiles([words[missingWordIndex], ...getSmartDistractors(words[missingWordIndex], 'pl', 5)], true);
+            } else {
+                missingWordIndex = -1; document.getElementById('word').innerText = cur.ru;
+                renderTiles([...words, ...shuffle(dictionary).slice(0, 4).map(x => x.pl)], false);
+            }
+        }
+
+        function renderTiles(pool, isMissing) {
+            const container = document.getElementById('tiles-container');
+            shuffle(pool).forEach(w => {
+                const t = document.createElement('div'); t.className = 'tile'; t.innerText = w;
+                t.onclick = () => {
+                    if (t.classList.contains('used')) return;
+                    speakText(w, 'pl-PL'); t.classList.add('used');
+                    if (isMissing) fillMissingSlot(w, t); else addWordToSentence(w, t);
+                };
+                container.appendChild(t);
             });
         }
 
-        function speakCurrent() {
-            window.speechSynthesis.cancel();
-            const u = new SpeechSynthesisUtterance(document.getElementById('word').innerText);
-            u.lang = 'pl-PL';
-            window.speechSynthesis.speak(u);
+        function fillMissingSlot(word, tileRef) {
+            const slot = document.getElementById('slot-' + missingWordIndex);
+            if(selectedPhraseWords[missingWordIndex]) {
+                const old = selectedPhraseWords[missingWordIndex];
+                document.querySelectorAll('.tile.used').forEach(tile => { if(tile.innerText === old) tile.classList.remove('used'); });
+            }
+            slot.innerText = word; slot.classList.remove('placeholder'); slot.classList.add('placed');
+            selectedPhraseWords[missingWordIndex] = word;
         }
 
-        // Запуск
-        setMode('classic');
+        function addWordToSentence(word, tileRef) {
+            const slots = document.getElementById('slots-container');
+            const s = document.createElement('div'); s.className = 'tile placed'; s.innerText = word;
+            s.onclick = () => { s.remove(); tileRef.classList.remove('used'); selectedPhraseWords = selectedPhraseWords.filter(x => x !== word); };
+            slots.appendChild(s); selectedPhraseWords.push(word);
+        }
+
+        function checkSentence() {
+            if (isWaiting) return; const cur = currentQueue[0]; const targetRaw = cur.pl.replace(/[.?!,]/g, '').split(' ');
+            let isCorrect = false;
+            if (missingWordIndex !== -1) {
+                if ((selectedPhraseWords[missingWordIndex] || "").toLowerCase() === targetRaw[missingWordIndex].toLowerCase()) isCorrect = true;
+            } else {
+                const res = selectedPhraseWords.join(' ').toLowerCase(); const tar = targetRaw.join(' ').toLowerCase();
+                if (res === tar || (tar.includes(res) && res.length > 5)) isCorrect = true;
+            }
+
+            if (isCorrect) {
+                isWaiting = true; stats.xp += 5; stats.phrases++; saveStats(); currentQueue.shift();
+                setTimeout(nextQuestion, 300);
+            } else {
+                const hint = document.getElementById('correct-hint'); hint.innerText = "Правильно: " + cur.pl; hint.style.display = 'block';
+                addMistake(cur); const item = currentQueue.shift(); currentQueue.push(item);
+                setTimeout(nextQuestion, 1200); 
+            }
+        }
+
+        function checkWordAnswer(btn, sel, target, curObj) {
+            if (isWaiting) return; isWaiting = true; clearInterval(timerInterval);
+            if (sel === target) {
+                if (btn) btn.classList.add('is-correct'); stats.xp += 1; stats.words++; saveStats(); currentQueue.shift();
+                setTimeout(nextQuestion, 300);
+            } else {
+                if (btn) btn.classList.add('is-wrong'); addMistake(curObj);
+                const item = currentQueue.shift(); currentQueue.push(item);
+                setTimeout(nextQuestion, 1200);
+            }
+        }
+
+        function addMistake(item) {
+            if (!mistakesDb.some(m => m.pl === item.pl)) { mistakesDb.push(item); localStorage.setItem('pl_mistakes_v2', JSON.stringify(mistakesDb)); updateStatsUI(); }
+        }
+
+        function openMistakes() {
+            document.getElementById('game-container').style.display = 'none';
+            document.getElementById('mistakes-screen').style.display = 'flex';
+            currentQueue = shuffle([...mistakesDb]); renderMistakeQuestion();
+        }
+
+        function renderMistakeQuestion() {
+            if (currentQueue.length === 0 || mistakesDb.length === 0) { closeMistakes(); return; }
+            isWaiting = false; const cur = currentQueue[0];
+            document.getElementById('m-word').innerText = cur.pl; speakText(cur.pl, 'pl-PL');
+            const container = document.getElementById('m-options-container'); container.innerHTML = '';
+            let opts = shuffle([cur.ru, ...getSmartDistractors(cur.ru, 'ru', 2)]);
+            opts.forEach(o => {
+                const b = document.createElement('button'); b.className = 'option-btn'; b.innerText = o;
+                b.onclick = () => {
+                    if (isWaiting) return; isWaiting = true;
+                    if (o === cur.ru) { b.classList.add('is-correct'); mistakesDb = mistakesDb.filter(m => m.pl !== cur.pl); localStorage.setItem('pl_mistakes_v2', JSON.stringify(mistakesDb)); currentQueue.shift(); setTimeout(renderMistakeQuestion, 400); }
+                    else { b.classList.add('is-wrong'); setTimeout(() => { b.classList.remove('is-wrong'); isWaiting = false; }, 600); }
+                    updateStatsUI();
+                }; container.appendChild(b);
+            });
+        }
+
+        function closeMistakes() { document.getElementById('mistakes-screen').style.display = 'none'; startLevel(); updateStatsUI(); }
+        function saveStats() { localStorage.setItem('pl_stats_v2', JSON.stringify(stats)); updateStatsUI(); if (stats.xp % 5 === 0) syncWithCloud(); }
+        function updateHeader() { const isExam = (currentLevel + 1) % 10 === 0; document.getElementById('stats-header').innerText = (isExam ? 'ЭКЗАМЕН' : `УРОВЕНЬ ${currentLevel + 1}`) + ` (ОСТАЛОСЬ: ${currentQueue.length})`; }
+
+        async function fetchLeaderboard() {
+            const { data } = await sb.from('leaderboard').select('*').order('xp', { ascending: false }).limit(10);
+            document.getElementById('leaderboard-list').innerHTML = (data || []).map((u, i) => `<div class="leader-row" style="${u.username === userName ? 'border-color:var(--accent); background:rgba(59,130,246,0.1)' : ''}"><span>${i+1}. ${u.username}</span><span class="leader-score">${u.xp || 0} XP</span></div>`).join('');
+        }
+
+        function startSprintTimer(cur, target) {
+            let start = Date.now(); let bar = document.getElementById('timer-bar'); clearInterval(timerInterval);
+            timerInterval = setInterval(() => { let p = 100 - ((Date.now() - start) / 7000 * 100); bar.style.width = p + '%'; if (p <= 0) { clearInterval(timerInterval); checkWordAnswer(null, '', target, cur); } }, 50);
+        }
+
+        function showMsg(t, d, action, isWin) {
+            document.getElementById('game-container').style.display = 'none';
+            const m = document.getElementById('message-screen'); m.style.display = 'flex';
+            document.getElementById('msg-title').innerText = t; document.getElementById('msg-desc').innerText = d;
+            document.getElementById('msg-cat-img').src = isWin ? 'good.png' : 'bad.png';
+            nextActionFn = action;
+        }
+
+        function handleMessageClick() {
+            if (nextActionFn) {
+                document.getElementById('message-screen').style.display = 'none';
+                nextActionFn();
+            }
+        }
+
+        function speakCurrent() { const el = document.getElementById('word'); speakText(el.dataset.val || el.innerText, el.dataset.lang || 'pl-PL'); }
+        function speakMistake() { speakText(document.getElementById('m-word').innerText, 'pl-PL'); }
+        function speakText(t, l) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = l; u.rate = 0.95; window.speechSynthesis.speak(u); }
+        function shuffle(a) { return a.sort(() => Math.random() - 0.5); }
+        function resetProgress() { if(confirm("Сбросить всё?")) { localStorage.clear(); location.reload(); } }
+
+        startLevel(); updateStatsUI();
     </script>
 </body>
 </html>
