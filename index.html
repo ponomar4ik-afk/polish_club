@@ -2765,35 +2765,33 @@
     {pl: "To jest wyrafinowany styl dla prawdziwych koneserów", ru: "Это изысканный стиль для настоящих ценителей", cat: "buyer"}
 ];
 
-        // --- ИСПРАВЛЕННАЯ ЛОГИКА v4.4 --- (Вставлять СТРОГО после ]; массива фраз)
+       // --- ПОЛНОСТЬЮ ИСПРАВЛЕННАЯ ЛОГИКА v4.5 (ФИНАЛ) ---
 
-        const userName = localStorage.getItem('pl_user_name') || 'Гость';
-        let currentMode = 'classic'; // Состояние: какой режим сейчас (слова, фразы или ошибки)
-        let currentQuestionIndex = 0;
-        let activeDeck = [];    // Состояние: текущий набор СЛОВ
-        let activePhrases = []; // Состояние: текущий набор ФРАЗ
-        
+        const userName = localStorage.getItem('pl_user_name') || 'Панама';
+        let currentMode = 'classic'; 
+        let currentIndex = 0; 
+        let activeDeck = [];    // Пул для СЛОВ
+        let activePhrases = []; // Пул для ФРАЗ
+
         let stats = JSON.parse(localStorage.getItem('pl_stats')) || { xp: 0, words: 0, mistakes: [] };
         let selectedCats = JSON.parse(localStorage.getItem('pl_selected_cats')) || [];
         let nextActionFn = null;
 
-        // Настройка Supabase (твои данные)
+        // Настройка Supabase (твои данные подставятся автоматически, если ключ на месте)
         const sb = supabase.createClient('https://vzoiavyidskvsmiafswy.supabase.co', 'YOUR_KEY_HERE');
 
-        // 1. ИНИЦИАЛИЗАЦИЯ
+        function shuffle(a) { return [...a].sort(() => Math.random() - 0.5); }
+
         function initApp() {
-            // Проставляем галочки в меню ТЕМЫ
             selectedCats.forEach(c => {
                 const el = document.getElementById('cat-' + c);
                 if(el) el.checked = true;
             });
-            applyMixer(); // Сразу фильтруем базу под интересы
+            applyMixer(); 
             updateStatsUI();
         }
 
-        function shuffle(a) { return a.sort(() => Math.random() - 0.5); }
-
-        // 2. МИКСЕР (РАЗДЕЛЯЕТ СЛОВА И ФРАЗЫ)
+        // МИКСЕР: Решает проблему "слова во фразах"
         function applyMixer() {
             selectedCats = [];
             ['auto', 'football', 'mma', 'truck', 'buyer'].forEach(cat => {
@@ -2801,29 +2799,25 @@
             });
             localStorage.setItem('pl_selected_cats', JSON.stringify(selectedCats));
             
-            // Фильтруем СЛОВА для обучения
+            // 1. Готовим СЛОВА
             const baseWords = dictionary.filter(w => w.cat === 'base');
             const intWords = dictionary.filter(w => selectedCats.includes(w.cat));
-            activeDeck = selectedCats.length === 0 ? shuffle([...baseWords]) : shuffle([...baseWords.slice(0,300), ...intWords]);
+            activeDeck = selectedCats.length === 0 ? shuffle(baseWords) : shuffle([...baseWords.slice(0,300), ...intWords]);
 
-            // Фильтруем ФРАЗЫ (Теперь тут будут ТОЛЬКО фразы)
+            // 2. Готовим ФРАЗЫ (Теперь тут будут только фразы из sentencesData)
             const basePhrases = sentencesData.filter(s => s.cat === 'base');
             const intPhrases = sentencesData.filter(s => selectedCats.includes(s.cat));
-            activePhrases = selectedCats.length === 0 ? shuffle([...basePhrases]) : shuffle([...basePhrases.slice(0,50), ...intPhrases]);
+            activePhrases = selectedCats.length === 0 ? shuffle(basePhrases) : shuffle([...basePhrases.slice(0,50), ...intPhrases]);
             
             setMode('classic');
         }
 
-        // 3. ПЕРЕКЛЮЧЕНИЕ РЕЖИМОВ (Кнопки "СЛОВА", "ФРАЗЫ", "ОШИБКИ")
         function setMode(mode) {
             currentMode = mode;
-            currentQuestionIndex = 0;
-            
-            // Скрываем/показываем панель интересов
+            currentIndex = 0;
             document.getElementById('interests-panel').style.display = mode === 'interests' ? 'flex' : 'none';
             document.getElementById('play-zone').style.display = mode === 'interests' ? 'none' : 'flex';
             
-            // Подсветка кнопок выбора режима
             document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById('btn-' + mode)?.classList.add('active');
 
@@ -2831,30 +2825,28 @@
         }
 
         function startLevel() {
-            currentQuestionIndex = 0;
+            currentIndex = 0;
             nextQuestion();
         }
 
-        // 4. ЛОГИКА ВОПРОСОВ
         function nextQuestion() {
             let q;
-            // Выбираем ЧТО показывать в зависимости от активного режима (состояния)
+            // Выбираем источник данных
             if (currentMode === 'mistakes') {
                 if (stats.mistakes.length === 0) {
-                    showMsg("Ошибок нет!", "Ты всё выучил.", () => setMode('classic'), true);
+                    showMsg("Ошибок нет!", "Всё выучено!", () => setMode('classic'), true);
                     return;
                 }
-                q = stats.mistakes[currentQuestionIndex % stats.mistakes.length];
+                q = stats.mistakes[currentIndex % stats.mistakes.length];
             } else if (currentMode === 'phrases') {
-                q = activePhrases[currentQuestionIndex]; // Берем ФРАЗУ
+                q = activePhrases[currentIndex]; // Источник ФРАЗ
             } else {
-                q = activeDeck[currentQuestionIndex]; // Берем СЛОВО
+                q = activeDeck[currentIndex]; // Источник СЛОВ
             }
 
-            // Конец уровня (через 20 вопросов)
-            if (!q || currentQuestionIndex >= 20) {
-                const win = currentMode === 'mistakes' ? true : currentQuestionIndex >= 15;
-                showMsg(win ? "Уровень пройден!" : "Нужно поднажать!", win ? "+50 XP" : "Попробуй еще раз", () => setMode('classic'), win);
+            if (!q || currentIndex >= 20) {
+                const win = currentMode === 'mistakes' ? true : currentIndex >= 15;
+                showMsg(win ? "Уровень пройден!" : "Попробуй еще!", win ? "+50 XP" : "Нужно 15 верных", () => setMode('classic'), win);
                 if(win) { stats.xp += 50; updateStatsUI(); }
                 return;
             }
@@ -2863,28 +2855,27 @@
 
         function renderQuestion(q) {
             const card = document.getElementById('word-card');
-            const optionsGrid = document.getElementById('options-grid');
+            const grid = document.getElementById('options-grid');
             card.innerHTML = `<div style="font-size:0.9rem; color:var(--text-muted); margin-bottom:10px;">Как переводится?</div>
-                              <div style="font-size:1.8rem; font-weight:800; color:var(--accent); text-align:center;">${q.pl}</div>`;
+                              <div style="font-size:1.6rem; font-weight:800; color:var(--accent); text-align:center; padding:0 10px;">${q.pl}</div>`;
             
             const options = generateOptions(q);
-            optionsGrid.innerHTML = '';
+            grid.innerHTML = '';
             options.forEach(opt => {
                 const btn = document.createElement('div');
                 btn.className = 'option-btn';
                 btn.innerText = opt;
                 btn.onclick = () => handleAnswer(opt === q.ru, btn);
-                optionsGrid.appendChild(btn);
+                grid.appendChild(btn);
             });
         }
 
-        // 5. ГЕНЕРАЦИЯ ВАРИАНТОВ (Исправляет баг с надписью "Ошибка")
+        // РЕШЕНИЕ проблемы с надписью "Ошибка"
         function generateOptions(correctObj) {
-            let pool = dictionary.map(d => d.ru);
+            let pool = dictionary.map(d => d.ru); // Всегда берем из общего словаря
             let filtered = pool.filter(ru => ru !== correctObj.ru);
-            let shuffled = shuffle(filtered);
-            // Если слов в базе вдруг не хватило, подставляем стандартные значения
-            return shuffle([correctObj.ru, shuffled[0] || "Tak", shuffled[1] || "Nie"]);
+            let shuffledPool = shuffle(filtered);
+            return shuffle([correctObj.ru, shuffledPool[0] || "Tak", shuffledPool[1] || "Nie"]);
         }
 
         function handleAnswer(isCorrect, btn) {
@@ -2896,22 +2887,20 @@
             } else {
                 btn.style.borderColor = 'var(--error)';
                 btn.style.backgroundColor = 'rgba(255, 59, 48, 0.1)';
-                let q = currentMode === 'phrases' ? activePhrases[currentQuestionIndex] : activeDeck[currentQuestionIndex];
+                let q = (currentMode === 'phrases') ? activePhrases[currentIndex] : activeDeck[currentIndex];
                 if(!stats.mistakes.find(m => m.pl === q.pl)) stats.mistakes.push(q);
             }
             updateStatsUI();
-            setTimeout(() => { currentQuestionIndex++; nextQuestion(); }, 600);
+            setTimeout(() => { currentIndex++; nextQuestion(); }, 600);
         }
 
-        // 6. ВКЛАДКИ (Исправляет зависание кнопки СТАТИСТИКА)
+        // РЕШЕНИЕ визуального бага вкладки Статистика
         function switchTab(tab) {
             document.getElementById('game-container').style.display = tab === 'play' ? 'flex' : 'none';
             document.getElementById('stats-page').style.display = tab === 'stats' ? 'flex' : 'none';
             
-            // Удаляем active у всех, добавляем только нажатой
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            const activeTab = document.getElementById('tab-' + tab);
-            if(activeTab) activeTab.classList.add('active');
+            document.getElementById('tab-' + tab)?.classList.add('active');
 
             if (tab === 'stats') { 
                 updateStatsUI(); 
@@ -2925,10 +2914,10 @@
             document.getElementById('stat-mistakes').innerText = stats.mistakes.length;
             document.getElementById('user-name-display').innerText = userName;
             
-            const level = Math.floor(stats.xp / 500) + 1;
-            const progress = ((stats.xp % 500) / 500) * 100;
-            document.getElementById('user-level').innerText = "Уровень " + level;
-            document.getElementById('progress-fill').style.width = progress + "%";
+            const lvl = Math.floor(stats.xp / 500) + 1;
+            const prog = ((stats.xp % 500) / 500) * 100;
+            document.getElementById('user-level').innerText = "Уровень " + lvl;
+            document.getElementById('progress-fill').style.width = prog + "%";
             localStorage.setItem('pl_stats', JSON.stringify(stats));
         }
 
@@ -2937,7 +2926,8 @@
             const m = document.getElementById('message-screen'); 
             m.style.display = 'flex'; 
             document.getElementById('msg-title').innerText = t;
-            document.getElementById('msg-cat-img').src = isWin ? 'good.png' : 'bad.png';
+            const img = document.getElementById('msg-cat-img');
+            if(img) img.src = isWin ? 'good.png' : 'bad.png'; 
             nextActionFn = action; 
         }
 
@@ -2948,20 +2938,9 @@
 
         window.onload = initApp;
 
-        // ОБЛАЧНЫЕ ФУНКЦИИ
-        async function syncWithCloud() { 
-            try { 
-                await sb.from('leaderboard').upsert({ 
-                    username: userName, xp: stats.xp, score: stats.words, level: Math.floor(stats.xp / 500) + 1 
-                }, { onConflict: 'username' }); 
-            } catch (e) {} 
-        }
-        async function fetchLeaderboard() { 
-            const { data } = await sb.from('leaderboard').select('*').order('xp', { ascending: false }).limit(10); 
-            document.getElementById('leaderboard-list').innerHTML = (data || []).map((u, i) => 
-                `<div class="leader-row"><span>${i+1}. ${u.username}</span><span>${u.xp} XP</span></div>`
-            ).join(''); 
-        }
+        async function syncWithCloud() { try { await sb.from('leaderboard').upsert({ username: userName, xp: stats.xp, score: stats.words, level: Math.floor(stats.xp / 500) + 1 }, { onConflict: 'username' }); } catch (e) {} }
+        async function fetchLeaderboard() { const { data } = await sb.from('leaderboard').select('*').order('xp', { ascending: false }).limit(10); document.getElementById('leaderboard-list').innerHTML = (data || []).map((u, i) => `<div class="leader-row"><span>${i+1}. ${u.username}</span><span>${u.xp} XP</span></div>`).join(''); }
         function resetProgress() { if(confirm("Сбросить всё?")) { localStorage.clear(); location.reload(); } }
-
-    
+    </script>
+</body>
+</html>
