@@ -2787,31 +2787,32 @@
 
         // --- ЛОГИКА МИКСЕРА ---
 function applyMixer() {
-    selectedCats = [];
-    // Проверяем каждую галочку и добавляем метку категории в массив
-    if(document.getElementById('cat-auto').checked) selectedCats.push('auto');
-    if(document.getElementById('cat-football').checked) selectedCats.push('football');
-    if(document.getElementById('cat-mma').checked) selectedCats.push('mma');
-    if(document.getElementById('cat-truck').checked) selectedCats.push('truck');
-    if(document.getElementById('cat-buyer').checked) selectedCats.push('buyer');
-    
-    localStorage.setItem('pl_selected_cats', JSON.stringify(selectedCats));
-    
-    // Фильтруем базу: берем часть обычных слов и ВСЕ слова из выбранных тем
-    const baseWords = dictionary.filter(w => w.cat === 'base');
-    const interestWords = dictionary.filter(w => selectedCats.includes(w.cat));
-    
-    if (selectedCats.length === 0) {
-        // Если ничего не выбрано, учим только базу
-        activeDeck = shuffle([...baseWords]);
-    } else {
-        // Если выбраны темы, миксуем: 50% базы и все тематические слова
-        const halfBase = shuffle([...baseWords]).slice(0, Math.floor(baseWords.length / 2));
-        activeDeck = shuffle([...halfBase, ...interestWords]);
+    try {
+        selectedCats = [];
+        // Используем ?., чтобы код не умирал, если ID не найден
+        if(document.getElementById('cat-auto')?.checked) selectedCats.push('auto');
+        if(document.getElementById('cat-football')?.checked) selectedCats.push('football');
+        if(document.getElementById('cat-mma')?.checked) selectedCats.push('mma');
+        if(document.getElementById('cat-truck')?.checked) selectedCats.push('truck');
+        if(document.getElementById('cat-buyer')?.checked) selectedCats.push('buyer');
+        
+        localStorage.setItem('pl_selected_cats', JSON.stringify(selectedCats));
+        
+        const baseWords = dictionary.filter(w => w.cat === 'base');
+        const interestWords = dictionary.filter(w => selectedCats.includes(w.cat));
+        
+        if (selectedCats.length === 0) {
+            activeDeck = shuffle([...baseWords]);
+        } else {
+            // Берем 500 случайных слов из базы и добавляем выбранные темы
+            const halfBase = shuffle([...baseWords]).slice(0, 500);
+            activeDeck = shuffle([...halfBase, ...interestWords]);
+        }
+        
+        setMode('classic');
+    } catch (e) {
+        console.error("Ошибка в applyMixer:", e);
     }
-    
-    // Перезапускаем режим со словами
-    setMode('classic');
 }
 
         function startLevel() {
