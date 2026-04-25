@@ -2823,7 +2823,7 @@ const dictionary = [
             const container = document.getElementById('options-container');
             container.style.display = 'flex'; container.innerHTML = '';
             document.getElementById('word').innerText = currentMode === 'audio' ? '🎧' : cur.pl;
-            if (currentMode === 'audio' || currentLevel < 5) speakText(cur.pl);
+            if (currentMode === 'audio' || currentLevel < 15) speakText(cur.pl);
             
             let pool = activeDeck.filter(w => w.ru !== cur.ru).map(w => w.ru);
             if (pool.length < 2) pool = dictionary.filter(w => w.cat === 'base').map(w => w.ru);
