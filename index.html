@@ -3058,6 +3058,25 @@
 
         // Вызываем инициализацию, которая и галочки расставит, и массивы сформирует
         initApp();
+        window.onload = function() {
+            // 1. Показываем контейнер игры
+            document.getElementById('game-container').style.display = 'flex';
+            document.getElementById('stats-page').style.display = 'none';
+            
+            // 2. Делаем вкладку "Прогресс" активной
+            document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('tab-play').classList.add('active');
+
+            // 3. Расставляем галочки интересов (если они были сохранены)
+            selectedCats.forEach(cat => {
+                let checkbox = document.getElementById('cat-' + cat);
+                if (checkbox) checkbox.checked = true;
+            });
+            
+            // 4. Запускаем логику (выберет слова и отрисует карточку)
+            applyMixer();
+            updateStatsUI();
+        };
     </script>
 </body>
 </html>
