@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Panamket Pro v4.4</title>
+    <title>Panamket Pro v4.5</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
@@ -22,7 +22,7 @@
         }
 
         .tabs { display: flex; width: 100%; background: #0F172A; border-bottom: 1px solid #1E293B; position: fixed; top: 0; z-index: 100; }
-        .tab { flex: 1; padding: 18px 0; text-align: center; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; text-transform: uppercase; }
+        .tab { flex: 1; padding: 18px 0; text-align: center; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; text-transform: uppercase; transition: 0.2s; }
         .tab.active { color: var(--text-main); border-bottom: 3px solid var(--accent); }
 
         .container { 
@@ -32,19 +32,15 @@
         }
         
         .mode-tabs { display: flex; width: 100%; gap: 6px; margin-bottom: 15px; flex-shrink: 0; }
-        .mode-btn { flex: 1; background: var(--btn-bg); color: var(--text-muted); border: 1px solid #1E293B; padding: 12px 2px; border-radius: 12px; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; cursor: pointer; }
+        .mode-btn { flex: 1; background: var(--btn-bg); color: var(--text-muted); border: 1px solid #1E293B; padding: 12px 2px; border-radius: 12px; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.2s; }
         .mode-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-
-        .is-pressed { box-shadow: inset 0 0 0 3px #FFFFFF !important; transform: scale(0.96); transition: 0.1s; }
-        .is-correct { border-color: var(--correct) !important; background: rgba(16, 185, 129, 0.2) !important; color: var(--correct) !important; }
-        .is-wrong { border-color: var(--error) !important; background: rgba(255, 59, 48, 0.2) !important; color: var(--error) !important; animation: shake 0.3s; }
 
         .header-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-shrink: 0; }
         .stats-label { font-size: 0.7rem; color: var(--text-muted); font-weight: bold; }
         .lives { color: var(--error); font-size: 1.1rem; }
 
         .word-card { background: var(--card-bg); padding: 25px 20px; border-radius: 24px; border: 1px solid #1E293B; margin-bottom: 15px; min-height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; }
-        .word-card h1 { margin: 0; font-size: 1.7rem; font-weight: 700; }
+        .word-card h1 { margin: 0; font-size: 1.7rem; font-weight: 700; text-align: center; }
         .speaker-icon { margin-top: 10px; font-size: 1.2rem; cursor: pointer; background: #1E293B; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 
         #interests-panel { display: none; flex-direction: column; width: 100%; }
@@ -55,12 +51,14 @@
         .tile { background: var(--btn-bg); border: 1px solid #334155; padding: 10px 14px; border-radius: 12px; font-size: 0.95rem; font-weight: 600; cursor: pointer; }
         .tile.used { opacity: 0.15; pointer-events: none; }
         .tile.placed { background: var(--accent); border-color: var(--accent); color: white; }
-        .tile.placeholder { background: transparent !important; border: 2px dashed rgba(255,255,255,0.15) !important; min-width: 60px; color: transparent; pointer-events: none; }
 
         .correct-hint-box { display: none; margin-bottom: 10px; padding: 12px; background: rgba(16, 185, 129, 0.15); border: 1px solid var(--correct); border-radius: 12px; color: var(--correct); font-weight: 700; font-size: 0.9rem; }
 
         .btn-group { display: flex; flex-direction: column; gap: 10px; flex-grow: 1; }
         button.option-btn { border: 1px solid #1E293B; padding: 18px; border-radius: 15px; font-size: 1.05rem; font-weight: 600; cursor: pointer; background: var(--btn-bg); color: #FFFFFF; width: 100%; transition: 0.1s; }
+        .is-correct { border-color: var(--correct) !important; background: rgba(16, 185, 129, 0.2) !important; color: var(--correct) !important; }
+        .is-wrong { border-color: var(--error) !important; background: rgba(255, 59, 48, 0.2) !important; color: var(--error) !important; animation: shake 0.3s; }
+
         .action-btn { background: var(--accent); color: #fff; border: none; padding: 22px 30px; border-radius: 18px; font-weight: 800; font-size: 1.1rem; cursor: pointer; width: 100%; }
 
         .fab-mistakes { position: fixed; bottom: 20px; right: 20px; background: var(--error); color: #fff; padding: 14px 22px; border-radius: 30px; font-weight: 800; font-size: 0.85rem; cursor: pointer; z-index: 2000; display: none; align-items: center; gap: 8px; box-shadow: 0 8px 20px rgba(255, 59, 48, 0.4); border: none; }
@@ -70,7 +68,6 @@
         .stat-box { background: #1E293B; padding: 15px; border-radius: 18px; }
         .stat-box h3 { margin: 0; font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; }
         .stat-box .value { font-size: 1.3rem; font-weight: 800; margin-top: 4px; }
-        .leaderboard-title { margin: 25px 0 20px 0; font-size: 1rem; color: var(--accent); text-transform: uppercase; font-weight: 900; text-align: center; }
         .leader-row { display: flex; justify-content: space-between; padding: 14px; background: rgba(255,255,255,0.04); border-radius: 14px; margin-bottom: 8px; }
 
         #message-screen { display: none; flex-direction: column; align-items: center; justify-content: center; height: 100vh; position: fixed; top:0; left:0; width:100%; background: var(--bg-color); z-index: 3000; }
@@ -101,7 +98,7 @@
             </div>
             
             <div class="word-card">
-                <h1 id="word">Учимся...</h1>
+                <h1 id="word">Загрузка...</h1>
                 <div class="speaker-icon" onclick="speakCurrent()">🔊</div>
             </div>
 
@@ -144,9 +141,9 @@
             <div class="stat-box"><h3>Слов</h3><p id="st-words" class="value">0</p></div>
             <div class="stat-box"><h3>Фраз</h3><p id="st-phrases" class="value">0</p></div>
         </div>
-        <div class="leaderboard-title">ТОП ПШЕКОВ 🏆</div>
+        <div style="text-align:center; color:var(--accent); font-weight:800; margin: 20px 0;">ТОП ПШЕКОВ 🏆</div>
         <div id="leaderboard-list"></div>
-        <button class="action-btn" style="background:var(--error); margin-top:40px; opacity:1 !important;" onclick="resetProgress()">СБРОСИТЬ ПРОГРЕСС</button>
+        <button class="action-btn" style="background:var(--error); margin-top:40px;" onclick="resetProgress()">СБРОСИТЬ ПРОГРЕСС</button>
     </div>
 
     <div id="message-screen">
@@ -164,8 +161,7 @@
         const tg = window.Telegram.WebApp;
         const userName = tg.initDataUnsafe?.user?.first_name || "Панама";
 
-        // --- БАЗА ДАННЫХ ---
-        const dictionary = [
+const dictionary = [
     // УРОВЕНЬ 1: Основы основ
     {pl: "Ja", ru: "Я", cat: "base"},
     {pl: "Ty", ru: "Ты", cat: "base"},
@@ -2764,105 +2760,59 @@
     {pl: "Kolekcja kapsułowa wyprzedała się w kilka minut", ru: "Капсульная коллекция распродалась за несколько минут", cat: "buyer"},
     {pl: "To jest wyrafinowany styl dla prawdziwych koneserów", ru: "Это изысканный стиль для настоящих ценителей", cat: "buyer"}
 ];
-        // --- СОСТОЯНИЕ ---
+
         let stats = JSON.parse(localStorage.getItem('pl_stats_v2')) || { xp: 0, words: 0, phrases: 0 };
         let mistakesDb = JSON.parse(localStorage.getItem('pl_mistakes_v2')) || [];
         let currentLevel = parseInt(localStorage.getItem('pl_level')) || 0;
         let selectedCats = JSON.parse(localStorage.getItem('pl_selected_cats')) || [];
         
-        let levelLives = 2;
-        let activeDeck = [];
-        let activePhrases = [];
-        let currentQueue = [];
-        let currentMode = 'classic';
-        let isWaiting = false;
-        let selectedPhraseWords = [];
-        let nextActionFn = null;
+        let levelLives = 2; let activeDeck = []; let activePhrases = [];
+        let currentQueue = []; let currentMode = 'classic'; let isWaiting = false;
+        let selectedPhraseWords = []; let nextActionFn = null;
 
         tg.ready(); tg.expand();
 
-        function renderLives() {
-            document.getElementById('lives-display').innerText = "❤️".repeat(levelLives) + "🤍".repeat(Math.max(0, 2 - levelLives));
-        }
-
-        // --- ИНИЦИАЛИЗАЦИЯ И МИКСЕР ---
-        function initApp() {
-            // Восстанавливаем галочки при запуске
-            selectedCats.forEach(cat => {
-                let checkbox = document.getElementById('cat-' + cat);
-                if (checkbox) checkbox.checked = true;
-            });
-            applyMixer(); 
-            updateStatsUI();
-        }
+        function shuffle(a) { return [...a].sort(() => Math.random() - 0.5); }
+        function renderLives() { document.getElementById('lives-display').innerText = "❤️".repeat(levelLives) + "🤍".repeat(Math.max(0, 2 - levelLives)); }
 
         function applyMixer() {
-            try {
-                selectedCats = [];
-                ['auto', 'football', 'mma', 'truck', 'buyer'].forEach(cat => {
-                    if(document.getElementById('cat-' + cat)?.checked) selectedCats.push(cat);
-                });
-                
-                localStorage.setItem('pl_selected_cats', JSON.stringify(selectedCats));
-                
-                const baseWords = dictionary.filter(w => w.cat === 'base');
-                const interestWords = dictionary.filter(w => selectedCats.includes(w.cat));
-                
-                // ЧЕТКОЕ ПРАВИЛО: Если не выбрано - только база. Если выбрано - 500 база + сленг
-                if (selectedCats.length === 0) {
-                    activeDeck = shuffle([...baseWords]);
-                } else {
-                    const halfBase = shuffle([...baseWords]).slice(0, 500);
-                    activeDeck = shuffle([...halfBase, ...interestWords]);
-                }
+            selectedCats = [];
+            ['auto', 'football', 'mma', 'truck', 'buyer'].forEach(c => {
+                if(document.getElementById('cat-' + c)?.checked) selectedCats.push(c);
+            });
+            localStorage.setItem('pl_selected_cats', JSON.stringify(selectedCats));
+            
+            const baseWords = dictionary.filter(w => w.cat === 'base');
+            const intWords = dictionary.filter(w => selectedCats.includes(w.cat));
+            activeDeck = selectedCats.length === 0 ? shuffle(baseWords) : shuffle([...shuffle(baseWords).slice(0, 500), ...intWords]);
 
-                // Фильтруем фразы
-                const basePhrases = sentencesData.filter(s => s.cat === 'base');
-                const interestPhrases = sentencesData.filter(s => selectedCats.includes(s.cat));
-                
-                if (selectedCats.length === 0) {
-                    activePhrases = shuffle([...basePhrases]);
-                } else {
-                    const halfBasePhrases = shuffle([...basePhrases]).slice(0, 50);
-                    activePhrases = shuffle([...halfBasePhrases, ...interestPhrases]);
-                }
-            } catch (e) {
-                console.error("Ошибка в applyMixer:", e);
-            }
+            const baseP = sentencesData.filter(s => s.cat === 'base');
+            const intP = sentencesData.filter(s => selectedCats.includes(s.cat));
+            activePhrases = selectedCats.length === 0 ? shuffle(baseP) : shuffle([...shuffle(baseP).slice(0, 50), ...intP]);
         }
 
-        // Вызывается по кнопке "Сохранить и начать"
-        function applyMixerAndStart() {
-            applyMixer();
-            setMode('classic');
+        function applyMixerAndStart() { applyMixer(); setMode('classic'); }
+
+        function setMode(mode) {
+            currentMode = mode; isWaiting = false;
+            document.getElementById('interests-panel').style.display = mode === 'interests' ? 'flex' : 'none';
+            document.getElementById('play-zone').style.display = mode === 'interests' ? 'none' : 'flex';
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-' + mode)?.classList.add('active');
+            if (mode !== 'interests') startLevel();
         }
 
         function startLevel() {
-            levelLives = 2; // СБРОС ЖИЗНЕЙ ПРИ СТАРТЕ
-            renderLives();
-            const isExam = (currentLevel + 1) % 10 === 0;
-            
-            let sourceArray = currentMode === 'phrases' ? activePhrases : activeDeck;
-            if (!sourceArray || sourceArray.length === 0) sourceArray = activeDeck;
-            
-            if (isExam) {
-                currentQueue = shuffle([...sourceArray]).slice(0, 20);
-            } else {
-                currentQueue = shuffle([...sourceArray]).slice(0, 10);
-            }
-            
-            if(currentQueue.length === 0) currentQueue = shuffle([...activeDeck]).slice(0, 10);
+            levelLives = 2; renderLives();
+            let source = currentMode === 'phrases' ? activePhrases : activeDeck;
+            if (!source.length) source = activeDeck;
+            currentQueue = shuffle([...source]).slice(0, 10);
             nextQuestion();
         }
 
         function nextQuestion() {
-            if (currentQueue.length === 0) {
-                currentLevel++; saveStats();
-                showMsg("Победа!", "Уровень пройден!", startLevel, true);
-                return;
-            }
-            isWaiting = false;
-            document.getElementById('correct-hint').style.display = 'none';
+            if (!currentQueue.length) { currentLevel++; saveStats(); showMsg("Победа!", "Уровень пройден!", startLevel, true); return; }
+            isWaiting = false; document.getElementById('correct-hint').style.display = 'none';
             const cur = currentQueue[0];
             if (currentMode === 'phrases') renderPhrasesMode(cur); else renderWordsMode(cur);
             updateHeader();
@@ -2870,22 +2820,18 @@
 
         function renderWordsMode(cur) {
             document.getElementById('phrase-builder-ui').style.display = 'none';
-            document.getElementById('options-container').style.display = 'flex';
+            const container = document.getElementById('options-container');
+            container.style.display = 'flex'; container.innerHTML = '';
             document.getElementById('word').innerText = currentMode === 'audio' ? '🎧' : cur.pl;
-            speakText(cur.pl);
-            const container = document.getElementById('options-container'); container.innerHTML = '';
+            if (currentMode === 'audio' || currentLevel < 5) speakText(cur.pl);
             
-            // ВАЖНО: берем обманки ТОЛЬКО ИЗ АКТИВНОЙ КОЛОДЫ (чтобы сленг не выпадал в базе)
             let pool = activeDeck.filter(w => w.ru !== cur.ru).map(w => w.ru);
-            // Защита, если активная колода вдруг меньше 2 слов (во время тестов)
-            if(pool.length < 2) pool = dictionary.filter(w => w.cat === 'base').map(w => w.ru);
-            
-            let distractors = shuffle(pool).slice(0, 2);
-            let opts = shuffle([cur.ru, ...distractors]);
+            if (pool.length < 2) pool = dictionary.filter(w => w.cat === 'base').map(w => w.ru);
+            let opts = shuffle([cur.ru, ...shuffle(pool).slice(0, 2)]);
             
             opts.forEach(o => {
                 const b = document.createElement('button'); b.className = 'option-btn'; b.innerText = o;
-                b.onclick = () => { if(isWaiting) return; checkWordAnswer(b, o, cur.ru, cur); };
+                b.onclick = () => { if(!isWaiting) checkWordAnswer(b, o, cur.ru, cur); };
                 container.appendChild(b);
             });
         }
@@ -2896,16 +2842,9 @@
             const slots = document.getElementById('slots-container'); const tiles = document.getElementById('tiles-container');
             slots.innerHTML = ''; tiles.innerHTML = ''; selectedPhraseWords = [];
             document.getElementById('word').innerText = cur.ru;
-            
             const correctWords = cur.pl.split(' ');
-            
-            // Ложные слова берем из активной колоды, а не всей базы
             let trapsPool = shuffle(activeDeck).map(x => x.pl);
-            if(trapsPool.length < 4) trapsPool = shuffle(dictionary.filter(w => w.cat === 'base')).map(x => x.pl);
-            
-            const traps = trapsPool.slice(0, 4);
-            const pool = shuffle([...correctWords, ...traps]);
-            
+            const pool = shuffle([...correctWords, ...trapsPool.slice(0, 4)]);
             pool.forEach(w => {
                 const t = document.createElement('div'); t.className = 'tile'; t.innerText = w;
                 t.onclick = () => {
@@ -2919,20 +2858,12 @@
             });
         }
 
-        function handleMistake(curObj) {
-            levelLives--;
-            renderLives();
-            addMistake(curObj);
-            
-            if (levelLives <= 0) {
-                isWaiting = true;
-                setTimeout(() => {
-                    showMsg("Ой-ой!", "Жизни кончились. Давай сначала?", startLevel, false);
-                }, 600);
-            } else {
-                currentQueue.push(currentQueue.shift());
-                setTimeout(nextQuestion, 1200);
-            }
+        function checkWordAnswer(btn, sel, target, curObj) {
+            isWaiting = true;
+            if (sel === target) {
+                btn.classList.add('is-correct'); stats.xp += 1; stats.words++; currentQueue.shift();
+                saveStats(); setTimeout(nextQuestion, 400);
+            } else { btn.classList.add('is-wrong'); handleMistake(curObj); }
         }
 
         function checkSentence() {
@@ -2940,49 +2871,25 @@
             if (selectedPhraseWords.join(' ') === cur.pl) {
                 stats.xp += 5; stats.phrases++; currentQueue.shift(); saveStats(); setTimeout(nextQuestion, 400);
             } else {
-                const hint = document.getElementById('correct-hint');
-                hint.innerText = "Правильно: " + cur.pl; hint.style.display = 'block';
+                document.getElementById('correct-hint').innerText = "Правильно: " + cur.pl;
+                document.getElementById('correct-hint').style.display = 'block';
                 handleMistake(cur);
             }
         }
 
-        function checkWordAnswer(btn, sel, target, curObj) {
-            isWaiting = true;
-            if (sel === target) {
-                btn.classList.add('is-correct'); stats.xp += 1; stats.words++; currentQueue.shift();
-                saveStats(); setTimeout(nextQuestion, 400);
-            } else {
-                btn.classList.add('is-wrong');
-                handleMistake(curObj);
-            }
-        }
-
-        // --- СИСТЕМНЫЕ ФУНКЦИИ ---
-        function setMode(mode) {
-            document.getElementById('interests-panel').style.display = mode === 'interests' ? 'flex' : 'none';
-            document.getElementById('play-zone').style.display = mode === 'interests' ? 'none' : 'flex';
-            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-            const btn = document.getElementById('btn-' + (mode === 'interests' ? 'interests' : mode));
-            if(btn) btn.classList.add('active');
-            
-            if (mode !== 'interests') { currentMode = mode; startLevel(); }
+        function handleMistake(obj) {
+            levelLives--; renderLives();
+            if (!mistakesDb.some(m => m.pl === obj.pl)) mistakesDb.push(obj);
+            if (levelLives <= 0) setTimeout(() => showMsg("Ой-ой!", "Жизни кончились!", startLevel, false), 600);
+            else { currentQueue.push(currentQueue.shift()); setTimeout(nextQuestion, 1200); }
         }
 
         function switchTab(tab) {
             document.getElementById('game-container').style.display = tab === 'play' ? 'flex' : 'none';
             document.getElementById('stats-page').style.display = tab === 'stats' ? 'flex' : 'none';
-            
-            // Визуальное переключение вкладок
             document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
-            const activeTabBtn = document.getElementById('tab-' + tab);
-            if(activeTabBtn) activeTabBtn.classList.add('active');
-
+            document.getElementById('tab-' + tab)?.classList.add('active');
             if (tab === 'stats') { updateStatsUI(); syncWithCloud().then(fetchLeaderboard); }
-            else { setMode('classic'); }
-        }
-
-        function addMistake(item) {
-            if (!mistakesDb.some(m => m.pl === item.pl)) { mistakesDb.push(item); updateStatsUI(); }
         }
 
         function openMistakes() {
@@ -2992,28 +2899,14 @@
         }
 
         function renderMistakeQuestion() {
-            if (currentQueue.length === 0) { closeMistakes(); return; }
-            const cur = currentQueue[0];
-            document.getElementById('m-word').innerText = cur.pl;
+            if (!currentQueue.length) { closeMistakes(); return; }
+            const cur = currentQueue[0]; document.getElementById('m-word').innerText = cur.pl;
             const container = document.getElementById('m-options-container'); container.innerHTML = '';
-            
-            // Варианты ошибок тянем только из текущей колоды (БЕЗ НАДПИСИ ОШИБКА 1/2)
             let pool = activeDeck.filter(w => w.ru !== cur.ru).map(w => w.ru);
-            if(pool.length < 2) pool = dictionary.filter(w => w.cat === 'base').map(w => w.ru);
-            
             let opts = shuffle([cur.ru, ...shuffle(pool).slice(0, 2)]);
-            
             opts.forEach(o => {
                 const b = document.createElement('button'); b.className = 'option-btn'; b.innerText = o;
-                b.onclick = () => { 
-                    if(o === cur.ru) { 
-                        mistakesDb = mistakesDb.filter(m => m.pl !== cur.pl); 
-                        currentQueue.shift(); 
-                        renderMistakeQuestion(); 
-                    } else {
-                        b.classList.add('is-wrong');
-                    }
-                };
+                b.onclick = () => { if(o === cur.ru) { mistakesDb = mistakesDb.filter(m => m.pl !== cur.pl); currentQueue.shift(); renderMistakeQuestion(); } else b.classList.add('is-wrong'); };
                 container.appendChild(b);
             });
             updateStatsUI();
@@ -3021,60 +2914,34 @@
 
         function closeMistakes() { document.getElementById('mistakes-screen').style.display = 'none'; document.getElementById('game-container').style.display = 'flex'; updateStatsUI(); }
         function saveStats() { localStorage.setItem('pl_level', currentLevel); localStorage.setItem('pl_stats_v2', JSON.stringify(stats)); localStorage.setItem('pl_mistakes_v2', JSON.stringify(mistakesDb)); updateStatsUI(); syncWithCloud(); }
-        
         function updateStatsUI() {
-            document.getElementById('st-xp').innerText = stats.xp + ' XP';
-            document.getElementById('st-level').innerText = currentLevel + 1;
-            document.getElementById('st-words').innerText = stats.words;
-            document.getElementById('st-phrases').innerText = stats.phrases;
-            document.getElementById('fab-count').innerText = mistakesDb.length;
-            document.getElementById('fab-mistakes').style.display = mistakesDb.length > 0 ? 'flex' : 'none';
+            document.getElementById('st-xp').innerText = stats.xp + ' XP'; document.getElementById('st-level').innerText = currentLevel + 1;
+            document.getElementById('st-words').innerText = stats.words; document.getElementById('st-phrases').innerText = stats.phrases;
+            document.getElementById('fab-count').innerText = mistakesDb.length; document.getElementById('fab-mistakes').style.display = mistakesDb.length > 0 ? 'flex' : 'none';
         }
-        
-        function updateHeader() { const isExam = (currentLevel + 1) % 10 === 0; document.getElementById('stats-header').innerText = isExam ? "ЭКЗАМЕН" : `УРОВЕНЬ ${currentLevel + 1}`; }
+        function updateHeader() { document.getElementById('stats-header').innerText = `УРОВЕНЬ ${currentLevel + 1}`; }
+        function speakText(t) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = 'pl-PL'; window.speechSynthesis.speak(u); }
         function speakCurrent() { speakText(currentQueue[0]?.pl || ""); }
         function speakMistake() { speakText(document.getElementById('m-word').innerText); }
-        function speakText(t) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = 'pl-PL'; window.speechSynthesis.speak(u); }
-        function shuffle(a) { return [...a].sort(() => Math.random() - 0.5); }
         function resetProgress() { if(confirm("Сбросить всё?")) { localStorage.clear(); location.reload(); } }
-        
         async function syncWithCloud() { try { await sb.from('leaderboard').upsert({ username: userName, xp: stats.xp, score: stats.words, level: currentLevel + 1 }, { onConflict: 'username' }); } catch (e) {} }
         async function fetchLeaderboard() { const { data } = await sb.from('leaderboard').select('*').order('xp', { ascending: false }).limit(10); document.getElementById('leaderboard-list').innerHTML = (data || []).map((u, i) => `<div class="leader-row"><span>${i+1}. ${u.username}</span><span>${u.xp} XP</span></div>`).join(''); }
-        
-        function showMsg(t, d, action, isWin) { 
-            document.getElementById('play-zone').style.display = 'none'; 
-            const m = document.getElementById('message-screen'); 
-            m.style.display = 'flex'; 
-            document.getElementById('msg-title').innerText = t; 
-            document.getElementById('msg-cat-img').src = isWin ? 'good.png' : 'bad.png'; 
-            nextActionFn = action; 
-        }
-        
-        function handleMessageClick() { 
-            document.getElementById('message-screen').style.display = 'none'; 
-            document.getElementById('play-zone').style.display = 'flex'; 
-            if (nextActionFn) nextActionFn(); 
-        }
+        function showMsg(t, d, action, isWin) { document.getElementById('play-zone').style.display = 'none'; const m = document.getElementById('message-screen'); m.style.display = 'flex'; document.getElementById('msg-title').innerText = t; document.getElementById('msg-cat-img').src = isWin ? 'good.png' : 'bad.png'; nextActionFn = action; }
+        function handleMessageClick() { document.getElementById('message-screen').style.display = 'none'; document.getElementById('play-zone').style.display = 'flex'; if (nextActionFn) nextActionFn(); }
 
-        // Вызываем инициализацию, которая и галочки расставит, и массивы сформирует
-        initApp();
+        // --- ЖЕЛЕЗОБЕТОННЫЙ ЗАПУСК ---
         window.onload = function() {
-            // 1. Показываем контейнер игры
             document.getElementById('game-container').style.display = 'flex';
             document.getElementById('stats-page').style.display = 'none';
+            document.getElementById('mistakes-screen').style.display = 'none';
             
-            // 2. Делаем вкладку "Прогресс" активной
-            document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
-            document.getElementById('tab-play').classList.add('active');
-
-            // 3. Расставляем галочки интересов (если они были сохранены)
             selectedCats.forEach(cat => {
                 let checkbox = document.getElementById('cat-' + cat);
                 if (checkbox) checkbox.checked = true;
             });
             
-            // 4. Запускаем логику (выберет слова и отрисует карточку)
             applyMixer();
+            setMode('classic');
             updateStatsUI();
         };
     </script>
