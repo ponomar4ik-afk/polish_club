@@ -2776,21 +2776,26 @@ const dictionary = [
         function renderLives() { document.getElementById('lives-display').innerText = "❤️".repeat(levelLives) + "🤍".repeat(Math.max(0, 2 - levelLives)); }
 
         function applyMixer() {
-            selectedCats = [];
-            ['auto', 'football', 'mma', 'truck', 'buyer'].forEach(c => {
-                if(document.getElementById('cat-' + c)?.checked) selectedCats.push(c);
-            });
-            localStorage.setItem('pl_selected_cats', JSON.stringify(selectedCats));
-            
-            const baseWords = dictionary.filter(w => w.cat === 'base');
-            const intWords = dictionary.filter(w => selectedCats.includes(w.cat));
-            activeDeck = selectedCats.length === 0 ? shuffle(baseWords) : shuffle([...shuffle(baseWords).slice(0, 500), ...intWords]);
+            try {
+                selectedCats = [];
+                ['auto', 'football', 'mma', 'truck', 'buyer'].forEach(cat => {
+                    if(document.getElementById('cat-' + cat)?.checked) selectedCats.push(cat);
+                });
+                localStorage.setItem('pl_selected_cats', JSON.stringify(selectedCats));
+                
+                // Сохраняем слова для обманок без перемешивания!
+                const baseWords = dictionary.filter(w => w.cat === 'base');
+                const intWords = dictionary.filter(w => selectedCats.includes(w.cat));
+                activeDeck = [...baseWords, ...intWords];
 
-            const baseP = sentencesData.filter(s => s.cat === 'base');
-            const intP = sentencesData.filter(s => selectedCats.includes(s.cat));
-            activePhrases = selectedCats.length === 0 ? shuffle(baseP) : shuffle([...shuffle(baseP).slice(0, 50), ...intP]);
+                // Сохраняем фразы без перемешивания
+                const basePhrases = sentencesData.filter(s => s.cat === 'base');
+                const intPhrases = sentencesData.filter(s => selectedCats.includes(s.cat));
+                activePhrases = [...basePhrases, ...intPhrases];
+            } catch (e) {
+                console.error("Ошибка в applyMixer:", e);
+            }
         }
-
         function applyMixerAndStart() { applyMixer(); setMode('classic'); }
 
         function setMode(mode) {
@@ -2803,10 +2808,36 @@ const dictionary = [
         }
 
         function startLevel() {
-            levelLives = 2; renderLives();
-            let source = currentMode === 'phrases' ? activePhrases : activeDeck;
-            if (!source.length) source = activeDeck;
-            currentQueue = shuffle([...source]).slice(0, 10);
+            levelLives = 2; 
+            renderLives();
+            const isExam = (currentLevel + 1) % 10 === 0;
+            const itemsNeeded = isExam ? 20 : 10; // Сколько карточек нужно
+            
+            const isPhrases = currentMode === 'phrases';
+            
+            // Выбираем откуда черпать (слова или фразы)
+            const fullBase = isPhrases ? sentencesData.filter(s => s.cat === 'base') : dictionary.filter(w => w.cat === 'base');
+            const fullInt = isPhrases ? sentencesData.filter(s => selectedCats.includes(s.cat)) : dictionary.filter(w => selectedCats.includes(w.cat));
+            
+            // Если есть интересы, берем 8 базы + 2 сленга (на экзамене 16+4)
+            const baseCount = fullInt.length > 0 ? (isExam ? 16 : 8) : itemsNeeded;
+            const intCount = itemsNeeded - baseCount;
+            
+            // БЕРЕМ БАЗУ СТРОГО ПО ПОРЯДКУ (Формула: Уровень * Количество)
+            const startIdx = currentLevel * baseCount;
+            let levelBase = fullBase.slice(startIdx, startIdx + baseCount);
+            
+            // Бесконечная игра: если прошел ВСЮ базу, выдаем случайные для повторения
+            if (levelBase.length < baseCount) {
+                levelBase = shuffle([...fullBase]).slice(0, baseCount);
+            }
+            
+            // Сленг всегда подмешиваем случайно, чтобы удивлять
+            const levelInt = shuffle([...fullInt]).slice(0, intCount);
+            
+            // Сливаем базу и сленг, и перемешиваем ТОЛЬКО ЭТУ десятку для игры
+            currentQueue = shuffle([...levelBase, ...levelInt]);
+            
             nextQuestion();
         }
 
