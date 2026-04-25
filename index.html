@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Panamket Pro v4.3</title>
+    <title>Panamket Pro v4.4</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
@@ -22,7 +22,7 @@
         }
 
         .tabs { display: flex; width: 100%; background: #0F172A; border-bottom: 1px solid #1E293B; position: fixed; top: 0; z-index: 100; }
-        .tab { flex: 1; padding: 18px 0; text-align: center; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; text-transform: uppercase; }
+        .tab { flex: 1; padding: 18px 0; text-align: center; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; text-transform: uppercase; transition: 0.2s;}
         .tab.active { color: var(--text-main); border-bottom: 3px solid var(--accent); }
 
         .container { 
@@ -32,7 +32,7 @@
         }
         
         .mode-tabs { display: flex; width: 100%; gap: 6px; margin-bottom: 15px; flex-shrink: 0; }
-        .mode-btn { flex: 1; background: var(--btn-bg); color: var(--text-muted); border: 1px solid #1E293B; padding: 12px 2px; border-radius: 12px; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; cursor: pointer; }
+        .mode-btn { flex: 1; background: var(--btn-bg); color: var(--text-muted); border: 1px solid #1E293B; padding: 12px 2px; border-radius: 12px; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.2s;}
         .mode-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
         .is-pressed { box-shadow: inset 0 0 0 3px #FFFFFF !important; transform: scale(0.96); transition: 0.1s; }
@@ -44,7 +44,7 @@
         .lives { color: var(--error); font-size: 1.1rem; }
 
         .word-card { background: var(--card-bg); padding: 25px 20px; border-radius: 24px; border: 1px solid #1E293B; margin-bottom: 15px; min-height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; }
-        .word-card h1 { margin: 0; font-size: 1.7rem; font-weight: 700; }
+        .word-card h1 { margin: 0; font-size: 1.7rem; font-weight: 700; text-align: center;}
         .speaker-icon { margin-top: 10px; font-size: 1.2rem; cursor: pointer; background: #1E293B; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 
         #interests-panel { display: none; flex-direction: column; width: 100%; }
@@ -120,12 +120,12 @@
         <div id="interests-panel">
             <h2 style="margin-bottom:20px; font-size: 1.2rem;">Что тебе интересно?</h2>
             <div id="interests-list">
-    <div class="interest-item"><input type="checkbox" id="cat-auto"><label style="margin-left:10px" for="cat-auto">🏎 Автомобили</label></div>
-    <div class="interest-item"><input type="checkbox" id="cat-buyer"><label style="margin-left:10px" for="cat-buyer">🛍 Байер (Люкс)</label></div>
-    <div class="interest-item"><input type="checkbox" id="cat-truck"><label style="margin-left:10px" for="cat-truck">🚛 Дальнобойщики</label></div>
-    <div class="interest-item"><input type="checkbox" id="cat-mma"><label style="margin-left:10px" for="cat-mma">🥊 Единоборства</label></div>
-    <div class="interest-item"><input type="checkbox" id="cat-football"><label style="margin-left:10px" for="cat-football">⚽️ Футбол</label></div>
-</div>
+                <div class="interest-item"><input type="checkbox" id="cat-auto"><label style="margin-left:10px" for="cat-auto">🏎 Автомобили</label></div>
+                <div class="interest-item"><input type="checkbox" id="cat-buyer"><label style="margin-left:10px" for="cat-buyer">🛍 Байер (Люкс)</label></div>
+                <div class="interest-item"><input type="checkbox" id="cat-truck"><label style="margin-left:10px" for="cat-truck">🚛 Дальнобойщики</label></div>
+                <div class="interest-item"><input type="checkbox" id="cat-mma"><label style="margin-left:10px" for="cat-mma">🥊 Единоборства</label></div>
+                <div class="interest-item"><input type="checkbox" id="cat-football"><label style="margin-left:10px" for="cat-football">⚽️ Футбол</label></div>
+            </div>
             <button class="action-btn" style="margin-top:20px" onclick="applyMixer()">Сохранить и Начать</button>
         </div>
     </div>
@@ -166,2781 +166,420 @@
 
         // --- БАЗА ДАННЫХ ---
         const dictionary = [
-    // УРОВЕНЬ 1: Основы основ
-    {pl: "Ja", ru: "Я", cat: "base"},
-    {pl: "Ty", ru: "Ты", cat: "base"},
-    {pl: "On", ru: "Он", cat: "base"},
-    {pl: "Ona", ru: "Она", cat: "base"},
-    {pl: "Ono", ru: "Оно", cat: "base"},
-    {pl: "My", ru: "Мы", cat: "base"},
-    {pl: "Wy", ru: "Вы", cat: "base"},
-    {pl: "Oni", ru: "Они (мужчины)", cat: "base"},
-    {pl: "One", ru: "Они (женщины/вещи)", cat: "base"},
-    {pl: "Być", ru: "Быть", cat: "base"},
-
-    // УРОВЕНЬ 2: Вежливость и первые фразы
-    {pl: "Tak", ru: "Да", cat: "base"},
-    {pl: "Nie", ru: "Нет", cat: "base"},
-    {pl: "Cześć", ru: "Привет / Пока", cat: "base"},
-    {pl: "Dzień dobry", ru: "Добрый день", cat: "base"},
-    {pl: "Dobry wieczór", ru: "Добрый вечер", cat: "base"},
-    {pl: "Dobranoc", ru: "Спокойной ночи", cat: "base"},
-    {pl: "Dziękuję", ru: "Спасибо", cat: "base"},
-    {pl: "Proszę", ru: "Пожалуйста", cat: "base"},
-    {pl: "Przepraszam", ru: "Извините / Прошу прощения", cat: "base"},
-    {pl: "Do widzenia", ru: "До свидания", cat: "base"},
-
-    // УРОВЕНЬ 3: Семья
-    {pl: "Mama", ru: "Мама", cat: "base"},
-    {pl: "Tata", ru: "Папа", cat: "base"},
-    {pl: "Brat", ru: "Брат", cat: "base"},
-    {pl: "Siostra", ru: "Сестра", cat: "base"},
-    {pl: "Dziecko", ru: "Ребенок", cat: "base"},
-    {pl: "Rodzice", ru: "Родители", cat: "base"},
-    {pl: "Babcia", ru: "Бабушка", cat: "base"},
-    {pl: "Dziadek", ru: "Дедушка", cat: "base"},
-    {pl: "Syn", ru: "Сын", cat: "base"},
-    {pl: "Córka", ru: "Дочь", cat: "base"},
-
-    // УРОВЕНЬ 4: Глаголы действия (жизненно важные)
-    {pl: "Mieć", ru: "Иметь", cat: "base"},
-    {pl: "Robić", ru: "Делать", cat: "base"},
-    {pl: "Mówić", ru: "Говорить", cat: "base"},
-    {pl: "Wiedzieć", ru: "Знать", cat: "base"},
-    {pl: "Chcieć", ru: "Хотеть", cat: "base"},
-    {pl: "Móc", ru: "Мочь", cat: "base"},
-    {pl: "Iść", ru: "Идти", cat: "base"},
-    {pl: "Jachać", ru: "Ехать", cat: "base"},
-    {pl: "Widzieć", ru: "Видеть", cat: "base"},
-    {pl: "Słyszeć", ru: "Слышать", cat: "base"},
-
-    // УРОВЕНЬ 5: Еда и питье
-    {pl: "Woda", ru: "Вода", cat: "base"},
-    {pl: "Chleb", ru: "Хлеб", cat: "base"},
-    {pl: "Mleko", ru: "Молоко", cat: "base"},
-    {pl: "Kawa", ru: "Кофе", cat: "base"},
-    {pl: "Herbata", ru: "Чай", cat: "base"},
-    {pl: "Jedzenie", ru: "Еда", cat: "base"},
-    {pl: "Jabłko", ru: "Яблоко", cat: "base"},
-    {pl: "Cukier", ru: "Сахар", cat: "base"},
-    {pl: "Sól", ru: "Соль", cat: "base"},
-    {pl: "Obiad", ru: "Обед", cat: "base"},
-
-    // УРОВЕНЬ 6: Числа (1-10)
-    {pl: "Jeden", ru: "Один", cat: "base"},
-    {pl: "Dwa", ru: "Два", cat: "base"},
-    {pl: "Trzy", ru: "Три", cat: "base"},
-    {pl: "Cztery", ru: "Четыре", cat: "base"},
-    {pl: "Pięć", ru: "Пять", cat: "base"},
-    {pl: "Sześć", ru: "Шесть", cat: "base"},
-    {pl: "Siedem", ru: "Семь", cat: "base"},
-    {pl: "Osiem", ru: "Восемь", cat: "base"},
-    {pl: "Dziewięć", ru: "Девять", cat: "base"},
-    {pl: "Dziesięć", ru: "Десять", cat: "base"},
-
-    // УРОВЕНЬ 7: Время
-    {pl: "Czas", ru: "Время", cat: "base"},
-    {pl: "Godzina", ru: "Час", cat: "base"},
-    {pl: "Dzień", ru: "День", cat: "base"},
-    {pl: "Noc", ru: "Ночь", cat: "base"},
-    {pl: "Tydzień", ru: "Неделя", cat: "base"},
-    {pl: "Miesiąc", ru: "Месяц", cat: "base"},
-    {pl: "Rok", ru: "Год", cat: "base"},
-    {pl: "Dzisiaj", ru: "Сегодня", cat: "base"},
-    {pl: "Jutro", ru: "Завтра", cat: "base"},
-    {pl: "Wczoraj", ru: "Вчера", cat: "base"},
-
-    // УРОВЕНЬ 8: Дом и быт
-    {pl: "Dom", ru: "Дом", cat: "base"},
-    {pl: "Okno", ru: "Окно", cat: "base"},
-    {pl: "Drzwi", ru: "Дверь", cat: "base"},
-    {pl: "Pokój", ru: "Комната", cat: "base"},
-    {pl: "Kuchnia", ru: "Кухня", cat: "base"},
-    {pl: "Łazienka", ru: "Ванная комната", cat: "base"},
-    {pl: "Łóżko", ru: "Кровать", cat: "base"},
-    {pl: "Stół", ru: "Стол", cat: "base"},
-    {pl: "Krzesło", ru: "Стул", cat: "base"},
-    {pl: "Klucz", ru: "Ключ", cat: "base"},
-
-    // УРОВЕНЬ 9: Город и транспорт
-    {pl: "Miasto", ru: "Город", cat: "base"},
-    {pl: "Ulica", ru: "Улица", cat: "base"},
-    {pl: "Sklep", ru: "Магазин", cat: "base"},
-    {pl: "Szkoła", ru: "Школа", cat: "base"},
-    {pl: "Praca", ru: "Работа", cat: "base"},
-    {pl: "Samochód", ru: "Машина", cat: "base"},
-    {pl: "Autobus", ru: "Автобус", cat: "base"},
-    {pl: "Pociąg", ru: "Поезд", cat: "base"},
-    {pl: "Bilet", ru: "Билет", cat: "base"},
-    {pl: "Droga", ru: "Дорога", cat: "base"},
-
-    // ЭКЗАМЕН (УРОВЕНЬ 10) соберется автоматически из слов выше
-
-    // УРОВЕНЬ 11: Люди
-    {pl: "Człowiek", ru: "Человек", cat: "base"},
-    {pl: "Ludzie", ru: "Люди", cat: "base"},
-    {pl: "Mężczyzna", ru: "Мужчина", cat: "base"},
-    {pl: "Kobieta", ru: "Женщина", cat: "base"},
-    {pl: "Chłopak", ru: "Парень", cat: "base"},
-    {pl: "Dziewczyna", ru: "Девушка", cat: "base"},
-    {pl: "Przyjaciel", ru: "Друг", cat: "base"},
-    {pl: "Sąsiad", ru: "Сосед", cat: "base"},
-    {pl: "Pan", ru: "Господин", cat: "base"},
-    {pl: "Pani", ru: "Госпожа", cat: "base"},
-
-    // УРОВЕНЬ 12: Местоимения и вопросы
-    {pl: "Kto", ru: "Кто", cat: "base"},
-    {pl: "Co", ru: "Что", cat: "base"},
-    {pl: "Gdzie", ru: "Где", cat: "base"},
-    {pl: "Kiedy", ru: "Когда", cat: "base"},
-    {pl: "Dlaczego", ru: "Почему", cat: "base"},
-    {pl: "Jak", ru: "Как", cat: "base"},
-    {pl: "Ile", ru: "Сколько", cat: "base"},
-    {pl: "Który", ru: "Который", cat: "base"},
-    {pl: "Ten", ru: "Этот", cat: "base"},
-    {pl: "Tamten", ru: "Тот", cat: "base"},
-
-    // УРОВЕНЬ 13: Прилагательные (цвета)
-    {pl: "Biały", ru: "Белый", cat: "base"},
-    {pl: "Czarny", ru: "Черный", cat: "base"},
-    {pl: "Czerwony", ru: "Красный", cat: "base"},
-    {pl: "Niebieski", ru: "Синий", cat: "base"},
-    {pl: "Zielony", ru: "Зеленый", cat: "base"},
-    {pl: "Żółty", ru: "Желтый", cat: "base"},
-    {pl: "Szary", ru: "Серый", cat: "base"},
-    {pl: "Brązowy", ru: "Коричневый", cat: "base"},
-    {pl: "Kolor", ru: "Цвет", cat: "base"},
-    {pl: "Jasny", ru: "Светлый", cat: "base"},
-
-    // УРОВЕНЬ 14: Прилагательные (качества)
-    {pl: "Dobry", ru: "Хороший", cat: "base"},
-    {pl: "Zły", ru: "Плохой", cat: "base"},
-    {pl: "Duży", ru: "Большой", cat: "base"},
-    {pl: "Mały", ru: "Маленький", cat: "base"},
-    {pl: "Nowy", ru: "Новый", cat: "base"},
-    {pl: "Stary", ru: "Старый", cat: "base"},
-    {pl: "Drogi", ru: "Дорогой", cat: "base"},
-    {pl: "Tani", ru: "Дешевый", cat: "base"},
-    {pl: "Ładny", ru: "Красивый", cat: "base"},
-    {pl: "Brzydki", ru: "Уродливый", cat: "base"},
-
-    // УРОВЕНЬ 15: Тело
-    {pl: "Ciało", ru: "Тело", cat: "base"},
-    {pl: "Głowa", ru: "Голова", cat: "base"},
-    {pl: "Ręka", ru: "Рука", cat: "base"},
-    {pl: "Noga", ru: "Нога", cat: "base"},
-    {pl: "Oko", ru: "Глаз", cat: "base"},
-    {pl: "Ucho", ru: "Ухо", cat: "base"},
-    {pl: "Nos", ru: "Нос", cat: "base"},
-    {pl: "Usta", ru: "Рот", cat: "base"},
-    {pl: "Serce", ru: "Сердце", cat: "base"},
-    {pl: "Krew", ru: "Кровь", cat: "base"},
-
-    // УРОВЕНЬ 16: Одежда
-    {pl: "Ubranie", ru: "Одежда", cat: "base"},
-    {pl: "Koszulka", ru: "Футболка", cat: "base"},
-    {pl: "Spodnie", ru: "Брюки", cat: "base"},
-    {pl: "Buty", ru: "Обувь", cat: "base"},
-    {pl: "Kurtka", ru: "Куртка", cat: "base"},
-    {pl: "Czapka", ru: "Шапка", cat: "base"},
-    {pl: "Sukienka", ru: "Платье", cat: "base"},
-    {pl: "Koszuła", ru: "Рубашка", cat: "base"},
-    {pl: "Skarpetki", ru: "Носки", cat: "base"},
-    {pl: "Torba", ru: "Сумка", cat: "base"},
-
-    // УРОВЕНЬ 17: Природа
-    {pl: "Niebło", ru: "Небо", cat: "base"},
-    {pl: "Słońce", ru: "Солнце", cat: "base"},
-    {pl: "Księżyc", ru: "Луна", cat: "base"},
-    {pl: "Ziemia", ru: "Земля", cat: "base"},
-    {pl: "Woda", ru: "Вода", cat: "base"},
-    {pl: "Ogień", ru: "Огонь", cat: "base"},
-    {pl: "Drzewo", ru: "Дерево", cat: "base"},
-    {pl: "Kwiat", ru: "Цветок", cat: "base"},
-    {pl: "Pogoda", ru: "Погода", cat: "base"},
-    {pl: "Wiatr", ru: "Ветер", cat: "base"},
-
-    // УРОВЕНЬ 18: Животные
-    {pl: "Zwierzę", ru: "Животное", cat: "base"},
-    {pl: "Pies", ru: "Собака", cat: "base"},
-    {pl: "Kot", ru: "Кот", cat: "base"},
-    {pl: "Koń", ru: "Лошадь", cat: "base"},
-    {pl: "Krowa", ru: "Корова", cat: "base"},
-    {pl: "Ptak", ru: "Птица", cat: "base"},
-    {pl: "Ryba", ru: "Рыба", cat: "base"},
-    {pl: "Mysz", ru: "Мышь", cat: "base"},
-    {pl: "Słoń", ru: "Слон", cat: "base"},
-    {pl: "Lew", ru: "Лев", cat: "base"},
-
-    // УРОВЕНЬ 19: Школа и обучение
-    {pl: "Książka", ru: "Книга", cat: "base"},
-    {pl: "Zeszyt", ru: "Тетрадь", cat: "base"},
-    {pl: "Długopis", ru: "Ручка", cat: "base"},
-    {pl: "Ołówek", ru: "Карандаш", cat: "base"},
-    {pl: "Papier", ru: "Бумага", cat: "base"},
-    {pl: "Pytanie", ru: "Вопрос", cat: "base"},
-    {pl: "Odpowiedź", ru: "Ответ", cat: "base"},
-    {pl: "Język", ru: "Язык", cat: "base"},
-    {pl: "Słowo", ru: "Слово", cat: "base"},
-    {pl: "Lekcja", ru: "Урок", cat: "base"},
-
-    // УРОВЕНЬ 21: Эмоции и чувства
-    {pl: "Miłość", ru: "Любовь", cat: "base"},
-    {pl: "Szczęście", ru: "Счастье", cat: "base"},
-    {pl: "Smutek", ru: "Грусть", cat: "base"},
-    {pl: "Gniew", ru: "Гнев", cat: "base"},
-    {pl: "Strach", ru: "Страх", cat: "base"},
-    {pl: "Nadzieja", ru: "Надежда", cat: "base"},
-    {pl: "Uśmiech", ru: "Улыбка", cat: "base"},
-    {pl: "Płacz", ru: "Плач", cat: "base"},
-    {pl: "Zabawa", ru: "Веселье / Игра", cat: "base"},
-    {pl: "Spokój", ru: "Спокойствие", cat: "base"},
-
-    // УРОВЕНЬ 22: Глаголы (движение)
-    {pl: "Biegać", ru: "Бегать", cat: "base"},
-    {pl: "Skakać", ru: "Прыгать", cat: "base"},
-    {pl: "Pływać", ru: "Плавать", cat: "base"},
-    {pl: "Stać", ru: "Стоять", cat: "base"},
-    {pl: "Siedzieć", ru: "Сидеть", cat: "base"},
-    {pl: "Leżeć", ru: "Лежать", cat: "base"},
-    {pl: "Czekać", ru: "Ждать", cat: "base"},
-    {pl: "Wracać", ru: "Возвращаться", cat: "base"},
-    {pl: "Wchodzić", ru: "Входить", cat: "base"},
-    {pl: "Wychodzić", ru: "Выходить", cat: "base"},
-
-    // УРОВЕНЬ 23: Работа и деньги
-    {pl: "Pieniądze", ru: "Деньги", cat: "base"},
-    {pl: "Karta", ru: "Карта", cat: "base"},
-    {pl: "Cena", ru: "Цена", cat: "base"},
-    {pl: "Koszt", ru: "Стоимость", cat: "base"},
-    {pl: "Kupować", ru: "Покупать", cat: "base"},
-    {pl: "Sprzedawać", ru: "Продавать", cat: "base"},
-    {pl: "Firma", ru: "Фирма", cat: "base"},
-    {pl: "Biuro", ru: "Офис", cat: "base"},
-    {pl: "Szef", ru: "Начальник", cat: "base"},
-    {pl: "Pensja", ru: "Зарплата", cat: "base"},
-
-    // УРОВЕНЬ 24: Технологии
-    {pl: "Telefon", ru: "Телефон", cat: "base"},
-    {pl: "Komputer", ru: "Компьютер", cat: "base"},
-    {pl: "Internet", ru: "Интернет", cat: "base"},
-    {pl: "Hasło", ru: "Пароль", cat: "base"},
-    {pl: "Wiadomość", ru: "Сообщение", cat: "base"},
-    {pl: "Poczta", ru: "Почта", cat: "base"},
-    {pl: "Strona", ru: "Страница", cat: "base"},
-    {pl: "Zdjęcie", ru: "Фотография", cat: "base"},
-    {pl: "Film", ru: "Фильм", cat: "base"},
-    {pl: "Muzyka", ru: "Музыка", cat: "base"},
-
-    // УРОВЕНЬ 25: Здоровье
-    {pl: "Zdrowie", ru: "Здоровье", cat: "base"},
-    {pl: "Lekarz", ru: "Врач", cat: "base"},
-    {pl: "Szpital", ru: "Больница", cat: "base"},
-    {pl: "Lek", ru: "Лекарство", cat: "base"},
-    {pl: "Choroba", ru: "Болезнь", cat: "base"},
-    {pl: "Ból", ru: "Боль", cat: "base"},
-    {pl: "Grypa", ru: "Грипп", cat: "base"},
-    {pl: "Serce", ru: "Сердце", cat: "base"},
-    {pl: "Pomoc", ru: "Помощь", cat: "base"},
-    {pl: "Apteka", ru: "Аптека", cat: "base"},
-
-            // УРОВЕНЬ 26: Городские локации
-    {pl: "Restauracja", ru: "Ресторан", cat: "base"},
-    {pl: "Kawiarnia", ru: "Кафе", cat: "base"},
-    {pl: "Park", ru: "Парк", cat: "base"},
-    {pl: "Kino", ru: "Кинотеатр", cat: "base"},
-    {pl: "Teatr", ru: "Театр", cat: "base"},
-    {pl: "Muzeum", ru: "Музей", cat: "base"},
-    {pl: "Basen", ru: "Бассейн", cat: "base"},
-    {pl: "Siłownia", ru: "Спортивный зал", cat: "base"},
-    {pl: "Poczta", ru: "Почта", cat: "base"},
-    {pl: "Bank", ru: "Банк", cat: "base"},
-
-    // УРОВЕНЬ 27: Мебель и интерьер
-    {pl: "Szafa", ru: "Шкаф", cat: "base"},
-    {pl: "Półka", ru: "Полка", cat: "base"},
-    {pl: "Dywan", ru: "Ковер", cat: "base"},
-    {pl: "Lustro", ru: "Зеркало", cat: "base"},
-    {pl: "Lampa", ru: "Лампа", cat: "base"},
-    {pl: "Obraz", ru: "Картина", cat: "base"},
-    {pl: "Zegar", ru: "Часы", cat: "base"},
-    {pl: "Kanapa", ru: "Диван", cat: "base"},
-    {pl: "Fotel", ru: "Кресло", cat: "base"},
-    {pl: "Biurko", ru: "Письменный стол", cat: "base"},
-
-    // УРОВЕНЬ 28: Прилагательные (состояние)
-    {pl: "Głodny", ru: "Голодный", cat: "base"},
-    {pl: "Spragniony", ru: "Жаждущий (хочет пить)", cat: "base"},
-    {pl: "Zmęczony", ru: "Уставший", cat: "base"},
-    {pl: "Chory", ru: "Больной", cat: "base"},
-    {pl: "Zdrowy", ru: "Здоровый", cat: "base"},
-    {pl: "Wesoły", ru: "Веселый", cat: "base"},
-    {pl: "Smutny", ru: "Грустный", cat: "base"},
-    {pl: "Zajęty", ru: "Занятой", cat: "base"},
-    {pl: "Wolny", ru: "Свободный", cat: "base"},
-    {pl: "Gotowy", ru: "Готовый", cat: "base"},
-
-    // УРОВЕНЬ 29: Кухонные принадлежности
-    {pl: "Talerz", ru: "Тарелка", cat: "base"},
-    {pl: "Kubek", ru: "Кружка", cat: "base"},
-    {pl: "Szklanka", ru: "Стакан", cat: "base"},
-    {pl: "Widelec", ru: "Вилка", cat: "base"},
-    {pl: "Nóż", ru: "Нож", cat: "base"},
-    {pl: "Łyżka", ru: "Ложка", cat: "base"},
-    {pl: "Garnek", ru: "Кастрюля", cat: "base"},
-    {pl: "Patelnia", ru: "Сковорода", cat: "base"},
-    {pl: "Lodówka", ru: "Холодильник", cat: "base"},
-    {pl: "Czajnik", ru: "Чайник", cat: "base"},
-
-    // УРОВЕНЬ 31: Погода и небо
-    {pl: "Deszcz", ru: "Дождь", cat: "base"},
-    {pl: "Śnieg", ru: "Снег", cat: "base"},
-    {pl: "Wiatr", ru: "Ветер", cat: "base"},
-    {pl: "Chmura", ru: "Облако", cat: "base"},
-    {pl: "Burza", ru: "Gроза", cat: "base"},
-    {pl: "Mgła", ru: "Туман", cat: "base"},
-    {pl: "Mróz", ru: "Мороз", cat: "base"},
-    {pl: "Upał", ru: "Жара", cat: "base"},
-    {pl: "Tęcza", ru: "Радуга", cat: "base"},
-    {pl: "Gwiazda", ru: "Звезда", cat: "base"},
-
-    // УРОВЕНЬ 32: Глаголы (мыслительная деятельность)
-    {pl: "Myśleć", ru: "Думать", cat: "base"},
-    {pl: "Pamiętać", ru: "Помнить", cat: "base"},
-    {pl: "Zapomnieć", ru: "Забыть", cat: "base"},
-    {pl: "Rozumieć", ru: "Понимать", cat: "base"},
-    {pl: "Uczyć się", ru: "Учиться", cat: "base"},
-    {pl: "Pytać", ru: "Спрашивать", cat: "base"},
-    {pl: "Odpowiadać", ru: "Отвечать", cat: "base"},
-    {pl: "Szukać", ru: "Искать", cat: "base"},
-    {pl: "Znaleźć", ru: "Найти", cat: "base"},
-    {pl: "Próbować", ru: "Пробовать / Пытаться", cat: "base"},
-
-    // УРОВЕНЬ 33: Овощи
-    {pl: "Ziemniak", ru: "Картофель", cat: "base"},
-    {pl: "Pomidor", ru: "Помидор", cat: "base"},
-    {pl: "Ogórek", ru: "Огурец", cat: "base"},
-    {pl: "Cebula", ru: "Лук", cat: "base"},
-    {pl: "Czosnek", ru: "Чеснок", cat: "base"},
-    {pl: "Marchewka", ru: "Морковь", cat: "base"},
-    {pl: "Kapusta", ru: "Капуста", cat: "base"},
-    {pl: "Sałata", ru: "Салат", cat: "base"},
-    {pl: "Papryka", ru: "Перец", cat: "base"},
-    {pl: "Burak", ru: "Свекла", cat: "base"},
-
-    // УРОВЕНЬ 34: Фрукты и ягоды
-    {pl: "Banan", ru: "Банан", cat: "base"},
-    {pl: "Cytryna", ru: "Лимон", cat: "base"},
-    {pl: "Pomarańcza", ru: "Апельсин", cat: "base"},
-    {pl: "Truskawka", ru: "Клубника", cat: "base"},
-    {pl: "Malina", ru: "Малина", cat: "base"},
-    {pl: "Jagoda", ru: "Черника / Ягода", cat: "base"},
-    {pl: "Winogrona", ru: "Виноград", cat: "base"},
-    {pl: "Gruszka", ru: "Груша", cat: "base"},
-    {pl: "Śliwka", ru: "Слива", cat: "base"},
-    {pl: "Arbuz", ru: "Арбуз", cat: "base"},
-
-    // УРОВЕНЬ 35: Магазин и покупки
-    {pl: "Koszyk", ru: "Корзина", cat: "base"},
-    {pl: "Wózek", ru: "Тележка", cat: "base"},
-    {pl: "Kolejka", ru: "Очередь", cat: "base"},
-    {pl: "Paragon", ru: "Чек", cat: "base"},
-    {pl: "Reklamówka", ru: "Пакет", cat: "base"},
-    {pl: "Półka", ru: "Полка", cat: "base"},
-    {pl: "Promocja", ru: "Акция / Скидка", cat: "base"},
-    {pl: "Wyprzedaż", ru: "Распродажа", cat: "base"},
-    {pl: "Klient", ru: "Клиент", cat: "base"},
-    {pl: "Sprzedawca", ru: "Продавец", cat: "base"},
-
-    // УРОВЕНЬ 36: Профессии
-    {pl: "Kierowca", ru: "Водитель", cat: "base"},
-    {pl: "Kucharz", ru: "Повар", cat: "base"},
-    {pl: "Nauczyciel", ru: "Учитель", cat: "base"},
-    {pl: "Inżynier", ru: "Инженер", cat: "base"},
-    {pl: "Sprzątaczka", ru: "Уборщица", cat: "base"},
-    {pl: "Kelner", ru: "Официант", cat: "base"},
-    {pl: "Fryzjer", ru: "Парикмахер", cat: "base"},
-    {pl: "Mechanik", ru: "Механик", cat: "base"},
-    {pl: "Policjant", ru: "Полицейский", cat: "base"},
-    {pl: "Programista", ru: "Программист", cat: "base"},
-
-    // УРОВЕНЬ 37: Офис
-    {pl: "Papier", ru: "Бумага", cat: "base"},
-    {pl: "Drukarka", ru: "Принтер", cat: "base"},
-    {pl: "Pieczątka", ru: "Печать / Штамп", cat: "base"},
-    {pl: "Segregator", ru: "Папка (регистратор)", cat: "base"},
-    {pl: "Spotkanie", ru: "Встреча", cat: "base"},
-    {pl: "Przerwa", ru: "Перерыв", cat: "base"},
-    {pl: "Urlop", ru: "Отпуск", cat: "base"},
-    {pl: "Zwolnienie", ru: "Увольнение / Больничный", cat: "base"},
-    {pl: "Biuro", ru: "Офис", cat: "base"},
-    {pl: "Ksero", ru: "Ксерокс", cat: "base"},
-
-    // УРОВЕНЬ 38: Ванная и гигиена
-    {pl: "Mydło", ru: "Мыло", cat: "base"},
-    {pl: "Ręcznik", ru: "Полотенце", cat: "base"},
-    {pl: "Szampon", ru: "Шампунь", cat: "base"},
-    {pl: "Szczoteczka", ru: "Щетка", cat: "base"},
-    {pl: "Pasta", ru: "Паста", cat: "base"},
-    {pl: "Grzebień", ru: "Расческа", cat: "base"},
-    {pl: "Prysznic", ru: "Душ", cat: "base"},
-    {pl: "Wanna", ru: "Ванна", cat: "base"},
-    {pl: "Papier toaletowy", ru: "Туалетная бумага", cat: "base"},
-    {pl: "Lustro", ru: "Зеркало", cat: "base"},
-
-    // УРОВЕНЬ 39: Глаголы (бытовые действия)
-    {pl: "Sprzątać", ru: "Убирать", cat: "base"},
-    {pl: "Gotować", ru: "Готовить", cat: "base"},
-    {pl: "Prać", ru: "Стирать", cat: "base"},
-    {pl: "Prasować", ru: "Гладить", cat: "base"},
-    {pl: "Myć", ru: "Мыть", cat: "base"},
-    {pl: "Otwierać", ru: "Открывать", cat: "base"},
-    {pl: "Zamykać", ru: "Закрывать", cat: "base"},
-    {pl: "Naprawiać", ru: "Ремонтировать", cat: "base"},
-    {pl: "Płacić", ru: "Платить", cat: "base"},
-    {pl: "Kosztować", ru: "Стоить", cat: "base"},
-
-    // УРОВЕНЬ 41: Наречия (время)
-    {pl: "Zawsze", ru: "Всегда", cat: "base"},
-    {pl: "Nigdy", ru: "Никогда", cat: "base"},
-    {pl: "Często", ru: "Часто", cat: "base"},
-    {pl: "Rzadko", ru: "Редко", cat: "base"},
-    {pl: "Czasami", ru: "Иногда", cat: "base"},
-    {pl: "Teraz", ru: "Сейчас", cat: "base"},
-    {pl: "Potem", ru: "Потом", cat: "base"},
-    {pl: "Wcześniej", ru: "Раньше", cat: "base"},
-    {pl: "Później", ru: "Позже", cat: "base"},
-    {pl: "Nadal", ru: "Все еще / По-прежнему", cat: "base"},
-
-    // УРОВЕНЬ 42: Наречия (место)
-    {pl: "Tutaj", ru: "Здесь", cat: "base"},
-    {pl: "Tam", ru: "Там", cat: "base"},
-    {pl: "Blisko", ru: "Близко", cat: "base"},
-    {pl: "Daleko", ru: "Далеко", cat: "base"},
-    {pl: "Wszędzie", ru: "Везде", cat: "base"},
-    {pl: "Nigdzie", ru: "Нигде", cat: "base"},
-    {pl: "Wewnątrz", ru: "Внутри", cat: "base"},
-    {pl: "Na zewnątrz", ru: "Снаружи", cat: "base"},
-    {pl: "Góra", ru: "Верх", cat: "base"},
-    {pl: "Dół", ru: "Низ", cat: "base"},
-
-    // УРОВЕНЬ 43: Предлоги места
-    {pl: "Na", ru: "На", cat: "base"},
-    {pl: "W", ru: "В", cat: "base"},
-    {pl: "Pod", ru: "Под", cat: "base"},
-    {pl: "Nad", ru: "Над", cat: "base"},
-    {pl: "Przed", ru: "Перед", cat: "base"},
-    {pl: "Za", ru: "За", cat: "base"},
-    {pl: "Obok", ru: "Рядом / Возле", cat: "base"},
-    {pl: "Między", ru: "Между", cat: "base"},
-    {pl: "Przez", ru: "Через / Сквозь", cat: "base"},
-    {pl: "Dla", ru: "Для", cat: "base"},
-
-    // УРОВЕНЬ 44: Прилагательные (размер и форма)
-    {pl: "Długi", ru: "Длинный", cat: "base"},
-    {pl: "Krótki", ru: "Короткий", cat: "base"},
-    {pl: "Szeroki", ru: "Широкий", cat: "base"},
-    {pl: "Wąski", ru: "Узкий", cat: "base"},
-    {pl: "Wysoki", ru: "Высокий", cat: "base"},
-    {pl: "Niski", ru: "Низкий", cat: "base"},
-    {pl: "Gruby", ru: "Толстый", cat: "base"},
-    {pl: "Chudy", ru: "Худой", cat: "base"},
-    {pl: "Ciężki", ru: "Тяжелый", cat: "base"},
-    {pl: "Lekki", ru: "Легкий", cat: "base"},
-
-    // УРОВЕНЬ 45: Эмоции 2
-    {pl: "Zdziwiony", ru: "Удивленный", cat: "base"},
-    {pl: "Zły", ru: "Злой", cat: "base"},
-    {pl: "Obrażony", ru: "Обиженный", cat: "base"},
-    {pl: "Dzielny", ru: "Смелый", cat: "base"},
-    {pl: "Leniwy", ru: "Ленивый", cat: "base"},
-    {pl: "Cierpliwy", ru: "Терпеливый", cat: "base"},
-    {pl: "Zadowolony", ru: "Довольный", cat: "base"},
-    {pl: "Dumny", ru: "Гордый", cat: "base"},
-    {pl: "Ciekawy", ru: "Любопытный / Интересный", cat: "base"},
-    {pl: "Spokojny", ru: "Спокойный", cat: "base"},
-
-    // УРОВЕНЬ 46: Качества вещей
-    {pl: "Miękki", ru: "Мягкий", cat: "base"},
-    {pl: "Twardy", ru: "Твердый", cat: "base"},
-    {pl: "Gładki", ru: "Gладкий", cat: "base"},
-    {pl: "Szorstki", ru: "Шероховатый / Грубый", cat: "base"},
-    {pl: "Ostry", ru: "Острый", cat: "base"},
-    {pl: "Tępy", ru: "Тупой (нож)", cat: "base"},
-    {pl: "Suchy", ru: "Сухой", cat: "base"},
-    {pl: "Mokry", ru: "Мокрый", cat: "base"},
-    {pl: "Czysty", ru: "Чистый", cat: "base"},
-    {pl: "Brudny", ru: "Грязный", cat: "base"},
-
-    // УРОВЕНЬ 47: Природа 2
-    {pl: "Góra", ru: "Гора", cat: "base"},
-    {pl: "Rzeka", ru: "Река", cat: "base"},
-    {pl: "Jezioro", ru: "Озеро", cat: "base"},
-    {pl: "Morze", ru: "Море", cat: "base"},
-    {pl: "Las", ru: "Лес", cat: "base"},
-    {pl: "Piasek", ru: "Песок", cat: "base"},
-    {pl: "Kamień", ru: "Камень", cat: "base"},
-    {pl: "Trawa", ru: "Трава", cat: "base"},
-    {pl: "Liść", ru: "Лист", cat: "base"},
-    {pl: "Księżyc", ru: "Луна", cat: "base"},
-
-    // УРОВЕНЬ 48: Животные 2
-    {pl: "Pies", ru: "Собака", cat: "base"},
-    {pl: "Kogut", ru: "Петух", cat: "base"},
-    {pl: "Kura", ru: "Курица", cat: "base"},
-    {pl: "Świnia", ru: "Свинья", cat: "base"},
-    {pl: "Owca", ru: "Овца", cat: "base"},
-    {pl: "Kaczka", ru: "Утка", cat: "base"},
-    {pl: "Gęś", ru: "Гусь", cat: "base"},
-    {pl: "Pająk", ru: "Паук", cat: "base"},
-    {pl: "Mucha", ru: "Муха", cat: "base"},
-    {pl: "Komar", ru: "Комар", cat: "base"},
-
-    // УРОВЕНЬ 49: Глаголы (движение 2)
-    {pl: "Latać", ru: "Летать", cat: "base"},
-    {pl: "Skakać", ru: "Прыгать", cat: "base"},
-    {pl: "Pływać", ru: "Плавать", cat: "base"},
-    {pl: "Wspinać się", ru: "Карабкаться / Подниматься", cat: "base"},
-    {pl: "Biegać", ru: "Бегать", cat: "base"},
-    {pl: "Spacerować", ru: "Гулять", cat: "base"},
-    {pl: "Tańczyć", ru: "Танцевать", cat: "base"},
-    {pl: "Prowadzić", ru: "Вести (машину) / Лидировать", cat: "base"},
-    {pl: "Nosić", ru: "Носить", cat: "base"},
-    {pl: "Przesuwać", ru: "Передвигать", cat: "base"},
-
-        // УРОВЕНЬ 51: Путешествия и аэропорт
-    {pl: "Podróż", ru: "Путешествие", cat: "base"},
-    {pl: "Wakacje", ru: "Каникулы / Отпуск", cat: "base"},
-    {pl: "Lotnisko", ru: "Аэропорт", cat: "base"},
-    {pl: "Samolot", ru: "Самолет", cat: "base"},
-    {pl: "Paszport", ru: "Паспорт", cat: "base"},
-    {pl: "Walizka", ru: "Чемодан", cat: "base"},
-    {pl: "Bagaż", ru: "Багаж", cat: "base"},
-    {pl: "Bilet lotniczy", ru: "Авиабилет", cat: "base"},
-    {pl: "Przesiadka", ru: "Пересадка", cat: "base"},
-    {pl: "Granica", ru: "Граница", cat: "base"},
-
-    // УРОВЕНЬ 52: Отель и проживание
-    {pl: "Hotel", ru: "Отель", cat: "base"},
-    {pl: "Recepcja", ru: "Рецепция", cat: "base"},
-    {pl: "Rezerwacja", ru: "Бронирование", cat: "base"},
-    {pl: "Pokój jednoosobowy", ru: "Одноместный номер", cat: "base"},
-    {pl: "Klucz", ru: "Ключ", cat: "base"},
-    {pl: "Winda", ru: "Лифт", cat: "base"},
-    {pl: "Piętro", ru: "Этаж", cat: "base"},
-    {pl: "Klimatyzacja", ru: "Кондиционер", cat: "base"},
-    {pl: "Śniadanie włączone", ru: "Завтрак включен", cat: "base"},
-    {pl: "Doba hotelowa", ru: "Отельные сутки", cat: "base"},
-
-    // УРОВЕНЬ 53: Здоровье 2 (Симптомы и аптека)
-    {pl: "Gorączka", ru: "Температура / Жар", cat: "base"},
-    {pl: "Kaszel", ru: "Кашель", cat: "base"},
-    {pl: "Katar", ru: "Насморк", cat: "base"},
-    {pl: "Recepta", ru: "Рецепт (от врача)", cat: "base"},
-    {pl: "Tabletka", ru: "Таблетка", cat: "base"},
-    {pl: "Maść", ru: "Мазь", cat: "base"},
-    {pl: "Plaster", ru: "Пластырь", cat: "base"},
-    {pl: "Wizyta", ru: "Визит / Прием", cat: "base"},
-    {pl: "Ubezpieczenie", ru: "Страховка", cat: "base"},
-    {pl: "Karetka", ru: "Скорая помощь", cat: "base"},
-
-    // УРОВЕНЬ 54: Прилагательные (характер)
-    {pl: "Miły", ru: "Милый / Приятный", cat: "base"},
-    {pl: "Uprzejmy", ru: "Вежливый", cat: "base"},
-    {pl: "Szczery", ru: "Искренний", cat: "base"},
-    {pl: "Odważny", ru: "Смелый", cat: "base"},
-    {pl: "Mądry", ru: "Умный", cat: "base"},
-    {pl: "Głupi", ru: "Глупый", cat: "base"},
-    {pl: "Wesoły", ru: "Веселый", cat: "base"},
-    {pl: "Smutny", ru: "Грустный", cat: "base"},
-    {pl: "Sprytny", ru: "Хитрый / Находчивый", cat: "base"},
-    {pl: "Uczciwy", ru: "Честный", cat: "base"},
-
-    // УРОВЕНЬ 55: Кухонная техника и утварь 2
-    {pl: "Zmywarka", ru: "Посудомоечная машина", cat: "base"},
-    {pl: "Kuchenka", ru: "Плита", cat: "base"},
-    {pl: "Piekarnik", ru: "Духовка", cat: "base"},
-    {pl: "Mikrofalówka", ru: "Микроволновка", cat: "base"},
-    {pl: "Zamrażarka", ru: "Морозилка", cat: "base"},
-    {pl: "Ekspres do kawy", ru: "Кофемашина", cat: "base"},
-    {pl: "Toster", ru: "Тостер", cat: "base"},
-    {pl: "Mikserr", ru: "Миксер", cat: "base"},
-    {pl: "Sztućce", ru: "Столовые приборы", cat: "base"},
-    {pl: "Serwetka", ru: "Салфетка", cat: "base"},
-
-    // УРОВЕНЬ 56: Природа и ландшафт
-    {pl: "Las", ru: "Лес", cat: "base"},
-    {pl: "Jezioro", ru: "Озеро", cat: "base"},
-    {pl: "Rzeka", ru: "Река", cat: "base"},
-    {pl: "Morze", ru: "Море", cat: "base"},
-    {pl: "Plaża", ru: "Пляж", cat: "base"},
-    {pl: "Wyspa", ru: "Остров", cat: "base"},
-    {pl: "Dolina", ru: "Долина", cat: "base"},
-    {pl: "Pole", ru: "Поле", cat: "base"},
-    {pl: "Ogród", ru: "Сад", cat: "base"},
-    {pl: "Wioska", ru: "Деревня", cat: "base"},
-
-    // УРОВЕНЬ 57: Глаголы (социальное взаимодействие)
-    {pl: "Rozmawiać", ru: "Разговаривать", cat: "base"},
-    {pl: "Pomagać", ru: "Помогать", cat: "base"},
-    {pl: "Spotykać się", ru: "Встречаться", cat: "base"},
-    {pl: "Dzwonić", ru: "Звонить", cat: "base"},
-    {pl: "Pisać", ru: "Писать", cat: "base"},
-    {pl: "Czytać", ru: "Читать", cat: "base"},
-    {pl: "Słuchać", ru: "Слушать", cat: "base"},
-    {pl: "Oglądać", ru: "Смотреть (ТВ, фильм)", cat: "base"},
-    {pl: "Uśmiechać się", ru: "Улыбаться", cat: "base"},
-    {pl: "Śmiać się", ru: "Смеяться", cat: "base"},
-
-    // УРОВЕНЬ 58: Дом (материалы и ремонт)
-    {pl: "Ściana", ru: "Стена", cat: "base"},
-    {pl: "Podłoga", ru: "Пол", cat: "base"},
-    {pl: "Sufit", ru: "Потолок", cat: "base"},
-    {pl: "Dach", ru: "Крыша", cat: "base"},
-    {pl: "Schody", ru: "Лестница", cat: "base"},
-    {pl: "Balkon", ru: "Балкон", cat: "base"},
-    {pl: "Garaż", ru: "Гараж", cat: "base"},
-    {pl: "Piwnica", ru: "Подвал", cat: "base"},
-    {pl: "Płot", ru: "Забор", cat: "base"},
-    {pl: "Brama", ru: "Ворота", cat: "base"},
-
-    // УРОВЕНЬ 59: Одежда 2 (Аксессуары)
-    {pl: "Pasek", ru: "Ремень", cat: "base"},
-    {pl: "Rękawiczki", ru: "Перчатки", cat: "base"},
-    {pl: "Szalik", ru: "Шарф", cat: "base"},
-    {pl: "Okulary", ru: "Очки", cat: "base"},
-    {pl: "Zegarek", ru: "Часы (наручные)", cat: "base"},
-    {pl: "Parasol", ru: "Зонт", cat: "base"},
-    {pl: "Portfel", ru: "Кошелек", cat: "base"},
-    {pl: "Biżuteria", ru: "Ювелирные изделия", cat: "base"},
-    {pl: "Pierścionek", ru: "Кольцо", cat: "base"},
-    {pl: "Naszyjnik", ru: "Ожерелье", cat: "base"},
-
-    // УРОВЕНЬ 61: Глаголы (быт 2)
-    {pl: "Budzić się", ru: "Просыпаться", cat: "base"},
-    {pl: "Wstawać", ru: "Вставать", cat: "base"},
-    {pl: "Myć zęby", ru: "Чистить зубы", cat: "base"},
-    {pl: "Czesać się", ru: "Причесываться", cat: "base"},
-    {pl: "Ubierać się", ru: "Одеваться", cat: "base"},
-    {pl: "Jeść śniadanie", ru: "Завтракать", cat: "base"},
-    {pl: "Wychodzić", ru: "Выходить", cat: "base"},
-    {pl: "Odpoczywać", ru: "Отдыхать", cat: "base"},
-    {pl: "Spać", ru: "Спать", cat: "base"},
-    {pl: "Śnić", ru: "Видеть сны", cat: "base"},
-
-    // УРОВЕНЬ 62: Городской транспорт 2
-    {pl: "Przystanek", ru: "Остановка", cat: "base"},
-    {pl: "Tramwaj", ru: "Трамвай", cat: "base"},
-    {pl: "Metro", ru: "Метро", cat: "base"},
-    {pl: "Taksówka", ru: "Такси", cat: "base"},
-    {pl: "Rower", ru: "Велосипед", cat: "base"},
-    {pl: "Hulajnoga", ru: "Самокат", cat: "base"},
-    {pl: "Parking", ru: "Парковка", cat: "base"},
-    {pl: "Korek", ru: "Пробка (дорожная)", cat: "base"},
-    {pl: "Skrzyżowanie", ru: "Перекресток", cat: "base"},
-    {pl: "Sygnalizacja świetlna", ru: "Светофор", cat: "base"},
-
-    // УРОВЕНЬ 63: Еда (напитки)
-    {pl: "Sok", ru: "Сок", cat: "base"},
-    {pl: "Piwo", ru: "Пиво", cat: "base"},
-    {pl: "Wino", ru: "Вино", cat: "base"},
-    {pl: "Wódka", ru: "Водка", cat: "base"},
-    {pl: "Napoje gazowane", ru: "Газированные напитки", cat: "base"},
-    {pl: "Woda gazowana", ru: "Газированная вода", cat: "base"},
-    {pl: "Lód", ru: "Лед", cat: "base"},
-    {pl: "Szampan", ru: "Шампанское", cat: "base"},
-    {pl: "Koktajl", ru: "Коктейль", cat: "base"},
-    {pl: "Mleko roślinne", ru: "Растительное молоко", cat: "base"},
-
-    // УРОВЕНЬ 64: Животные (дикие)
-    {pl: "Niedźwiedź", ru: "Медведь", cat: "base"},
-    {pl: "Wilk", ru: "Волк", cat: "base"},
-    {pl: "Lis", ru: "Лиса", cat: "base"},
-    {pl: "Zając", ru: "Заяц", cat: "base"},
-    {pl: "Jeleń", ru: "Олень", cat: "base"},
-    {pl: "Małpa", ru: "Обезьяна", cat: "base"},
-    {pl: "Żyrafa", ru: "Жираф", cat: "base"},
-    {pl: "Tygrys", ru: "Тигр", cat: "base"},
-    {pl: "Wąż", ru: "Змея", cat: "base"},
-    {pl: "Żółw", ru: "Черепаха", cat: "base"},
-
-    // УРОВЕНЬ 65: Праздники и события
-    {pl: "Urodziny", ru: "День рождения", cat: "base"},
-    {pl: "Prezent", ru: "Подарок", cat: "base"},
-    {pl: "Impreza", ru: "Вечеринка", cat: "base"},
-    {pl: "Święta", ru: "Праздники", cat: "base"},
-    {pl: "Boże Narodzenie", ru: "Рождество", cat: "base"},
-    {pl: "Wielkanoc", ru: "Пасха", cat: "base"},
-    {pl: "Sylwester", ru: "Новый год (ночь)", cat: "base"},
-    {pl: "Życzenia", ru: "Пожелания", cat: "base"},
-    {pl: "Tort", ru: "Торт", cat: "base"},
-    {pl: "Toast", ru: "Тост", cat: "base"},
-
-    // УРОВЕНЬ 66: Инструменты
-    {pl: "Młotek", ru: "Молоток", cat: "base"},
-    {pl: "Śrubokręt", ru: "Отвертка", cat: "base"},
-    {pl: "Klucz francuski", ru: "Разводной ключ", cat: "base"},
-    {pl: "Piła", ru: "Пила", cat: "base"},
-    {pl: "Wiertarka", ru: "Дрель", cat: "base"},
-    {pl: "Gwoźdź", ru: "Гвоздь", cat: "base"},
-    {pl: "Śruba", ru: "Болт / Винт", cat: "base"},
-    {pl: "Klej", ru: "Клей", cat: "base"},
-    {pl: "Nożyczki", ru: "Ножницы", cat: "base"},
-    {pl: "Taśma", ru: "Лента / Скотч", cat: "base"},
-
-    // УРОВЕНЬ 67: Глаголы (учеба и работа)
-    {pl: "Ćwiczyć", ru: "Упражняться / Тренироваться", cat: "base"},
-    {pl: "Sprawdzać", ru: "Проверять", cat: "base"},
-    {pl: "Błądzić", ru: "Блуждать / Ошибаться", cat: "base"},
-    {pl: "Poprawiać", ru: "Исправлять", cat: "base"},
-    {pl: "Tłumaczyć", ru: "Переводить / Объяснять", cat: "base"},
-    {pl: "Notować", ru: "Записывать", cat: "base"},
-    {pl: "Wysyłać", ru: "Отправлять", cat: "base"},
-    {pl: "Otrzymywać", ru: "Получать", cat: "base"},
-    {pl: "Podpisywać", ru: "Подписывать", cat: "base"},
-    {pl: "Zatrudniać", ru: "Нанимать на работу", cat: "base"},
-
-    // УРОВЕНЬ 68: Погода 2 (Явления)
-    {pl: "Piorun", ru: "Молния", cat: "base"},
-    {pl: "Grad", ru: "Град", cat: "base"},
-    {pl: "Śnieżyca", ru: "Метель / Вьюга", cat: "base"},
-    {pl: "Susza", ru: "Засуха", cat: "base"},
-    {pl: "Powódź", ru: "Наводнение", cat: "base"},
-    {pl: "Wiatr halny", ru: "Сильный горный ветер", cat: "base"},
-    {pl: "Mżawka", ru: "Изморось", cat: "base"},
-    {pl: "Ulewa", ru: "Ливень", cat: "base"},
-    {pl: "Rosa", ru: "Роса", cat: "base"},
-    {pl: "Szron", ru: "Иней", cat: "base"},
-
-    // УРОВЕНЬ 69: Прилагательные (физические свойства)
-    {pl: "Ciepły", ru: "Теплый", cat: "base"},
-    {pl: "Zimny", ru: "Холодный", cat: "base"},
-    {pl: "Gorący", ru: "Горячий", cat: "base"},
-    {pl: "Lodowaty", ru: "Ледяной", cat: "base"},
-    {pl: "Słony", ru: "Соленый", cat: "base"},
-    {pl: "Słodki", ru: "Сладкий", cat: "base"},
-    {pl: "Gorzki", ru: "Горький", cat: "base"},
-    {pl: "Kwaśny", ru: "Кислый", cat: "base"},
-    {pl: "Oostry", ru: "Острый (вкус)", cat: "base"},
-    {pl: "Tłusty", ru: "Жирный", cat: "base"},
-
-    // УРОВЕНЬ 71: Время 2 (Дни недели)
-    {pl: "Poniedziałek", ru: "Понедельник", cat: "base"},
-    {pl: "Wtorek", ru: "Вторник", cat: "base"},
-    {pl: "Środa", ru: "Среда", cat: "base"},
-    {pl: "Czwartek", ru: "Четверг", cat: "base"},
-    {pl: "Piątek", ru: "Пятница", cat: "base"},
-    {pl: "Sobota", ru: "Суббота", cat: "base"},
-    {pl: "Niedziela", ru: "Воскресенье", cat: "base"},
-    {pl: "Weekend", ru: "Выходные", cat: "base"},
-    {pl: "Rano", ru: "Утром", cat: "base"},
-    {pl: "Wieczorem", ru: "Вечером", cat: "base"},
-
-    // УРОВЕНЬ 72: Месяцы 1
-    {pl: "Styczeń", ru: "Январь", cat: "base"},
-    {pl: "Luty", ru: "Февраль", cat: "base"},
-    {pl: "Marzec", ru: "Март", cat: "base"},
-    {pl: "Kwiecień", ru: "Апрель", cat: "base"},
-    {pl: "Maj", ru: "Май", cat: "base"},
-    {pl: "Czerwiec", ru: "Июнь", cat: "base"},
-    {pl: "Lipiec", ru: "Июль", cat: "base"},
-    {pl: "Sierpień", ru: "Август", cat: "base"},
-    {pl: "Wrzesień", ru: "Сентябрь", cat: "base"},
-    {pl: "Październik", ru: "Октябрь", cat: "base"},
-
-    // УРОВЕНЬ 73: Месяцы 2 и Времена года
-    {pl: "Listopad", ru: "Ноябрь", cat: "base"},
-    {pl: "Grudzień", ru: "Декабрь", cat: "base"},
-    {pl: "Wiosna", ru: "Весна", cat: "base"},
-    {pl: "Lato", ru: "Лето", cat: "base"},
-    {pl: "Jesień", ru: "Осень", cat: "base"},
-    {pl: "Zima", ru: "Зима", cat: "base"},
-    {pl: "Pora roku", ru: "Время года", cat: "base"},
-    {pl: "Kwartal", ru: "Квартал", cat: "base"},
-    {pl: "Wiek", ru: "Век", cat: "base"},
-    {pl: "Przyszłość", ru: "Будущее", cat: "base"},
-
-    // УРОВЕНЬ 74: Глаголы (чувства 2)
-    {pl: "Czuć", ru: "Чувствовать", cat: "base"},
-    {pl: "Nienawidzić", ru: "Ненавидеть", cat: "base"},
-    {pl: "Lubić", ru: "Любить / Нравиться", cat: "base"},
-    {pl: "Uwielbiać", ru: "Обожать", cat: "base"},
-    {pl: "Tęsknić", ru: "Скучать / Тосковать", cat: "base"},
-    {pl: "Bać się", ru: "Бояться", cat: "base"},
-    {pl: "Martwić się", ru: "Беспокоиться", cat: "base"},
-    {pl: "Cieszyć się", ru: "Радоваться", cat: "base"},
-    {pl: "Dziwić się", ru: "Удивляться", cat: "base"},
-    {pl: "Współczuć", ru: "Сочувствовать", cat: "base"},
-
-    // УРОВЕНЬ 75: Абстрактные понятия
-    {pl: "Życie", ru: "Жизнь", cat: "base"},
-    {pl: "Śmierć", ru: "Смерть", cat: "base"},
-    {pl: "Prawda", ru: "Правда", cat: "base"},
-    {pl: "Kłamstwo", ru: "Ложь", cat: "base"},
-    {pl: "Pokój", ru: "Мир (отсутствие войны)", cat: "base"},
-    {pl: "Wojna", ru: "Война", cat: "base"},
-    {pl: "Wolność", ru: "Свобода", cat: "base"},
-    {pl: "Sprawiedliwość", ru: "Справедливость", cat: "base"},
-    {pl: "Czas", ru: "Время", cat: "base"},
-    {pl: "Przestrzeń", ru: "Пространство", cat: "base"},
-
-        // УРОВЕНЬ 76: Культура и искусство
-    {pl: "Sztuka", ru: "Искусство", cat: "base"},
-    {pl: "Kultura", ru: "Культура", cat: "base"},
-    {pl: "Wystawa", ru: "Выставка", cat: "base"},
-    {pl: "Koncert", ru: "Концерт", cat: "base"},
-    {pl: "Galeria", ru: "Галерея", cat: "base"},
-    {pl: "Malarstwo", ru: "Живопись", cat: "base"},
-    {pl: "Rzeźba", ru: "Скульптура", cat: "base"},
-    {pl: "Instrument", ru: "Инструмент (музыкальный)", cat: "base"},
-    {pl: "Scena", ru: "Сцена", cat: "base"},
-    {pl: "Widz", ru: "Зритель", cat: "base"},
-
-    // УРОВЕНЬ 77: Глаголы (состояние и изменения)
-    {pl: "Zmieniać się", ru: "Меняться", cat: "base"},
-    {pl: "Stawać się", ru: "Становиться", cat: "base"},
-    {pl: "Zostawać", ru: "Оставаться", cat: "base"},
-    {pl: "Wydawać się", ru: "Казаться", cat: "base"},
-    {pl: "Zdarzać się", ru: "Случаться", cat: "base"},
-    {pl: "Trwać", ru: "Длиться", cat: "base"},
-    {pl: "Pojawiać się", ru: "Появляться", cat: "base"},
-    {pl: "Znikać", ru: "Исчезать", cat: "base"},
-    {pl: "Rosnąć", ru: "Расти", cat: "base"},
-    {pl: "Maleć", ru: "Уменьшаться", cat: "base"},
-
-    // УРОВЕНЬ 78: Право и общество
-    {pl: "Prawo", ru: "Право / Закон", cat: "base"},
-    {pl: "Zasada", ru: "Правило", cat: "base"},
-    {pl: "Obowiązek", ru: "Обязанность", cat: "base"},
-    {pl: "Wolność", ru: "Свобода", cat: "base"},
-    {pl: "Państwo", ru: "Государство", cat: "base"},
-    {pl: "Rząd", ru: "Правительство", cat: "base"},
-    {pl: "Obywatel", ru: "Гражданин", cat: "base"},
-    {pl: "Wybory", ru: "Выборы", cat: "base"},
-    {pl: "Kara", ru: "Штраф / Наказание", cat: "base"},
-    {pl: "Sąd", ru: "Суд", cat: "base"},
-
-    // УРОВЕНЬ 79: Прилагательные (сложные качества)
-    {pl: "Ważny", ru: "Важный", cat: "base"},
-    {pl: "Główny", ru: "Главный", cat: "base"},
-    {pl: "Dziwny", ru: "Странный", cat: "base"},
-    {pl: "Cudowny", ru: "Чудесный", cat: "base"},
-    {pl: "Okropny", ru: "Ужасный", cat: "base"},
-    {pl: "Możliwy", ru: "Возможный", cat: "base"},
-    {pl: "Konieczny", ru: "Необходимый", cat: "base"},
-    {pl: "Pewny", ru: "Уверенный", cat: "base"},
-    {pl: "Bezpieczny", ru: "Безопасный", cat: "base"},
-    {pl: "Niebezpieczny", ru: "Опасный", cat: "base"},
-
-    // УРОВЕНЬ 81: Работа и карьера 2
-    {pl: "Doświadczenie", ru: "Опыт", cat: "base"},
-    {pl: "Umiejętność", ru: "Навык", cat: "base"},
-    {pl: "Wykształcenie", ru: "Образование", cat: "base"},
-    {pl: "Awans", ru: "Повышение", cat: "base"},
-    {pl: "Sukces", ru: "Успех", cat: "base"},
-    {pl: "Porażka", ru: "Поражение / Провал", cat: "base"},
-    {pl: "Cel", ru: "Цель", cat: "base"},
-    {pl: "Zadanie", ru: "Задание / Задача", cat: "base"},
-    {pl: "Współpraca", ru: "Сотрудничество", cat: "base"},
-    {pl: "Emerytura", ru: "Пенсия", cat: "base"},
-
-    // УРОВЕНЬ 82: Финансы 2
-    {pl: "Podatek", ru: "Налог", cat: "base"},
-    {pl: "Konto", ru: "Счет (в банке)", cat: "base"},
-    {pl: "Przelew", ru: "Перевод (денежный)", cat: "base"},
-    {pl: "Oszczędności", ru: "Сбережения", cat: "base"},
-    {pl: "Dług", ru: "Долг", cat: "base"},
-    {pl: "Kredyt", ru: "Кредит", cat: "base"},
-    {pl: "Inwestycja", ru: "Инвестиция", cat: "base"},
-    {pl: "Zysk", ru: "Прибыль", cat: "base"},
-    {pl: "Strata", ru: "Убыток", cat: "base"},
-    {pl: "Budżet", ru: "Бюджет", cat: "base"},
-
-    // УРОВЕНЬ 83: Глаголы (обработка информации)
-    {pl: "Analizować", ru: "Анализировать", cat: "base"},
-    {pl: "Opisywać", ru: "Описывать", cat: "base"},
-    {pl: "Wyjaśniać", ru: "Объяснять", cat: "base"},
-    {pl: "Porównyвать", ru: "Сравнивать", cat: "base"},
-    {pl: "Wybierać", ru: "Выбирать", cat: "base"},
-    {pl: "Decydować", ru: "Решать / Делать выбор", cat: "base"},
-    {pl: "Planować", ru: "Планировать", cat: "base"},
-    {pl: "Organizować", ru: "Организовывать", cat: "base"},
-    {pl: "Tworzyć", ru: "Создавать", cat: "base"},
-    {pl: "Niszczyć", ru: "Разрушать", cat: "base"},
-
-    // УРОВЕНЬ 84: Медиа и информация
-    {pl: "Wiadomości", ru: "Новости", cat: "base"},
-    {pl: "Artykuł", ru: "Статья", cat: "base"},
-    {pl: "Gazeta", ru: "Газета", cat: "base"},
-    {pl: "Wywiad", ru: "Интервью", cat: "base"},
-    {pl: "Reklama", ru: "Реклама", cat: "base"},
-    {pl: "Opinia", ru: "Мнение", cat: "base"},
-    {pl: "Fakt", ru: "Факт", cat: "base"},
-    {pl: "Źródło", ru: "Источник", cat: "base"},
-    {pl: "Informacja", ru: "Информация", cat: "base"},
-    {pl: "Komunikat", ru: "Сообщение / Извещение", cat: "base"},
-
-    // УРОВЕНЬ 85: Наука и знания
-    {pl: "Nauka", ru: "Наука / Учеба", cat: "base"},
-    {pl: "Badanie", ru: "Исследование", cat: "base"},
-    {pl: "Teoria", ru: "Теория", cat: "base"},
-    {pl: "Wiedza", ru: "Знания", cat: "base"},
-    {pl: "Odkrycie", ru: "Открытие", cat: "base"},
-    {pl: "Wynalazek", ru: "Изобретение", cat: "base"},
-    {pl: "Eksperyment", ru: "Эксперимент", cat: "base"},
-    {pl: "Metoda", ru: "Метод", cat: "base"},
-    {pl: "System", ru: "Система", cat: "base"},
-    {pl: "Rozwój", ru: "Развитие", cat: "base"},
-
-    // УРОВЕНЬ 86: Глаголы (быт и техника)
-    {pl: "Włączać", ru: "Включать", cat: "base"},
-    {pl: "Wyłączać", ru: "Выключать", cat: "base"},
-    {pl: "Ładować", ru: "Заряжать", cat: "base"},
-    {pl: "Działać", ru: "Действовать / Работать (о технике)", cat: "base"},
-    {pl: "Psuć się", ru: "Ломаться", cat: "base"},
-    {pl: "Używać", ru: "Использовать", cat: "base"},
-    {pl: "Potrzebować", ru: "Нуждаться", cat: "base"},
-    {pl: "Szukać", ru: "Искать", cat: "base"},
-    {pl: "Znajdować", ru: "Находить", cat: "base"},
-    {pl: "Zgubić", ru: "Потерять", cat: "base"},
-
-    // УРОВЕНЬ 87: Абстрактные понятия 2
-    {pl: "Nadzieja", ru: "Надежда", cat: "base"},
-    {pl: "Szacunek", ru: "Уважение", cat: "base"},
-    {pl: "Zaufanie", ru: "Доверие", cat: "base"},
-    {pl: "Wstyd", ru: "Стыд", cat: "base"},
-    {pl: "Zazdrość", ru: "Зависть / Ревность", cat: "base"},
-    {pl: "Nienawiść", ru: "Ненависть", cat: "base"},
-    {pl: "Przyjaźń", ru: "Дружба", cat: "base"},
-    {pl: "Wsparcie", ru: "Поддержка", cat: "base"},
-    {pl: "Sukces", ru: "Успех", cat: "base"},
-    {pl: "Szczęście", ru: "Счастье / Удача", cat: "base"},
-
-    // УРОВЕНЬ 88: Связующие слова (союзы и частицы)
-    {pl: "Ponieważ", ru: "Потому что", cat: "base"},
-    {pl: "Dlatego", ru: "Поэтому", cat: "base"},
-    {pl: "Jednak", ru: "Однако", cat: "base"},
-    {pl: "Mimo że", ru: "Несмотря на то что", cat: "base"},
-    {pl: "Zamiast", ru: "Вместо", cat: "base"},
-    {pl: "Chyba", ru: "Наверное", cat: "base"},
-    {pl: "Nawet", ru: "Даже", cat: "base"},
-    {pl: "Przynajmniej", ru: "По крайней мере", cat: "base"},
-    {pl: "Właśnie", ru: "Как раз / Именно", cat: "base"},
-    {pl: "Prawie", ru: "Почти", cat: "base"},
-
-    // УРОВЕНЬ 89: Окружающая среда
-    {pl: "Przyroda", ru: "Природа", cat: "base"},
-    {pl: "Środowisko", ru: "Среда (окружающая)", cat: "base"},
-    {pl: "Pogoda", ru: "Погода", cat: "base"},
-    {pl: "Klimat", ru: "Климат", cat: "base"},
-    {pl: "Energia", ru: "Энергия", cat: "base"},
-    {pl: "Odpady", ru: "Отходы", cat: "base"},
-    {pl: "Recykling", ru: "Переработка", cat: "base"},
-    {pl: "Zanieczyszczenie", ru: "Загрязнение", cat: "base"},
-    {pl: "Ochrona", ru: "Охрана / Защита", cat: "base"},
-    {pl: "Zwierzęta", ru: "Животные", cat: "base"},
-
-    // УРОВЕНЬ 91: Глаголы (отношения 2)
-    {pl: "Kochać", ru: "Любить", cat: "base"},
-    {pl: "Lubić", ru: "Нравиться", cat: "base"},
-    {pl: "Szanować", ru: "Уважать", cat: "base"},
-    {pl: "Ufać", ru: "Доверять", cat: "base"},
-    {pl: "Kłócić się", ru: "Ссориться", cat: "base"},
-    {pl: "Przepraszać", ru: "Извиняться", cat: "base"},
-    {pl: "Wybaczać", ru: "Прощать", cat: "base"},
-    {pl: "Dzielić", ru: "Делить", cat: "base"},
-    {pl: "Łączyć", ru: "Соединять", cat: "base"},
-    {pl: "Wspierać", ru: "Поддерживать", cat: "base"},
-
-    // УРОВЕНЬ 92: Состояние общества
-    {pl: "Pokój", ru: "Мир", cat: "base"},
-    {pl: "Wojna", ru: "Война", cat: "base"},
-    {pl: "Kryzys", ru: "Кризис", cat: "base"},
-    {pl: "Rozwój", ru: "Развитие", cat: "base"},
-    {pl: "Postęp", ru: "Прогресс", cat: "base"},
-    {pl: "Tradycja", ru: "Традиция", cat: "base"},
-    {pl: "Zmiana", ru: "Перемена / Изменение", cat: "base"},
-    {pl: "Problem", ru: "Проблема", cat: "base"},
-    {pl: "Rozwiązanie", ru: "Решение (проблемы)", cat: "base"},
-    {pl: "Szansa", ru: "Шанс", cat: "base"},
-
-    // УРОВЕНЬ 93: Глаголы (высшая деятельность)
-    {pl: "Osiągać", ru: "Достигать", cat: "base"},
-    {pl: "Spełniać", ru: "Исполнять / Выполнять", cat: "base"},
-    {pl: "Walczyć", ru: "Бороться", cat: "base"},
-    {pl: "Wygrywać", ru: "Выигрывать", cat: "base"},
-    {pl: "Przegrywać", ru: "Проигрывать", cat: "base"},
-    {pl: "Ryzykować", ru: "Рисковать", cat: "base"},
-    {pl: "Unikać", ru: "Избегать", cat: "base"},
-    {pl: "Chronić", ru: "Защищать", cat: "base"},
-    {pl: "Budować", ru: "Строить", cat: "base"},
-    {pl: "Projektować", ru: "Проектировать", cat: "base"},
-
-    // УРОВЕНЬ 94: Качества личности
-    {pl: "Ambitny", ru: "Амбициозный", cat: "base"},
-    {pl: "Pracowity", ru: "Трудолюбивый", cat: "base"},
-    {pl: "Kreatywny", ru: "Творческий / Креативный", cat: "base"},
-    {pl: "Odpowiedzialny", ru: "Ответственный", cat: "base"},
-    {pl: "Samodzielny", ru: "Самостоятельный", cat: "base"},
-    {pl: "Uważny", ru: "Внимательный", cat: "base"},
-    {pl: "Otwarty", ru: "Открытый", cat: "base"},
-    {pl: "Zamknięty", ru: "Закрытый", cat: "base"},
-    {pl: "Spokojny", ru: "Спокойный", cat: "base"},
-    {pl: "Energiczny", ru: "Энергичный", cat: "base"},
-
-    // УРОВЕНЬ 95: Финальные абстракции
-    {pl: "Sens", ru: "Смысл", cat: "base"},
-    {pl: "Wartość", ru: "Ценность", cat: "base"},
-    {pl: "Idea", ru: "Идея", cat: "base"},
-    {pl: "Przyczyna", ru: "Причина", cat: "base"},
-    {pl: "Skutek", ru: "Следствие / Эффект", cat: "base"},
-    {pl: "Wpływ", ru: "Влияние", cat: "base"},
-    {pl: "Różnica", ru: "Разница", cat: "base"},
-    {pl: "Podobieństwo", ru: "Сходство", cat: "base"},
-    {pl: "Rzeczywistość", ru: "Реальность", cat: "base"},
-    {pl: "Marzenie", ru: "Мечта", cat: "base"},
-
-        // АВТО: Уровни 1-3 (Общее устройство и кузов)
-    {pl: "Samochód / Auto", ru: "Автомобиль", cat: "auto"},
-    {pl: "Osobówka", ru: "Легковушка", cat: "auto"},
-    {pl: "Dostawczak", ru: "Фургон / Бусик", cat: "auto"},
-    {pl: "Fura", ru: "Тачка (сленг)", cat: "auto"},
-    {pl: "Gruz", ru: "Старая разбитая машина (корч)", cat: "auto"},
-    {pl: "Maska", ru: "Капот", cat: "auto"},
-    {pl: "Bagażnik", ru: "Багажник", cat: "auto"},
-    {pl: "Zderzak", ru: "Бампер", cat: "auto"},
-    {pl: "Szyba", ru: "Стекло", cat: "auto"},
-    {pl: "Wycieraczki", ru: "Дворники", cat: "auto"},
-    {pl: "Drzwi", ru: "Дверь", cat: "auto"},
-    {pl: "Lusterko", ru: "Зеркало", cat: "auto"},
-    {pl: "Klamka", ru: "Ручка двери", cat: "auto"},
-    {pl: "Dach", ru: "Крыша", cat: "auto"},
-    {pl: "Szyberdach", ru: "Люк в крыше", cat: "auto"},
-    {pl: "Reflektor", ru: "Фара", cat: "auto"},
-    {pl: "Kierunkowskaz", ru: "Поворотник", cat: "auto"},
-    {pl: "Halogeny", ru: "Противотуманки", cat: "auto"},
-    {pl: "Blacha", ru: "Кузовное железо", cat: "auto"},
-    {pl: "Lakier", ru: "Краска / Лак", cat: "auto"},
-    {pl: "Wlew paliwa", ru: "Лючок бензобака", cat: "auto"},
-    {pl: "Hak", ru: "Фаркоп", cat: "auto"},
-    {pl: "Tablica rejestracyjna", ru: "Номерной знак", cat: "auto"},
-    {pl: "Błotnik", ru: "Крыло", cat: "auto"},
-    {pl: "Próg", ru: "Порог", cat: "auto"},
-    {pl: "Słupek", ru: "Стойка кузова", cat: "auto"},
-    {pl: "Podwozie", ru: "Днище / Ходовая часть", cat: "auto"},
-    {pl: "Nadwozie", ru: "Кузов", cat: "auto"},
-    {pl: "Spoiler", ru: "Спойлер", cat: "auto"},
-    {pl: "Felga", ru: "Колесный диск", cat: "auto"},
-
-    // АВТО: Уровни 4-6 (Двигатель и подкапотка)
-    {pl: "Silnik", ru: "Двигатель", cat: "auto"},
-    {pl: "Motor", ru: "Мотор / Движок", cat: "auto"},
-    {pl: "Akumulator", ru: "Аккумулятор", cat: "auto"},
-    {pl: "Chłodnica", ru: "Радиатор", cat: "auto"},
-    {pl: "Turbina", ru: "Турбина", cat: "auto"},
-    {pl: "Alternator", ru: "Генератор", cat: "auto"},
-    {pl: "Rozrusznik", ru: "Стартер", cat: "auto"},
-    {pl: "Wtryski", ru: "Форсунки", cat: "auto"},
-    {pl: "Świece", ru: "Свечи", cat: "auto"},
-    {pl: "Pasek rozrządu", ru: "Ремень ГРМ", cat: "auto"},
-    {pl: "Łańcuch rozrządu", ru: "Цепь ГРМ", cat: "auto"},
-    {pl: "Uszczelka", ru: "Прокладка", cat: "auto"},
-    {pl: "Głowica", ru: "Голова (ГБЦ)", cat: "auto"},
-    {pl: "Blok silnika", ru: "Блок цилиндров", cat: "auto"},
-    {pl: "Tłok", ru: "Поршень", cat: "auto"},
-    {pl: "Wał korbowy", ru: "Коленвал", cat: "auto"},
-    {pl: "Miski olejowa", ru: "Поддон", cat: "auto"},
-    {pl: "Filtr powietrza", ru: "Воздушный фильтр", cat: "auto"},
-    {pl: "Kolektor", ru: "Коллектор", cat: "auto"},
-    {pl: "Zawór", ru: "Клапан", cat: "auto"},
-    {pl: "Pompa paliwa", ru: "Бензонасос", cat: "auto"},
-    {pl: "Płyn chłodniczy", ru: "Антифриз", cat: "auto"},
-    {pl: "Olej silnikowy", ru: "Масло", cat: "auto"},
-    {pl: "Bagnet", ru: "Щуп", cat: "auto"},
-    {pl: "Korek", ru: "Пробка / Крышка", cat: "auto"},
-    {pl: "Zbiorniczek", ru: "Бачок", cat: "auto"},
-    {pl: "Wentylator", ru: "Вентилятор", cat: "auto"},
-    {pl: "Przepustnica", ru: "Дроссель", cat: "auto"},
-    {pl: "Kable", ru: "Провода", cat: "auto"},
-    {pl: "Rura", ru: "Патрубок / Труба", cat: "auto"},
-
-    // АВТО: Уровни 7-10 (Салон и управление)
-    {pl: "Kierownica", ru: "Руль", cat: "auto"},
-    {pl: "Kiera", ru: "Руль (сленг)", cat: "auto"},
-    {pl: "Gałka", ru: "Ручка КПП", cat: "auto"},
-    {pl: "Bieg", ru: "Передача", cat: "auto"},
-    {pl: "Jedynka", ru: "Первая передача", cat: "auto"},
-    {pl: "Wsteczny", ru: "Задний ход", cat: "auto"},
-    {pl: "Luz", ru: "Нейтралка", cat: "auto"},
-    {pl: "Sprzęgło", ru: "Сцепление", cat: "auto"},
-    {pl: "Hamulec", ru: "Тормоз", cat: "auto"},
-    {pl: "Gaz", ru: "Газ", cat: "auto"},
-    {pl: "Ręczny", ru: "Ручник", cat: "auto"},
-    {pl: "Licznik", ru: "Приборка / Спидометр", cat: "auto"},
-    {pl: "Zegary", ru: "Приборы", cat: "auto"},
-    {pl: "Kontrolka", ru: "Лампочка (чек)", cat: "auto"},
-    {pl: "Deska rozdzielcza", ru: "Торпедо", cat: "auto"},
-    {pl: "Schowek", ru: "Бардачок", cat: "auto"},
-    {pl: "Podsufitka", ru: "Потолок салона", cat: "auto"},
-    {pl: "Fotel", ru: "Сиденье", cat: "auto"},
-    {pl: "Kanapa", ru: "Заднее сиденье", cat: "auto"},
-    {pl: "Zagłówek", ru: "Подголовник", cat: "auto"},
-    {pl: "Pas", ru: "Ремень безопасности", cat: "auto"},
-    {pl: "Poduszka powietrzna", ru: "Подушка безопасности", cat: "auto"},
-    {pl: "Nawiew", ru: "Обдув", cat: "auto"},
-    {pl: "Klima", ru: "Кондиционер", cat: "auto"},
-    {pl: "Radio", ru: "Магнитола", cat: "auto"},
-    {pl: "Głośnik", ru: "Динамик", cat: "auto"},
-    {pl: "Lusterko wsteczne", ru: "Зеркало заднего вида", cat: "auto"},
-    {pl: "Pedał", ru: "Педаль", cat: "auto"},
-    {pl: "Stacyjka", ru: "Замок зажигания", cat: "auto"},
-    {pl: "Kluczyk", ru: "Ключ", cat: "auto"},
-    {pl: "Pilot", ru: "Брелок / Пульт", cat: "auto"},
-    {pl: "Dywaniki", ru: "Коврики", cat: "auto"},
-    {pl: "Tapicerka", ru: "Обивка", cat: "auto"},
-    {pl: "Boczki", ru: "Дверные карты", cat: "auto"},
-    {pl: "Sufit", ru: "Потолок", cat: "auto"},
-    {pl: "Wyciszenie", ru: "Шумоизоляция", cat: "auto"},
-    {pl: "Gniazdko", ru: "Прикуриватель / Розетка", cat: "auto"},
-    {pl: "Ładowarka", ru: "Зарядка", cat: "auto"},
-    {pl: "Navi", ru: "Навигация", cat: "auto"},
-    {pl: "Ekran", ru: "Дисплей", cat: "auto"},
-
-        // АВТО: Уровни 11-13 (Ходовая и подвеска)
-    {pl: "Zawieszenie", ru: "Подвеска", cat: "auto"},
-    {pl: "Amortyzator", ru: "Амортизатор", cat: "auto"},
-    {pl: "Sprężyna", ru: "Пружина", cat: "auto"},
-    {pl: "Wahacz", ru: "Рычаг подвески", cat: "auto"},
-    {pl: "Tuleja", ru: "Сайлентблок / Втулка", cat: "auto"},
-    {pl: "Łożysko", ru: "Подшипник", cat: "auto"},
-    {pl: "Przegub", ru: "ШРУС (граната)", cat: "auto"},
-    {pl: "Zbieżność", ru: "Развал-схождение", cat: "auto"},
-    {pl: "Opona", ru: "Шина / Резина", cat: "auto"},
-    {pl: "Kapcie", ru: "Шины (сленг)", cat: "auto"},
-    {pl: "Bieżnik", ru: "Протектор", cat: "auto"},
-    {pl: "Opony letnie", ru: "Летняя резина", cat: "auto"},
-    {pl: "Opony zimowe", ru: "Зимняя резина", cat: "auto"},
-    {pl: "Wentyl", ru: "Ниппель / Вентиль", cat: "auto"},
-    {pl: "Zapas", ru: "Запаска", cat: "auto"},
-    {pl: "Dojazdówka", ru: "Докатка", cat: "auto"},
-    {pl: "Lewarek", ru: "Домкрат", cat: "auto"},
-    {pl: "Klucz do kół", ru: "Ballonный ключ", cat: "auto"},
-    {pl: "Tarcze hamulcowe", ru: "Тормозные диски", cat: "auto"},
-    {pl: "Klocki hamulcowe", ru: "Тормозные колодки", cat: "auto"},
-    {pl: "Zacisk", ru: "Суппорт", cat: "auto"},
-    {pl: "Przewód hamulcowy", ru: "Тормозной шланг", cat: "auto"},
-    {pl: "Płyn hamulcowy", ru: "Тормозная жидкость", cat: "auto"},
-    {pl: "ABS", ru: "АБС", cat: "auto"},
-    {pl: "Ręczny", ru: "Ручник", cat: "auto"},
-    {pl: "Maglownica", ru: "Рулевая рейка", cat: "auto"},
-    {pl: "Wspomaganie", ru: "Гидроусилитель (ГУР)", cat: "auto"},
-    {pl: "Drążek kierowniczy", ru: "Рулевая тяга", cat: "auto"},
-    {pl: "Końcówka drążka", ru: "Рулевой наконечник", cat: "auto"},
-    {pl: "Zbieżność", ru: "Сход-развал", cat: "auto"},
-
-    // АВТО: Уровни 14-16 (Топливо и жидкости)
-    {pl: "Paliwo", ru: "Топливо", cat: "auto"},
-    {pl: "Benzyna", ru: "Бензин", cat: "auto"},
-    {pl: "Ropa / Diesel", ru: "Дизель / Солярка", cat: "auto"},
-    {pl: "Gaz / LPG", ru: "Газ", cat: "auto"},
-    {pl: "Bak", ru: "Бак", cat: "auto"},
-    {pl: "Pistolet", ru: "Заправочный пистолет", cat: "auto"},
-    {pl: "Korek wlewu", ru: "Крышка бака", cat: "auto"},
-    {pl: "Spalanie", ru: "Расход топлива", cat: "auto"},
-    {pl: "Zasięg", ru: "Запас хода", cat: "auto"},
-    {pl: "Płyn do spryskiwaczy", ru: "Омывайка", cat: "auto"},
-    {pl: "Borygo", ru: "Антифриз (частое название)", cat: "auto"},
-    {pl: "Olej silnikowy", ru: "Моторное масло", cat: "auto"},
-    {pl: "Filtr oleju", ru: "Масляный фильтр", cat: "auto"},
-    {pl: "Filtr kabinowy", ru: "Салонный фильтр", cat: "auto"},
-    {pl: "Wymiana", ru: "Замена", cat: "auto"},
-    {pl: "Dolewka", ru: "Доливка", cat: "auto"},
-    {pl: "Wyciek", ru: "Утечка / Течь", cat: "auto"},
-    {pl: "Plama под autem", ru: "Пятно под машиной", cat: "auto"},
-    {pl: "Kopcić", ru: "Дымить", cat: "auto"},
-    {pl: "Brać olej", ru: "Жрать масло", cat: "auto"},
-
-    // АВТО: Уровни 17-19 (Сервис и тюнинг)
-    {pl: "Warsztat", ru: "Мастерская / СТО", cat: "auto"},
-    {pl: "Mechanik", ru: "Механик", cat: "auto"},
-    {pl: "Blacharz", ru: "Кузовщик", cat: "auto"},
-    {pl: "Lakiernik", ru: "Маляр", cat: "auto"},
-    {pl: "Podnośnik", ru: "Подъемник", cat: "auto"},
-    {pl: "Kanał", ru: "Яма", cat: "auto"},
-    {pl: "Komputer", ru: "Диагностика", cat: "auto"},
-    {pl: "Błąd", ru: "Ошибка", cat: "auto"},
-    {pl: "Kasowanie błędów", ru: "Сброс ошибок", cat: "auto"},
-    {pl: "Naprawa", ru: "Ремонт", cat: "auto"},
-    {pl: "Części", ru: "Запчасти", cat: "auto"},
-    {pl: "Zamiennik", ru: "Аналог / Неоригинал", cat: "auto"},
-    {pl: "Używka", ru: "Б/У запчасть", cat: "auto"},
-    {pl: "Szrot", ru: "Разборка", cat: "auto"},
-    {pl: "Gleba", ru: "Занижение подвески", cat: "auto"},
-    {pl: "Szpera", ru: "Блокировка дифференциала", cat: "auto"},
-    {pl: "Przelot", ru: "Прямоток (выхлоп)", cat: "auto"},
-    {pl: "Chip", ru: "Чип-тюнинг", cat: "auto"},
-    {pl: "Felgi alu", ru: "Литые диски", cat: "auto"},
-    {pl: "Dystanse", ru: "Проставки", cat: "auto"},
-
-    // АВТО: Уровни 20-22 (Дорога и Закон)
-    {pl: "Przegląd", ru: "Техосмотр", cat: "auto"},
-    {pl: "Ubezpieczenie OC", ru: "Обязательная страховка", cat: "auto"},
-    {pl: "Mandat", ru: "Штраф", cat: "auto"},
-    {pl: "Punkty karne", ru: "Штрафные баллы", cat: "auto"},
-    {pl: "Prawko", ru: "Права (водительские)", cat: "auto"},
-    {pl: "Dowód rejestracyjny", ru: "Техпаспорт", cat: "auto"},
-    {pl: "Karta pojazdu", ru: "Карточка ТС", cat: "auto"},
-    {pl: "Umowa kupna-sprzedaży", ru: "Договор купли-продажи", cat: "auto"},
-    {pl: "Handlarz", ru: "Перекуп", cat: "auto"},
-    {pl: "Igła", ru: "Идеальное состояние (сленг)", cat: "auto"},
-    {pl: "Bity", ru: "Битый / После ДТП", cat: "auto"},
-    {pl: "Klepany", ru: "Восстановленный после ДТП", cat: "auto"},
-    {pl: "Ulep", ru: "Машина, собранная из кусков", cat: "auto"},
-    {pl: "Laweta", ru: "Эвакуатор", cat: "auto"},
-    {pl: "Holowanie", ru: "Буксировка", cat: "auto"},
-    {pl: "Linka holownicza", ru: "Трос", cat: "auto"},
-    {pl: "Kable rozruchowe", ru: "Провода для прикуривания", cat: "auto"},
-    {pl: "Trójkąt", ru: "Знак аварийной остановки", cat: "auto"},
-    {pl: "Gaśnica", ru: "Огнетушитель", cat: "auto"},
-    {pl: "Apteczka", ru: "Аптечка", cat: "auto"},
-    {pl: "Kamizelka", ru: "Жилет (светоотражающий)", cat: "auto"},
-    {pl: "Stłuczka", ru: "Мелкое ДТП", cat: "auto"},
-    {pl: "Wypadek", ru: "Серьезная авария", cat: "auto"},
-    {pl: "Świadek", ru: "Свидетель", cat: "auto"},
-    {pl: "Sprawca", ru: "Виновник", cat: "auto"},
-    {pl: "Poszkodowany", ru: "Пострадавший", cat: "auto"},
-    {pl: "Oświadczenie", ru: "Протокол / Заявление", cat: "auto"},
-    {pl: "Kamera / Wideorejestrator", ru: "Видеорегистратор", cat: "auto"},
-    {pl: "Yanosik", ru: "Популярный антирадар (приложение)", cat: "auto"},
-    {pl: "Suszarka", ru: "Радар полицейского (сленг)", cat: "auto"},
-
-        // ФУТБОЛ: Уровни 1-3 (Основы и Поле)
-    {pl: "Piłka nożna", ru: "Футбол", cat: "football"},
-    {pl: "Piłka", ru: "Мяч", cat: "football"},
-    {pl: "Bramka", ru: "Ворота / Гол", cat: "football"},
-    {pl: "Boisko", ru: "Поле", cat: "football"},
-    {pl: "Stadion", ru: "Стадион", cat: "football"},
-    {pl: "Murawa", ru: "Газон", cat: "football"},
-    {pl: "Siatka", ru: "Сетка", cat: "football"},
-    {pl: "Słupek", ru: "Штанга", cat: "football"},
-    {pl: "Poprzeczka", ru: "Перекладина", cat: "football"},
-    {pl: "Linia boczna", ru: "Боковая linia", cat: "football"},
-    {pl: "Pole karne", ru: "Штрафная площадка", cat: "football"},
-    {pl: "Pole bramkowe", ru: "Вратарская площадка", cat: "football"},
-    {pl: "Punkt karny", ru: "Точка (пенальти)", cat: "football"},
-    {pl: "Chorągiewka", ru: "Угловой флажок", cat: "football"},
-    {pl: "Narożnik", ru: "Угловой сектор", cat: "football"},
-    {pl: "Szatnia", ru: "Раздевалка", cat: "football"},
-    {pl: "Trybuny", ru: "Трибуны", cat: "football"},
-    {pl: "Ławka rezerwowych", ru: "Скамейка запасных", cat: "football"},
-    {pl: "Mur", ru: "Стенка (из игроков)", cat: "football"},
-    {pl: "Sektor", ru: "Сектор", cat: "football"},
-
-    // ФУТБОЛ: Уровни 4-6 (Люди на поле)
-    {pl: "Piłkarz", ru: "Футболист", cat: "football"},
-    {pl: "Bramkarz", ru: "Вратарь", cat: "football"},
-    {pl: "Obrońca", ru: "Защитник", cat: "football"},
-    {pl: "Pomocnik", ru: "Полузащитник", cat: "football"},
-    {pl: "Napastnik", ru: "Нападающий", cat: "football"},
-    {pl: "Skrzydłowy", ru: "Вингер / Фланговый игrow", cat: "football"},
-    {pl: "Rezerwowy", ru: "Запасной", cat: "football"},
-    {pl: "Kapitan", ru: "Капитан", cat: "football"},
-    {pl: "Trener", ru: "Тренер", cat: "football"},
-    {pl: "Sędzia", ru: "Судья / Арбитр", cat: "football"},
-    {pl: "Sędzia liniowy", ru: "Боковой судья", cat: "football"},
-    {pl: "Kibic", ru: "Болельщик", cat: "football"},
-    {pl: "Fani", ru: "Фанаты", cat: "football"},
-    {pl: "Selekcjoner", ru: "Треner сборной", cat: "football"},
-    {pl: "Lekarz klubowy", ru: "Клубный врач", cat: "football"},
-    {pl: "Masażysta", ru: "Массажист", cat: "football"},
-    {pl: "Skaut", ru: "Скаут", cat: "football"},
-    {pl: "Prezes", ru: "Президент клуба", cat: "football"},
-    {pl: "Snajper", ru: "Бомбардир (сленг)", cat: "football"},
-    {pl: "Golkiper", ru: "Голкипер", cat: "football"},
-
-    // ФУТБОЛ: Уровни 7-10 (Действия и Техника)
-    {pl: "Podanie", ru: "Пас / Передача", cat: "football"},
-    {pl: "Strzał", ru: "Удар", cat: "football"},
-    {pl: "Dośrodkowanie", ru: "Навес / Прострел", cat: "football"},
-    {pl: "Wrzutka", ru: "Навес (сленг)", cat: "football"},
-    {pl: "Główka", ru: "Удар головой", cat: "football"},
-    {pl: "Dribling", ru: "Дриблинг", cat: "football"},
-    {pl: "Zwód", ru: "Финт", cat: "football"},
-    {pl: "Przejęcie", ru: "Перехват", cat: "football"},
-    {pl: "Odbiór", ru: "Отбор мяча", cat: "football"},
-    {pl: "Wślizg", ru: "Подкат", cat: "football"},
-    {pl: "Interwencja", ru: "Сейв / Вмешательство", cat: "football"},
-    {pl: "Obrona", ru: "Защита / Сейв", cat: "football"},
-    {pl: "Parada", ru: "Красивый сейв", cat: "football"},
-    {pl: "Wykop", ru: "Вынос мяча", cat: "football"},
-    {pl: "Aut", ru: "Аут / Ввод из-за боковой", cat: "football"},
-    {pl: "Rzut rożny", ru: "Угловой удар", cat: "football"},
-    {pl: "Rzut karny", ru: "Пенальти", cat: "football"},
-    {pl: "Rzut wolny", ru: "Штрафной удар", cat: "football"},
-    {pl: "Rzut pośredni", ru: "Свободный удар", cat: "football"},
-    {pl: "Spalony", ru: "Офсайд", cat: "football"},
-    {pl: "Faul", ru: "Фол / Нарушение", cat: "football"},
-    {pl: "Żółta kartka", ru: "Желтая карточка", cat: "football"},
-    {pl: "Czerwona kartka", ru: "Красная карточка", cat: "football"},
-    {pl: "Zmiana", ru: "Замена", cat: "football"},
-    {pl: "Kontuzja", ru: "Травма", cat: "football"},
-    {pl: "Gwizdek", ru: "Свисток", cat: "football"},
-    {pl: "Dogrywka", ru: "Дополнительное время", cat: "football"},
-    {pl: "Rzuty karne", ru: "Серия пенальти", cat: "football"},
-    {pl: "Samobój", ru: "Автогол", cat: "football"},
-    {pl: "Hat-trick", ru: "Хет-трик", cat: "football"},
-
-    // ФУТБОЛ: Уровни 11-13 (Экипировка и Сленг)
-    {pl: "Korki", ru: "Бутсы", cat: "football"},
-    {pl: "Getry", ru: "Гетры", cat: "football"},
-    {pl: "Koszulka", ru: "Футболка", cat: "football"},
-    {pl: "Spodenki", ru: "Шорты", cat: "football"},
-    {pl: "Ochraniacze", ru: "Щитки", cat: "football"},
-    {pl: "Rękawice", ru: "Перчатки", cat: "football"},
-    {pl: "Opaska kapitańska", ru: "Капитанская повязка", cat: "football"},
-    {pl: "Okienko", ru: "Девятка (створ ворот)", cat: "football"},
-    {pl: "Dziura", ru: "Между ног (прокинуть)", cat: "football"},
-    {pl: "Setka", ru: "100% момент", cat: "football"},
-    {pl: "Szmata", ru: "Глупый пропущенный гол", cat: "football"},
-    {pl: "Drewno", ru: "Неуклюжий игрок", cat: "football"},
-    {pl: "Laga", ru: "Длинный безадресный вынос", cat: "football"},
-    {pl: "Kontra", ru: "Контратака", cat: "football"},
-    {pl: "Pressing", ru: "Прессинг", cat: "football"},
-    {pl: "Ofensywa", ru: "Атака / Нападение", cat: "football"},
-    {pl: "Defensywa", ru: "Оборона", cat: "football"},
-    {pl: "Czyste konto", ru: "Сухой матч", cat: "football"},
-    {pl: "Wynik", ru: "Счет / Результат", cat: "football"},
-    {pl: "Remis", ru: "Ничья", cat: "football"},
-
-        // ФУТБОЛ: Уровни 14-16 (Турниры и Результаты)
-    {pl: "Mistrzostwa Świata", ru: "Чемпионат мира", cat: "football"},
-    {pl: "Mistrzostwa Europy", ru: "Чемпионат Европы (Евро)", cat: "football"},
-    {pl: "Liga Mistrzów", ru: "Лига Чемпионов", cat: "football"},
-    {pl: "Puchar", ru: "Кубок", cat: "football"},
-    {pl: "Ekstraklasa", ru: "Высшая лига (в Польше)", cat: "football"},
-    {pl: "Reprezentacja", ru: "Сборная", cat: "football"},
-    {pl: "Mecz towarzyski", ru: "Товарищеский матч", cat: "football"},
-    {pl: "Mecz o punkty", ru: "Официальный матч", cat: "football"},
-    {pl: "Faza grupowa", ru: "Групповой этап", cat: "football"},
-    {pl: "Faza pucharowa", ru: "Плей-офф", cat: "football"},
-    {pl: "Ćwierćfinał", ru: "Четвертьфинал", cat: "football"},
-    {pl: "Półfinał", ru: "Полуфинал", cat: "football"},
-    {pl: "Finał", ru: "Финал", cat: "football"},
-    {pl: "Awans", ru: "Выход (в след. раунд) / Повышение", cat: "football"},
-    {pl: "Spadek", ru: "Вылет (в лигу ниже)", cat: "football"},
-    {pl: "Tabela", ru: "Турнирная таблица", cat: "football"},
-    {pl: "Lider", ru: "Лидер", cat: "football"},
-    {pl: "Gospodarze", ru: "Хозяева (поля)", cat: "football"},
-    {pl: "Goście", ru: "Гости", cat: "football"},
-    {pl: "Rewanż", ru: "Ответный матч", cat: "football"},
-    {pl: "Walkower", ru: "Техническое поражение", cat: "football"},
-    {pl: "Zwycięstwo", ru: "Победа", cat: "football"},
-    {pl: "Porażka", ru: "Поражение", cat: "football"},
-    {pl: "Remis bramkowy", ru: "Результативная ничья", cat: "football"},
-    {pl: "Bez bramek", ru: "Нулевая ничья", cat: "football"},
-    {pl: "Bilans", ru: "Разница мячей / Баланс", cat: "football"},
-    {pl: "Kolejka", ru: "Тур (чемпионата)", cat: "football"},
-    {pl: "Sezon", ru: "Сезон", cat: "football"},
-    {pl: "Okienko transferowe", ru: "Трансферное окно", cat: "football"},
-    {pl: "Kontrakt", ru: "Контракт", cat: "football"},
-
-    // ФУТБОЛ: Уровни 17-19 (Фанатская культура и Атмосфера)
-    {pl: "Kibole", ru: "Фанаты / Ультрас (иногда агрессивные)", cat: "football"},
-    {pl: "Szalik", ru: "Шарф (роза)", cat: "football"},
-    {pl: "Barwy", ru: "Клубные цвета", cat: "football"},
-    {pl: "Oprawa", ru: "Перфоманс / Шоу на трибунах", cat: "football"},
-    {pl: "Race", ru: "Файеры", cat: "football"},
-    {pl: "Doping", ru: "Поддержка / Кричалки", cat: "football"},
-    {pl: "Śpiewy", ru: "Песнопения", cat: "football"},
-    {pl: "Hymn", ru: "Гимн", cat: "football"},
-    {pl: "Żyleta", ru: "Фанатская трибуна (напр. у Легии)", cat: "football"},
-    {pl: "Młyn", ru: "Активный сектор фанатов", cat: "football"},
-    {pl: "Wyjazd", ru: "Выездной матч", cat: "football"},
-    {pl: "Ustawka", ru: "Драка фанатов (договорная)", cat: "football"},
-    {pl: "Kosa", ru: "Вражда между клубами", cat: "football"},
-    {pl: "Sztama", ru: "Дружба между клубами", cat: "football"},
-    {pl: "Derby", ru: "Дерби", cat: "football"},
-    {pl: "Bilety", ru: "Билеты", cat: "football"},
-    {pl: "Karnet", ru: "Абонемент", cat: "football"},
-    {pl: "Komplet widzów", ru: "Аншлаг", cat: "football"},
-    {pl: "Nagłośnienie", ru: "Звук / Колонки", cat: "football"},
-    {pl: "Spiker", ru: "Диктор", cat: "football"},
-
-    // ФУТБОЛ: Уровни 20-22 (Технические тонкости и Сленг)
-    {pl: "Przewrotka", ru: "Удар через себя (ножницами)", cat: "football"},
-    {pl: "Szczupak", ru: "Удар головой в падении (рыбкой)", cat: "football"},
-    {pl: "Wkrętka", ru: "Крученый удар", cat: "football"},
-    {pl: "Lob", ru: "Черпачок / Парашют", cat: "football"},
-    {pl: "Piszczel", ru: "Удар пыром (сленг)", cat: "football"},
-    {pl: "Z kaczki", ru: "Удар внешней стороной стопы", cat: "football"},
-    {pl: "Z woleja", ru: "Удар с лета", cat: "football"},
-    {pl: "Kółeczko", ru: "Разворот с мячом (финт)", cat: "football"},
-    {pl: "Ruletka", ru: "Финт Зидана", cat: "football"},
-    {pl: "Siata", ru: "Проброс между ног", cat: "football"},
-    {pl: "Beton", ru: "Глухая оборона (автобус)", cat: "football"},
-    {pl: "Murowanie bramki", ru: "Ставить автобус", cat: "football"},
-    {pl: "Symulka", ru: "Симуляция", cat: "football"},
-    {pl: "Nurek", ru: "Симулянт (ныряльщик)", cat: "football"},
-    {pl: "Fryzjer", ru: "Коррумпированный судья (сленг)", cat: "football"},
-    {pl: "Kopacz", ru: "Плохой игрок (кривоногий)", cat: "football"},
-    {pl: "Gwiazdorzenie", ru: "Звездная болезнь", cat: "football"},
-    {pl: "Spalony", ru: "Вне игры", cat: "football"},
-    {pl: "Przywilej korzyści", ru: "Отложенный фол", cat: "football"},
-    {pl: "Rzut sędziowski", ru: "Спорный мяч", cat: "football"},
-    {pl: "Mur", ru: "Стенка", cat: "football"},
-    {pl: "Dobicie", ru: "Добивание мяча", cat: "football"},
-    {pl: "Sam na sam", ru: "Выход один на один", cat: "football"},
-    {pl: "Pusta bramka", ru: "Пустые ворота", cat: "football"},
-    {pl: "Doliczony czas", ru: "Добавленное время", cat: "football"},
-    {pl: "Wybicie", ru: "Вынос мяча", cat: "football"},
-    {pl: "Przechwyt", ru: "Перехват", cat: "football"},
-    {pl: "Zgrywanie", ru: "Скидка мяча", cat: "football"},
-    {pl: "Rozegranie", ru: "Разыгрывание", cat: "football"},
-    {pl: "Słabsza noga", ru: "Нерабочая нога", cat: "football"},
-
-    // ФУТБОЛ: Уровни 23-25 (Дополнительно)
-    {pl: "VAR", ru: "ВАР (видеоповтор)", cat: "football"},
-    {pl: "Analiza", ru: "Анализ матча", cat: "football"},
-    {pl: "Skrót meczu", ru: "Обзор матча", cat: "football"},
-    {pl: "Komentator", ru: "Комментатор", cat: "football"},
-    {pl: "Studio", ru: "Предматчевая студия", cat: "football"},
-    {pl: "Ekspert", ru: "Эксперт", cat: "football"},
-    {pl: "Wywiad", ru: "Интервью", cat: "football"},
-    {pl: "Konferencja", ru: "Пресс-конференция", cat: "football"},
-    {pl: "Transfer", ru: "Трансфер", cat: "football"},
-    {pl: "Wypożyczenie", ru: "Аренда (игрока)", cat: "football"},
-
-        // ЕДИНОБОРСТВА: Уровни 1-3 (Основы и Место)
-    {pl: "Sporty walki", ru: "Единоборства", cat: "mma"},
-    {pl: "Boks", ru: "Бокс", cat: "mma"},
-    {pl: "Zapasy", ru: "Борьба", cat: "mma"},
-    {pl: "Judo", ru: "Дзюдо", cat: "mma"},
-    {pl: "Karate", ru: "Карате", cat: "mma"},
-    {pl: "Klatka", ru: "Клетка", cat: "mma"},
-    {pl: "Oktagon", ru: "Октагон", cat: "mma"},
-    {pl: "Ring", ru: "Ринг", cat: "mma"},
-    {pl: "Mata", ru: "Мат / Татами", cat: "mma"},
-    {pl: "Narożnik", ru: "Угол (ринга/клетки)", cat: "mma"},
-    {pl: "Gala", ru: "Турнир / Бойцовский вечер", cat: "mma"},
-    {pl: "Walka", ru: "Бой / Схватка", cat: "mma"},
-    {pl: "Pojedynek", ru: "Поединок", cat: "mma"},
-    {pl: "Sparing", ru: "Спарринг", cat: "mma"},
-    {pl: "Trening", ru: "Тренировка", cat: "mma"},
-    {pl: "Rozgrzewka", ru: "Разминка", cat: "mma"},
-    {pl: "Trener", ru: "Тренер", cat: "mma"},
-    {pl: "Sekundant", ru: "Секундант", cat: "mma"},
-    {pl: "Sędzia", ru: "Судья / Рефери", cat: "mma"},
-    {pl: "Zawodnik", ru: "Боец / Спортсмен", cat: "mma"},
-
-    // ЕДИНОБОРСТВА: Уровни 4-6 (Экипировка)
-    {pl: "Rękawice", ru: "Перчатки", cat: "mma"},
-    {pl: "Owijki", ru: "Бинты (под перчатки)", cat: "mma"},
-    {pl: "Szczęka", ru: "Капа", cat: "mma"},
-    {pl: "Ochraniacz", ru: "Защита / Протектор", cat: "mma"},
-    {pl: "Kask", ru: "Шлем", cat: "mma"},
-    {pl: "Pas", ru: "Пояс", cat: "mma"},
-    {pl: "Kimono / Gi", ru: "Кимоно", cat: "mma"},
-    {pl: "Spodenki", ru: "Шорты", cat: "mma"},
-    {pl: "Rashguard", ru: "Рашгард", cat: "mma"},
-    {pl: "Worek treningowy", ru: "Боксерская груша (мешок)", cat: "mma"},
-    {pl: "Gruszka", ru: "Малая груша", cat: "mma"},
-    {pl: "Tarcze / Łapy", ru: "Лапы / Пады", cat: "mma"},
-    {pl: "Skakanka", ru: "Скакалка", cat: "mma"},
-    {pl: "Obciążenie", ru: "Отягощение / Веса", cat: "mma"},
-    {pl: "Magnezja", ru: "Магнезия", cat: "mma"},
-    {pl: "Plaster", ru: "Тейп / Пластырь", cat: "mma"},
-    {pl: "Woda", ru: "Вода", cat: "mma"},
-    {pl: "Ręcznik", ru: "Полотенце", cat: "mma"},
-    {pl: "Torba sportowa", ru: "Спортивная сумка", cat: "mma"},
-    {pl: "Prysznic", ru: "Душ", cat: "mma"},
-
-    // ЕДИНОБОРСТВА: Уровни 7-10 (Техника и Удары)
-    {pl: "Cios", ru: "Удар (рукой)", cat: "mma"},
-    {pl: "Kopnięcie", ru: "Удар (ногой)", cat: "mma"},
-    {pl: "Blok", ru: "Блок", cat: "mma"},
-    {pl: "Unik", ru: "Уворот / Уклон", cat: "mma"},
-    {pl: "Garda", ru: "Защита / Гард", cat: "mma"},
-    {pl: "Pozycja", ru: "Стойка / Позиция", cat: "mma"},
-    {pl: "Dystans", ru: "Дистанция", cat: "mma"},
-    {pl: "Klincz", ru: "Клинч", cat: "mma"},
-    {pl: "Parater", ru: "Партер", cat: "mma"},
-    {pl: "Stójka", ru: "Стойка", cat: "mma"},
-    {pl: "Obalenie", ru: "Тейкдаун / Сваливание", cat: "mma"},
-    {pl: "Rzut", ru: "Бросок", cat: "mma"},
-    {pl: "Lewy prosty", ru: "Джеб (левый прямой)", cat: "mma"},
-    {pl: "Prawy prosty", ru: "Кросс (правый прямой)", cat: "mma"},
-    {pl: "Sierpowy", ru: "Хук (боковой)", cat: "mma"},
-    {pl: "Hak", ru: "Апперкот", cat: "mma"},
-    {pl: "Kolano", ru: "Колено", cat: "mma"},
-    {pl: "Łokieć", ru: "Локоть", cat: "mma"},
-    {pl: "Low-kick", ru: "Лоу-кик", cat: "mma"},
-    {pl: "High-kick", ru: "Хай-кик", cat: "mma"},
-    {pl: "Front-kick", ru: "Прямой удар ногой", cat: "mma"},
-    {pl: "Obrotówka", ru: "Удар с разворота", cat: "mma"},
-    {pl: "Garda zamknięta", ru: "Закрытый гард", cat: "mma"},
-    {pl: "Dosiad", ru: "Маунт (позиция сверху)", cat: "mma"},
-    {pl: "Plecy", ru: "Спина (взять на замок)", cat: "mma"},
-    {pl: "Kontrola", ru: "Контроль", cat: "mma"},
-    {pl: "Ucieczka", ru: "Эскейп / Уход", cat: "mma"},
-    {pl: "Przetoczenie", ru: "Свип / Переворот", cat: "mma"},
-    {pl: "Kombinacja", ru: "Серия ударов", cat: "mma"},
-    {pl: "Kontra", ru: "Контрудар", cat: "mma"},
-
-    // ЕДИНОБОРСТВА: Уровни 11-13 (Результат и Правила)
-    {pl: "Runda", ru: "Раунд", cat: "mma"},
-    {pl: "Przerwa", ru: "Перерыв", cat: "mma"},
-    {pl: "Gong", ru: "Гонг", cat: "mma"},
-    {pl: "Nokaut", ru: "Нокаут", cat: "mma"},
-    {pl: "Nokdaun", ru: "Нокдаун", cat: "mma"},
-    {pl: "Poddanie", ru: "Сабмишн / Сдача", cat: "mma"},
-    {pl: "Odklepanie", ru: "Тап / Сдача (похлопывание)", cat: "mma"},
-    {pl: "Decyzja sędziów", ru: "Решение судей", cat: "mma"},
-    {pl: "Werdykt", ru: "Вердикт", cat: "mma"},
-    {pl: "Punktacja", ru: "Начисление очков", cat: "mma"},
-    {pl: "Remis", ru: "Ничья", cat: "mma"},
-    {pl: "Wygrana", ru: "Победа", cat: "mma"},
-    {pl: "Przegrana", ru: "Поражение", cat: "mma"},
-    {pl: "Faul", ru: "Нарушение / Фол", cat: "mma"},
-    {pl: "Ostrzeżenie", ru: "Предупреждение", cat: "mma"},
-    {pl: "Dyskwalifikacja", ru: "Дисквалификация", cat: "mma"},
-    {pl: "Walkower", ru: "Техническое поражение", cat: "mma"},
-    {pl: "Krew", ru: "Кровь", cat: "mma"},
-    {pl: "Rozcięcie", ru: "Рассечение", cat: "mma"},
-    {pl: "Kontuzja", ru: "Травма", cat: "mma"},
-    {pl: "Lekarz", ru: "Врач", cat: "mma"},
-    {pl: "Waga", ru: "Вес", cat: "mma"},
-    {pl: "Ważenie", ru: "Взвешивание", cat: "mma"},
-    {pl: "Limit", ru: "Лимит веса", cat: "mma"},
-    {pl: "Ranking", ru: "Рейтинг", cat: "mma"},
-    {pl: "Pas mistrzowski", ru: "Чемпионский пояс", cat: "mma"},
-    {pl: "Mistrz", ru: "Чемпион", cat: "mma"},
-    {pl: "Pretendent", ru: "Претендент", cat: "mma"},
-    {pl: "Debiut", ru: "Дебют", cat: "mma"},
-    {pl: "Main event", ru: "Главный бой вечера", cat: "mma"},
-
-        // ЕДИНОБОРСТВА: Уровни 14-16 (Борьба и Партер - Грэпплинг/BJJ)
-    {pl: "Duszenie", ru: "Удушение", cat: "mma"},
-    {pl: "Dźwignia", ru: "Болевой прием (рычаг/узел)", cat: "mma"},
-    {pl: "Balacha", ru: "Рычаг локтя", cat: "mma"},
-    {pl: "Trójkąt", ru: "Треугольник (ногами)", cat: "mma"},
-    {pl: "Gilotyna", ru: "Гильотина", cat: "mma"},
-    {pl: "Kimura", ru: "Кимура (узел плеча)", cat: "mma"},
-    {pl: "Amerykańska / Americana", ru: "Американа", cat: "mma"},
-    {pl: "Klucz na stopę", ru: "Узел стопы", cat: "mma"},
-    {pl: "Skrętówka", ru: "Скручивание пятки", cat: "mma"},
-    {pl: "Mataja / Duszenie zza pleców", ru: "Удушение сзади (RNC)", cat: "mma"},
-    {pl: "Anakonda", ru: "Анаконда", cat: "mma"},
-    {pl: "Brabo / D’Arce", ru: "Д’Арс", cat: "mma"},
-    {pl: "Półgarda", ru: "Полугард", cat: "mma"},
-    {pl: "Krucyfiks", ru: "Распятие (позиция)", cat: "mma"},
-    {pl: "Boczna (pozycja)", ru: "Сайд-контроль (удержание сбоку)", cat: "mma"},
-    {pl: "Północ-południe", ru: "Север-юг", cat: "mma"},
-    {pl: "Przetoczenie", ru: "Свип / Переворот", cat: "mma"},
-    {pl: "Sprawlowanie", ru: "Спраул (защита от прохода в ноги)", cat: "mma"},
-    {pl: "Wpięcie zza pleców", ru: "Взятие спины", cat: "mma"},
-    {pl: "Zapięcie trójkąta", ru: "Закрыть замок (треугольник)", cat: "mma"},
-    {pl: "Haki", ru: "Крючки (зацепы ногами)", cat: "mma"},
-    {pl: "Mostkowanie", ru: "Мост (движение в партере)", cat: "mma"},
-    {pl: "Wyjście z parteru", ru: "Вставание из партера", cat: "mma"},
-    {pl: "Ubijanie w parterze", ru: "Граунд-энд-паунд (GNP)", cat: "mma"},
-    {pl: "GNP", ru: "Добивание в партере", cat: "mma"},
-
-    // ЕДИНОБОРСТВА: Уровни 17-19 (Продвинутая ударка и Муай-Тай)
-    {pl: "Low-kick wewnętrzny", ru: "Внутренний лоу-кик", cat: "mma"},
-    {pl: "Latające kolano", ru: "Колено в прыжке", cat: "mma"},
-    {pl: "Overhand", ru: "Оверхенд", cat: "mma"},
-    {pl: "Spinning backfist", ru: "Удар рукой с разворота (бэкфист)", cat: "mma"},
-    {pl: "Spinning backkick", ru: "Удар ногой с разворота (вертушка)", cat: "mma"},
-    {pl: "Calf kick", ru: "Лоу-кик в икру", cat: "mma"},
-    {pl: "Kopnięcie opadające", ru: "Экс-кик (удар сверху вниз)", cat: "mma"},
-    {pl: "Teep / Kopnięcie frontalne", ru: "Тип (толчковый удар ногой)", cat: "mma"},
-    {pl: "Counter-punch", ru: "Контрудар", cat: "mma"},
-    {pl: "Kontra", ru: "Встречный удар", cat: "mma"},
-    {pl: "Brudny boks", ru: "Грязный бокс", cat: "mma"},
-    {pl: "Walka w klinczu", ru: "Бой в клинче", cat: "mma"},
-    {pl: "Zerwanie klinczu", ru: "Разрыв клинча", cat: "mma"},
-    {pl: "Zbijanie ciosów", ru: "Сбивы ударов", cat: "mma"},
-    {pl: "Unik rotacyjny", ru: "Нырок", cat: "mma"},
-    {pl: "Odchylenie", ru: "Оттяжка", cat: "mma"},
-    {pl: "Gardłowanie", ru: "Работа локтями", cat: "mma"},
-    {pl: "Praca nóg", ru: "Работа ног (футворк)", cat: "mma"},
-    {pl: "Balans ciałem", ru: "Баланс / Работа корпусом", cat: "mma"},
-    {pl: "Timing", ru: "Тайминг", cat: "mma"},
-
-    // ЕДИНОБОРСТВА: Уровни 20-22 (Сленг и состояние бойца)
-    {pl: "Kondycja / Tlen", ru: "Выносливость / Дыхалка", cat: "mma"},
-    {pl: "Zabrakło prądu", ru: "Закислился / Кончились силы", cat: "mma"},
-    {pl: "Pompka", ru: "Забитость мышц", cat: "mma"},
-    {pl: "Szklana szczęka", ru: "Стеклянная челюсть", cat: "mma"},
-    {pl: "Betonowa szczęka", ru: "Бетонная челюсть (железный подбородок)", cat: "mma"},
-    {pl: "Odcięcie", ru: "Глухой нокаут", cat: "mma"},
-    {pl: "Pływać", ru: "Поплыть (после удара)", cat: "mma"},
-    {pl: "Nogi z waty", ru: "Ноги ватные", cat: "mma"},
-    {pl: "Wojna", ru: "Рубка / Кровавый бой", cat: "mma"},
-    {pl: "Brawler", ru: "Рубака", cat: "mma"},
-    {pl: "Technik", ru: "Технарь", cat: "mma"},
-    {pl: "Parterowiec", ru: "Грэпплер / Борец", cat: "mma"},
-    {pl: "Stójkowicz", ru: "Ударник", cat: "mma"},
-    {pl: "Kopyto", ru: "Тяжелый удар / Пушка в руке", cat: "mma"},
-    {pl: "Ciężka ręka", ru: "Тяжелый удар", cat: "mma"},
-    {pl: "Garda dziurawa", ru: "Дырявая защита", cat: "mma"},
-    {pl: "Wchodzenie w nogi", ru: "Проход в ноги", cat: "mma"},
-    {pl: "Dociskanie do siatki", ru: "Прижимание к сетке", cat: "mma"},
-    {pl: "Presja", ru: "Давление / Прессинг", cat: "mma"},
-    {pl: "Przełamanie", ru: "Слом (соперника)", cat: "mma"},
-
-    // ЕДИНОБОРСТВА: Уровни 23-25 (Подготовка и Окружение)
-    {pl: "Obóz / Camp", ru: "Тренировочные сборы (Кэмп)", cat: "mma"},
-    {pl: "Ścinanie wagi", ru: "Весогонка", cat: "mma"},
-    {pl: "Sauna", ru: "Сауна (для сгонки)", cat: "mma"},
-    {pl: "Odwodnienie", ru: "Обезвоживание", cat: "mma"},
-    {pl: "Limit wagowy", ru: "Весовой лимит", cat: "mma"},
-    {pl: "Niedożywienie", ru: "Недобор веса", cat: "mma"},
-    {pl: "Forma życiowa", ru: "Пиковая форма", cat: "mma"},
-    {pl: "Fizjoterapeuta", ru: "Физиотерапевт", cat: "mma"},
-    {pl: "Suple", ru: "Спортивное питание (суплементы)", cat: "mma"},
-    {pl: "Białko", ru: "Белок / Протеин", cat: "mma"},
-    {pl: "Kreatyna", ru: "Креатин", cat: "mma"},
-    {pl: "Sterydy", ru: "Стероиды / Химия", cat: "mma"},
-    {pl: "Doping", ru: "Допинг", cat: "mma"},
-    {pl: "Badania krwi", ru: "Анализы крови", cat: "mma"},
-    {pl: "USADA / Komisja", ru: "Антидопинговая комиссия", cat: "mma"},
-    {pl: "Trash-talk", ru: "Трэш-ток", cat: "mma"},
-    {pl: "Face-to-face", ru: "Дуэль взглядов (стердаун)", cat: "mma"},
-    {pl: "Ważenie medialne", ru: "Показательное взвешивание", cat: "mma"},
-    {pl: "Underdog", ru: "Андердог (аутсайдер)", cat: "mma"},
-    {pl: "Faworyt", ru: "Фаворит", cat: "mma"},
-    {pl: "Kurs", ru: "Коэффициент / Ставка", cat: "mma"},
-    {pl: "Promotor", ru: "Промоутер", cat: "mma"},
-    {pl: "Matchmaker", ru: "Матчмейкер", cat: "mma"},
-    {pl: "Organizacja", ru: "Промоушен (организация)", cat: "mma"},
-    {pl: "Pas", ru: "Пояс", cat: "mma"},
-    {pl: "Obrona pasa", ru: "Защита титула", cat: "mma"},
-    {pl: "Rewanż", ru: "Реванш", cat: "mma"},
-    {pl: "Trylogia", ru: "Трилогия", cat: "mma"},
-    {pl: "Walka wieczoru", ru: "Главный бой вечера", cat: "mma"},
-    {pl: "Emerytura sportowa", ru: "Завершение карьеры", cat: "mma"},
-
-        // ДАЛЬНОБОЙ: Уровни 1-3 (Машина и Сцепка)
-    {pl: "Ciężarówka", ru: "Грузовик", cat: "truck"},
-    {pl: "Ciągnik siodłowy", ru: "Тягач", cat: "truck"},
-    {pl: "Naczepa", ru: "Прицеп / Полуприцеп", cat: "truck"},
-    {pl: "Zestaw", ru: "Сцепка (фура целиком)", cat: "truck"},
-    {pl: "Firanka", ru: "Штора (тип прицепа)", cat: "truck"},
-    {pl: "Chłodnia", ru: "Рефрижератор", cat: "truck"},
-    {pl: "Wywrotka", ru: "Самосвал", cat: "truck"},
-    {pl: "Gabaryt", ru: "Негабаритный груз", cat: "truck"},
-    {pl: "Kabina", ru: "Кабина", cat: "truck"},
-    {pl: "Siodło", ru: "Седло (сцепное устройство)", cat: "truck"},
-    {pl: "Koło zapasowe", ru: "Запаска", cat: "truck"},
-    {pl: "Opony", ru: "Шины", cat: "truck"},
-    {pl: "Bliźniaki", ru: "Сдвоенные колеса", cat: "truck"},
-    {pl: "Zbiornik paliwa", ru: "Бензобак", cat: "truck"},
-    {pl: "Korek wlewu", ru: "Крышка бака", cat: "truck"},
-    {pl: "AdBlue", ru: "Адблю (мочевина)", cat: "truck"},
-    {pl: "Owiewki", ru: "Спойлеры / Обтекатели", cat: "truck"},
-    {pl: "Skrzynia biegów", ru: "Коробка передач", cat: "truck"},
-    {pl: "Retarder", ru: "Ретардер (горный тормоз)", cat: "truck"},
-    {pl: "Pneumatyka", ru: "Пневмосистема", cat: "truck"},
-    {pl: "Poduszka", ru: "Пневмоподушка", cat: "truck"},
-    {pl: "Osłona międzyosiowa", ru: "Межосевой отбойник", cat: "truck"},
-    {pl: "Tabliczka imienna", ru: "Табличка с именем", cat: "truck"},
-    {pl: "Światła obrysowe", ru: "Габариты / Маркеры", cat: "truck"},
-    {pl: "Koguty", ru: "Мигалки (оранжевые)", cat: "truck"},
-    {pl: "Najazdy", ru: "Трапы / Аппарели", cat: "truck"},
-    {pl: "Plandeka", ru: "Тент", cat: "truck"},
-    {pl: "Linki celne", ru: "Таможенный трос", cat: "truck"},
-    {pl: "Klamry", ru: "Застежки на тенте", cat: "truck"},
-    {pl: "Kłonice", ru: "Стойки (в прицепе)", cat: "truck"},
-
-    // ДАЛЬНОБОЙ: Уровни 4-6 (Жизнь в кабине)
-    {pl: "Leżanka", ru: "Спальник", cat: "truck"},
-    {pl: "Kierownica", ru: "Руль", cat: "truck"},
-    {pl: "Fotel pneumatyczny", ru: "Сиденье на пневмоподушке", cat: "truck"},
-    {pl: "Lodówka", ru: "Холодильник", cat: "truck"},
-    {pl: "Kuchenka gazowa", ru: "Газовая плитка", cat: "truck"},
-    {pl: "Butla gazowa", ru: "Газовый баллон", cat: "truck"},
-    {pl: "Webasto", ru: "Автономка (обогреватель)", cat: "truck"},
-    {pl: "Klima postojowa", ru: "Стояночный кондиционер", cat: "truck"},
-    {pl: "Przetwornica", ru: "Преобразователь напряжения", cat: "truck"},
-    {pl: "CB Radio", ru: "Рация", cat: "truck"},
-    {pl: "Gruszka", ru: "Тангента (микрофон рации)", cat: "truck"},
-    {pl: "Antena", ru: "Антенна", cat: "truck"},
-    {pl: "Navi ciężarowa", ru: "Грузовая навигация", cat: "truck"},
-    {pl: "Tachograf", ru: "Тахограф", cat: "truck"},
-    {pl: "Karta kierowcy", ru: "Чип-карта водителя", cat: "truck"},
-    {pl: "Wykresówka / Tarczka", ru: "Шайба (для старых тахо)", cat: "truck"},
-    {pl: "Papier do tacho", ru: "Термобумага для тахографа", cat: "truck"},
-    {pl: "Wpis manualny", ru: "Ручной ввод (в тахограф)", cat: "truck"},
-    {pl: "Młoteczki", ru: "Режим 'Молотки' (работа)", cat: "truck"},
-    {pl: "Łóżko (tryb tacho)", ru: "Режим 'Кроватка' (отдых)", cat: "truck"},
-    {pl: "Kwadrat (tryb tacho)", ru: "Режим 'Квадратик' (готовность)", cat: "truck"},
-    {pl: "Out", ru: "Режим 'Аут' (вне регламента)", cat: "truck"},
-    {pl: "Schowek", ru: "Бардачок / Ящик", cat: "truck"},
-    {pl: "Zasłonki", ru: "Шторки в кабине", cat: "truck"},
-    {pl: "Półka na deskę", ru: "Полка на торпедо", cat: "truck"},
-    {pl: "Kapcie", ru: "Тапочки (святое в кабине)", cat: "truck"},
-    {pl: "Bańka na wodę", ru: "Канистра для воды", cat: "truck"},
-    {pl: "Skrzynka narzędziowa", ru: "Инструментальный ящик", cat: "truck"},
-    {pl: "Paleciara", ru: "Палетник", cat: "truck"},
-    {pl: "Kosz na śmieci", ru: "Мусорное ведро", cat: "truck"},
-
-    // ДАЛЬНОБОЙ: Уровни 7-10 (Дорога и Инфраструктура)
-    {pl: "Autostrada", ru: "Автобан / Магистраль", cat: "truck"},
-    {pl: "Ekspresówka", ru: "Скоростная дорога", cat: "truck"},
-    {pl: "Landówka", ru: "Национальная дорога (узкая)", cat: "truck"},
-    {pl: "Trasa", ru: "Маршрут / Трасса", cat: "truck"},
-    {pl: "Parking / Dzika", ru: "Паркинг / Дикая стоянка", cat: "truck"},
-    {pl: "MOP", ru: "Место отдыха путешественников", cat: "truck"},
-    {pl: "Autohof", ru: "Платный охраняемый паркинг", cat: "truck"},
-    {pl: "Stacja paliw", ru: "Заправка", cat: "truck"},
-    {pl: "Dystrybutor", ru: "Колонка", cat: "truck"},
-    {pl: "Pistolet high-flow", ru: "Скоростной пистолет", cat: "truck"},
-    {pl: "Pauza", ru: "Отстой / Пауза", cat: "truck"},
-    {pl: "Dziewiątka", ru: "Пауза 9 часов", cat: "truck"},
-    {pl: "Jedenastka", ru: "Пауза 11 часов", cat: "truck"},
-    {pl: "Weekend", ru: "45-часовая пауза", cat: "truck"},
-    {pl: "Kręcenie pauzy", ru: "Крутить паузу", cat: "truck"},
-    {pl: "Przekroczenie czasu", ru: "Перекрут (нарушение)", cat: "truck"},
-    {pl: "Bramki", ru: "Платные терминалы на автобане", cat: "truck"},
-    {pl: "Winieta", ru: "Виньетка (оплата дорог)", cat: "truck"},
-    {pl: "ViaToll / e-TOLL", ru: "Система оплаты дорог в Польше", cat: "truck"},
-    {pl: "Urządzenie pokładowe", ru: "Бортовое устройство (коробочка)", cat: "truck"},
-    {pl: "Waga", ru: "Весы (контроль массы)", cat: "truck"},
-    {pl: "ITD / Krokodyle", ru: "Транспортная инспекция Польши", cat: "truck"},
-    {pl: "Kontrola drogowa", ru: "Дорожный контроль", cat: "truck"},
-    {pl: "Zakaz wyprzedzania", ru: "Запрет обгона", cat: "truck"},
-    {pl: "Ogranicznik prędkości", ru: "Ограничитель скорости", cat: "truck"},
-    {pl: "Korek", ru: "Пробка", cat: "truck"},
-    {pl: "Objazd", ru: "Объезд", cat: "truck"},
-    {pl: "Roboty drogowe", ru: "Дорожные работы", cat: "truck"},
-    {pl: "Zwężenie", ru: "Сужение дороги", cat: "truck"},
-    {pl: "Wahadło", ru: "Реверсивное движение", cat: "truck"},
-    {pl: "Wiadukt", ru: "Мост / Виадук", cat: "truck"},
-    {pl: "Tunel", ru: "Туннель", cat: "truck"},
-    {pl: "Podjazd", ru: "Подъем в гору", cat: "truck"},
-    {pl: "Zjazd", ru: "Съезд / Спуск", cat: "truck"},
-    {pl: "Ślisko", ru: "Скользко", cat: "truck"},
-    {pl: "Gołoledź", ru: "Гололед", cat: "truck"},
-    {pl: "Czarny lód", ru: "Черный лед", cat: "truck"},
-    {pl: "Łańcuchy", ru: "Цепи противоскольжения", cat: "truck"},
-    {pl: "Piaskarka", ru: "Пескоструй / Солевоз", cat: "truck"},
-    {pl: "Pług", ru: "Снегоуборочная машина", cat: "truck"},
-
-        // ДАЛЬНОБОЙ: Уровни 11-13 (Рация и Дорожный сленг)
-    {pl: "Mobilki", ru: "Коллеги / Водители (обращение по рации)", cat: "truck"},
-    {pl: "Jak ścieżka?", ru: "Как дорожка? (обстановка на дороге)", cat: "truck"},
-    {pl: "Czysto", ru: "Чисто (нет полиции/контроля)", cat: "truck"},
-    {pl: "Miśki / Suszarka", ru: "Полиция с радаром", cat: "truck"},
-    {pl: "Krokodyle", ru: "Транспортная инспекция (ITD)", cat: "truck"},
-    {pl: "Oczko", ru: "Фара / Освещение", cat: "truck"},
-    {pl: "Bajo!", ru: "Удачи! / Пока! (по рации)", cat: "truck"},
-    {pl: "Kolego", ru: "Дружище (вежливое обращение)", cat: "truck"},
-    {pl: "Margines", ru: "Обочина", cat: "truck"},
-    {pl: "Lustra", ru: "Зеркала (проверка габаритов)", cat: "truck"},
-    {pl: "Draka", ru: "Пробка / Затор", cat: "truck"},
-    {pl: "Wahadło", ru: "Реверс", cat: "truck"},
-    {pl: "Tarcza", ru: "Шайба / Время работы", cat: "truck"},
-    {pl: "Pauza", ru: "Отстой / Перерыв", cat: "truck"},
-    {pl: "Wykręcić", ru: "Отстоять (паузу)", cat: "truck"},
-    {pl: "Przekręt", ru: "Нарушение режима труда", cat: "truck"},
-    {pl: "Magnes", ru: "Магнит (на датчик скорости)", cat: "truck"},
-    {pl: "Wyłącznik", ru: "Выключатель тахографа", cat: "truck"},
-    {pl: "Kierowca zawodowy", ru: "Водитель-профессионал", cat: "truck"},
-    {pl: "Szofer", ru: "Шофер (старой закалки)", cat: "truck"},
-
-    // ДАЛЬНОБОЙ: Уровни 14-16 (Документы и Офис)
-    {pl: "Spedycja", ru: "Экспедиция / Логистика", cat: "truck"},
-    {pl: "Spedytor", ru: "Логист / Диспетчер", cat: "truck"},
-    {pl: "Zlecenie", ru: "Заказ / Заявка на фрахт", cat: "truck"},
-    {pl: "CMR", ru: "ЦМР (международная накладная)", cat: "truck"},
-    {pl: "List przewozowy", ru: "Транспортная накладная", cat: "truck"},
-    {pl: "Pieczątka", ru: "Печать / Штамп", cat: "truck"},
-    {pl: "Podpis", ru: "Подпись", cat: "truck"},
-    {pl: "WZ / Wuzetka", ru: "Товарная накладная (внутренняя)", cat: "truck"},
-    {pl: "LKW", ru: "Грузовик (немецкий термин)", cat: "truck"},
-    {pl: "Zestaw", ru: "Сцепка", cat: "truck"},
-    {pl: "Karta paliwowa", ru: "Топливная карта", cat: "truck"},
-    {pl: "Kod 95", ru: "Код 95 (разрешение на работу)", cat: "truck"},
-    {pl: "Świadectwo kierowcy", ru: "Розовая бумага (для не граждан ЕС)", cat: "truck"},
-    {pl: "Ubezpieczenie", ru: "Страховка", cat: "truck"},
-    {pl: "Odprawa celna", ru: "Таможенная очистка", cat: "truck"},
-    {pl: "Cło", ru: "Таможенная пошлина", cat: "truck"},
-    {pl: "Urząd celny", ru: "Таможня", cat: "truck"},
-    {pl: "Agencja celna", ru: "Таможенное агентство", cat: "truck"},
-    {pl: "Tranzyt", ru: "Транзит", cat: "truck"},
-    {pl: "Karnet TIR", ru: "Книжка МДП", cat: "truck"},
-
-    // ДАЛЬНОБОЙ: Уровни 17-19 (Погрузка и Склад)
-    {pl: "Załadunek", ru: "Погрузка", cat: "truck"},
-    {pl: "Rozładunek", ru: "Выгрузка", cat: "truck"},
-    {pl: "Miejsce docelowe", ru: "Пункт назначения", cat: "truck"},
-    {pl: "Magazyn", ru: "Склад", cat: "truck"},
-    {pl: "Rampa", ru: "Рампа / Док", cat: "truck"},
-    {pl: "Podstawić się", ru: "Подъехать / Стать под рампу", cat: "truck"},
-    {pl: "Cofać", ru: "Сдавать задом", cat: "truck"},
-    {pl: "Złamać się", ru: "Заломиться (при маневре)", cat: "truck"},
-    {pl: "Wózek widłowy", ru: "Погрузчик (кара)", cat: "truck"},
-    {pl: "Paleciak", ru: "Рохля", cat: "truck"},
-    {pl: "Paleta", ru: "Поддон / Палета", cat: "truck"},
-    {pl: "Euro-paleta", ru: "Европалета", cat: "truck"},
-    {pl: "Wymiana palet", ru: "Обмен палет", cat: "truck"},
-    {pl: "Kosz paletowy", ru: "Палетник", cat: "truck"},
-    {pl: "Pasy transportowe", ru: "Ремни стяжные", cat: "truck"},
-    {pl: "Napiąć pasy", ru: "Затянуть ремни", cat: "truck"},
-    {pl: "Grzechotka", ru: "Трещотка ремня", cat: "truck"},
-    {pl: "Mata antypoślizgowa", ru: "Противоскользящий коврик", cat: "truck"},
-    {pl: "Kątownik", ru: "Уголок (защитный)", cat: "truck"},
-    {pl: "Belka rozporowa", ru: "Распорная штанга", cat: "truck"},
-    {pl: "Ładować bokiem", ru: "Грузить через бок", cat: "truck"},
-    {pl: "Górą", ru: "Верхняя загрузка", cat: "truck"},
-    {pl: "Plomby", ru: "Пломбы", cat: "truck"},
-    {pl: "Numer referencyjny", ru: "Номер референции", cat: "truck"},
-    {pl: "Awizacja", ru: "Авизация (время прибытия)", cat: "truck"},
-    {pl: "Opóźnienie", ru: "Опоздание", cat: "truck"},
-    {pl: "Waga towaru", ru: "Вес товара", cat: "truck"},
-    {pl: "Nadwaga", ru: "Перегруз", cat: "truck"},
-    {pl: "Towar niebezpieczny", ru: "Опасный груз (ADR)", cat: "truck"},
-    {pl: "ADR", ru: "АДР", cat: "truck"},
-
-    // ДАЛЬНОБОЙ: Уровни 20-22 (Техника и Проблемы)
-    {pl: "Awaria", ru: "Поломка", cat: "truck"},
-    {pl: "Usterka", ru: "Неисправность", cat: "truck"},
-    {pl: "Przebita opona", ru: "Пробитое колесо", cat: "truck"},
-    {pl: "Wystrzał", ru: "Взрыв колеса", cat: "truck"},
-    {pl: "Bieżnikowanie", ru: "Нарезка протектора", cat: "truck"},
-    {pl: "Hamulce trzymają", ru: "Тормоза клинят", cat: "truck"},
-    {pl: "Powietrze ucieka", ru: "Воздух шипит (утечка)", cat: "truck"},
-    {pl: "Przewód pneumatyczny", ru: "Пневмошланг", cat: "truck"},
-    {pl: "Kable", ru: "Витые кабели (косички)", cat: "truck"},
-    {pl: "Nieszczelność", ru: "Герметичность / Протечка", cat: "truck"},
-    {pl: "Wyciek oleju", ru: "Течь масла", cat: "truck"},
-    {pl: "Płyn chłodniczy", ru: "Антифриз", cat: "truck"},
-    {pl: "Brak mocy", ru: "Нет тяги", cat: "truck"},
-    {pl: "Turbina padła", ru: "Турбина сломалась", cat: "truck"},
-    {pl: "Serwis LKW", ru: "Грузовой сервис", cat: "truck"},
-    {pl: "Holownik", ru: "Тягач-эвакуатор", cat: "truck"},
-    {pl: "Olej napędowy", ru: "Дизельное топливо", cat: "truck"},
-    {pl: "Zamarznięte paliwo", ru: "Запарафинилось топливо", cat: "truck"},
-    {pl: "Paliwo letnie", ru: "Летняя солярка", cat: "truck"},
-    {pl: "Paliwo zimowe", ru: "Зимняя солярка", cat: "truck"},
-    {pl: "Odmrażacz", ru: "Размораживатель", cat: "truck"},
-    {pl: "Akumulatory padły", ru: "Аккумуляторы сели", cat: "truck"},
-    {pl: "Kable rozruchowe", ru: "Провода для прикуривания", cat: "truck"},
-    {pl: "Podpalić", ru: "Прикурить (машину)", cat: "truck"},
-    {pl: "Osuszacz powietrza", ru: "Осушитель воздуха", cat: "truck"},
-    {pl: "Błąd silnika", ru: "Ошибка двигателя", cat: "truck"},
-    {pl: "Kasować błędy", ru: "Сбрасывать ошибки", cat: "truck"},
-    {pl: "Licznik", ru: "Спидометр / Одометр", cat: "truck"},
-    {pl: "Ogranicznik", ru: "Ограничитель (отсечка)", cat: "truck"},
-    {pl: "Zatankować", ru: "Заправиться", cat: "truck"},
-
-        // БАЙЕР: Уровни 1-3 (Основы и Магазины)
-    {pl: "Moda luksusowa", ru: "Люксовая мода", cat: "buyer"},
-    {pl: "Marka / Brand", ru: "Бренд / Марка", cat: "buyer"},
-    {pl: "Projektant", ru: "Дизайнер", cat: "buyer"},
-    {pl: "Kolekcja", ru: "Коллекция", cat: "buyer"},
-    {pl: "Butik", ru: "Бутик", cat: "buyer"},
-    {pl: "Showroom", ru: "Шоурум", cat: "buyer"},
-    {pl: "Dom mody", ru: "Дом моды", cat: "buyer"},
-    {pl: "Galeria handlowa", ru: "Торговый центр (молл)", cat: "buyer"},
-    {pl: "Outlet premium", ru: "Премиум аутлет", cat: "buyer"},
-    {pl: "Asortyment", ru: "Ассортимент", cat: "buyer"},
-    {pl: "Nowość", ru: "Новинка", cat: "buyer"},
-    {pl: "Bestseller", ru: "Бестселлер", cat: "buyer"},
-    {pl: "Ekskluzywny", ru: "Эксклюзивный", cat: "buyer"},
-    {pl: "Unikatowy", ru: "Уникальный", cat: "buyer"},
-    {pl: "Limitowana edycja", ru: "Лимитированная серия", cat: "buyer"},
-    {pl: "Pre-order", ru: "Предзаказ", cat: "buyer"},
-    {pl: "Dostępność", ru: "Доступность / Наличие", cat: "buyer"},
-    {pl: "Na zamówienie", ru: "Под заказ", cat: "buyer"},
-    {pl: "Wyprzedaż", ru: "Распродажа", cat: "buyer"},
-    {pl: "Zniżka / Rabat", ru: "Скидка", cat: "buyer"},
-    {pl: "Karta stałego klienta", ru: "Карта постоянного клиента", cat: "buyer"},
-    {pl: "Zaproszenie", ru: "Приглашение", cat: "buyer"},
-    {pl: "Pokaz mody", ru: "Показ мод", cat: "buyer"},
-    {pl: "Trendsetter", ru: "Трендсеттер", cat: "buyer"},
-    {pl: "Must-have", ru: "Маст-хэв (обязательно к покупке)", cat: "buyer"},
-    {pl: "Stylizacja", ru: "Образ / Стилизация", cat: "buyer"},
-    {pl: "Lookbook", ru: "Лукбук", cat: "buyer"},
-    {pl: "Witryna", ru: "Витрина", cat: "buyer"},
-    {pl: "Wieszak", ru: "Вешалка", cat: "buyer"},
-    {pl: "Manekin", ru: "Манекен", cat: "buyer"},
-
-    // БАЙЕР: Уровни 4-6 (Материалы и Качество)
-    {pl: "Materiał", ru: "Материал / Ткань", cat: "buyer"},
-    {pl: "Jedwab", ru: "Шелк", cat: "buyer"},
-    {pl: "Bawełna", ru: "Хлопок", cat: "buyer"},
-    {pl: "Wełna", ru: "Шерсть", cat: "buyer"},
-    {pl: "Kaszmir", ru: "Кашемир", cat: "buyer"},
-    {pl: "Len", ru: "Лен", cat: "buyer"},
-    {pl: "Skóra naturalna", ru: "Натуральная кожа", cat: "buyer"},
-    {pl: "Zamsz", ru: "Замша", cat: "buyer"},
-    {pl: "Aksamit / Welur", ru: "Бархат / Велюр", cat: "buyer"},
-    {pl: "Koronka", ru: "Кружево", cat: "buyer"},
-    {pl: "Satyna", ru: "Сатин", cat: "buyer"},
-    {pl: "Tiul", ru: "Тюль", cat: "buyer"},
-    {pl: "Futerko", ru: "Мех", cat: "buyer"},
-    {pl: "Podszewka", ru: "Подкладка", cat: "buyer"},
-    {pl: "Guzik", ru: "Пуговица", cat: "buyer"},
-    {pl: "Zamek błyskawiczny", ru: "Молния (застежка)", cat: "buyer"},
-    {pl: "Haft", ru: "Вышивка", cat: "buyer"},
-    {pl: "Cekiny", ru: "Пайетки", cat: "buyer"},
-    {pl: "Splot", ru: "Плетение", cat: "buyer"},
-    {pl: "Jakość", ru: "Качество", cat: "buyer"},
-    {pl: "Wykończenie", ru: "Отделка / Финиш", cat: "buyer"},
-    {pl: "Ręczna robota", ru: "Ручная работа", cat: "buyer"},
-    {pl: "Handmade", ru: "Хэндмейд", cat: "buyer"},
-    {pl: "Trwałość", ru: "Долговечность", cat: "buyer"},
-    {pl: "Miękki", ru: "Мягкий", cat: "buyer"},
-    {pl: "Delikatny", ru: "Деликатный", cat: "buyer"},
-    {pl: "Przezroczysty", ru: "Прозрачный", cat: "buyer"},
-    {pl: "Błyszczący", ru: "Блестящий", cat: "buyer"},
-    {pl: "Matowy", ru: "Матовый", cat: "buyer"},
-    {pl: "Elastyczny", ru: "Эластичный", cat: "buyer"},
-
-    // БАЙЕР: Уровни 7-10 (Процесс и Подлинность)
-    {pl: "Autentyczność", ru: "Подлинность", cat: "buyer"},
-    {pl: "Certyfikat", ru: "Сертификат", cat: "buyer"},
-    {pl: "Oryginał", ru: "Оригинал", cat: "buyer"},
-    {pl: "Podróbka / Fake", ru: "Подделка / Фейк", cat: "buyer"},
-    {pl: "Replika", ru: "Реплика", cat: "buyer"},
-    {pl: "Kod QR", ru: "QR-код", cat: "buyer"},
-    {pl: "Numer seryjny", ru: "Серийный номер", cat: "buyer"},
-    {pl: "Opakowanie", ru: "Упаковка", cat: "buyer"},
-    {pl: "Pudełko", ru: "Коробка", cat: "buyer"},
-    {pl: "Worki przeciwkurzowe", ru: "Пыльники (для сумок/обуви)", cat: "buyer"},
-    {pl: "Torebka papierowa", ru: "Бумажный пакет", cat: "buyer"},
-    {pl: "Metka", ru: "Бирка / Этикетка", cat: "buyer"},
-    {pl: "Cena", ru: "Цена", cat: "buyer"},
-    {pl: "Paragon", ru: "Чек", cat: "buyer"},
-    {pl: "Faktura VAT", ru: "Счет-фактура (инвойс)", cat: "buyer"},
-    {pl: "Zwrot", ru: "Возврат", cat: "buyer"},
-    {pl: "Reklamacja", ru: "Рекламация / Претензия", cat: "buyer"},
-    {pl: "Wymiana", ru: "Обмен", cat: "buyer"},
-    {pl: "Rozmiar", ru: "Размер", cat: "buyer"},
-    {pl: "Tabela rozmiarów", ru: "Размерная сетка", cat: "buyer"},
-    {pl: "Przymierzalnia", ru: "Примерочная", cat: "buyer"},
-    {pl: "Lustro", ru: "Зеркало", cat: "buyer"},
-    {pl: "Obsługa klienta", ru: "Обслуживание клиентов", cat: "buyer"},
-    {pl: "Doradca klienta", ru: "Консультант", cat: "buyer"},
-    {pl: "Personal shopper", ru: "Персональный шопер", cat: "buyer"},
-    {pl: "Płatność kartą", ru: "Оплата картой", cat: "buyer"},
-    {pl: "Gotówka", ru: "Наличные", cat: "buyer"},
-    {pl: "Przelew bankowy", ru: "Банковский перевод", cat: "buyer"},
-    {pl: "Zaliczka", ru: "Задаток / Аванс", cat: "buyer"},
-    {pl: "Prowizja", ru: "Комиссия (байера)", cat: "buyer"},
-    {pl: "Marża", ru: "Маржа", cat: "buyer"},
-    {pl: "Koszt wysyłki", ru: "Стоимость доставки", cat: "buyer"},
-    {pl: "Ubezpieczenie przesyłki", ru: "Страховка посылки", cat: "buyer"},
-    {pl: "Cło", ru: "Таможенная пошлина", cat: "buyer"},
-    {pl: "Odprawa", ru: "Оформление (таможенное)", cat: "buyer"},
-    {pl: "Kurier", ru: "Курьер", cat: "buyer"},
-    {pl: "Śledzenie paczki", ru: "Отслеживание посылки", cat: "buyer"},
-    {pl: "Dostawa", ru: "Доставка", cat: "buyer"},
-    {pl: "Odbiór osobisty", ru: "Самовывоз", cat: "buyer"},
-    {pl: "Prezent", ru: "Подарок", cat: "buyer"},
-
-        // БАЙЕР: Уровни 11-13 (Одежда детально)
-    {pl: "Garnitur", ru: "Костюм (мужской)", cat: "buyer"},
-    {pl: "Garsonka", ru: "Костюм (женский)", cat: "buyer"},
-    {pl: "Marynarka", ru: "Пиджак / Блейзер", cat: "buyer"},
-    {pl: "Płaszcz", ru: "Пальто", cat: "buyer"},
-    {pl: "Trencz", ru: "Тренч", cat: "buyer"},
-    {pl: "Futro", ru: "Шуба", cat: "buyer"},
-    {pl: "Kożuch", ru: "Дубленка", cat: "buyer"},
-    {pl: "Kurtka puchowa", ru: "Пуховик", cat: "buyer"},
-    {pl: "Kamizelka", ru: "Жилет", cat: "buyer"},
-    {pl: "Sweter / Golf", ru: "Свитер / Водолазка", cat: "buyer"},
-    {pl: "Kardigan", ru: "Кардиган", cat: "buyer"},
-    {pl: "Koszuła wizytowa", ru: "Парадная рубашка", cat: "buyer"},
-    {pl: "Bluzka jedwabna", ru: "Шелковая блузка", cat: "buyer"},
-    {pl: "Suknia wieczorowa", ru: "Вечернее платье", cat: "buyer"},
-    {pl: "Mała czarna", ru: "Маленькое черное платье", cat: "buyer"},
-    {pl: "Spódnica ołówkowa", ru: "Юбка-карандаш", cat: "buyer"},
-    {pl: "Spodnie w kant", ru: "Брюки со стрелками", cat: "buyer"},
-    {pl: "Jeansy luksusowe", ru: "Люксовые джинсы", cat: "buyer"},
-    {pl: "Szlafrok", ru: "Халат", cat: "buyer"},
-    {pl: "Bielizna koronkowa", ru: "Кружевное белье", cat: "buyer"},
-
-    // БАЙЕР: Уровни 14-16 (Обувь и Сумки)
-    {pl: "Obuwie", ru: "Обувь", cat: "buyer"},
-    {pl: "Szpilki", ru: "Туфли на шпильке", cat: "buyer"},
-    {pl: "Czółenka", ru: "Туфли-лодочки", cat: "buyer"},
-    {pl: "Mokasyny", ru: "Мокасины", cat: "buyer"},
-    {pl: "Loafersy", ru: "Лоферы", cat: "buyer"},
-    {pl: "Sneakersy", ru: "Кроссовки (дизайнерские)", cat: "buyer"},
-    {pl: "Trampki", ru: "Кеды", cat: "buyer"},
-    {pl: "Botki", ru: "Ботильоны", cat: "buyer"},
-    {pl: "Kozaki", ru: "Сапоги", cat: "buyer"},
-    {pl: "Klapki", ru: "Шлепанцы / Мюли", cat: "buyer"},
-    {pl: "Sandały", ru: "Сандалии", cat: "buyer"},
-    {pl: "Torebka do ręki", ru: "Сумка с короткими ручками", cat: "buyer"},
-    {pl: "Kopertówka", ru: "Клатч", cat: "buyer"},
-    {pl: "Listonoszka", ru: "Сумка через плечо (кросс-боди)", cat: "buyer"},
-    {pl: "Shopper", ru: "Сумка-шоппер", cat: "buyer"},
-    {pl: "Plecak skórzany", ru: "Кожаный рюкзак", cat: "buyer"},
-    {pl: "Nerka", ru: "Поясная сумка", cat: "buyer"},
-    {pl: "Kufer", ru: "Сумка-сундучок", cat: "buyer"},
-    {pl: "Pasek skórzany", ru: "Кожаный ремень", cat: "buyer"},
-    {pl: "Rękawiczki skórzane", ru: "Кожаные перчатки", cat: "buyer"},
-
-    // БАЙЕР: Уровни 17-19 (Ювелирка и Часы)
-    {pl: "Biżuteria", ru: "Ювелирные изделия", cat: "buyer"},
-    {pl: "Złoto", ru: "Золото", cat: "buyer"},
-    {pl: "Srebro", ru: "Серебро", cat: "buyer"},
-    {pl: "Platyna", ru: "Платина", cat: "buyer"},
-    {pl: "Diament / Brylant", ru: "Алмаз / Бриллиант", cat: "buyer"},
-    {pl: "Kamień szlachetny", ru: "Драгоценный камень", cat: "buyer"},
-    {pl: "Naszyjnik", ru: "Ожерелье", cat: "buyer"},
-    {pl: "Naszyjnik z pereł", ru: "Жемчужное ожерелье", cat: "buyer"},
-    {pl: "Łańcuszek", ru: "Цепочка", cat: "buyer"},
-    {pl: "Zawieszka / Wisiorek", ru: "Кулон / Подвеска", cat: "buyer"},
-    {pl: "Kolczyki", ru: "Серьги", cat: "buyer"},
-    {pl: "Bransoletka", ru: "Браслет", cat: "buyer"},
-    {pl: "Pierścionek", ru: "Кольцо", cat: "buyer"},
-    {pl: "Sygnet", ru: "Перстень / Печатка", cat: "buyer"},
-    {pl: "Broszka", ru: "Брошь", cat: "buyer"},
-    {pl: "Zegarek automatyczny", ru: "Механические часы", cat: "buyer"},
-    {pl: "Chronograf", ru: "Хронограф", cat: "buyer"},
-    {pl: "Bransoleta", ru: "Металлический браслет часов", cat: "buyer"},
-    {pl: "Pasek do zegarka", ru: "Ремешок часов", cat: "buyer"},
-    {pl: "Tarcza zegarka", ru: "Циферблат", cat: "buyer"},
-
-    // БАЙЕР: Уровни 20-22 (Сленг и Тренды)
-    {pl: "Haute Couture", ru: "Высокая мода", cat: "buyer"},
-    {pl: "Prêt-à-porter", ru: "Готовое платье (прет-а-порте)", cat: "buyer"},
-    {pl: "Kolekcja kapsułowa", ru: "Капсульная коллекция", cat: "buyer"},
-    {pl: "Drop", ru: "Дроп (выпуск новой коллекции)", cat: "buyer"},
-    {pl: "Sold out", ru: "Распродано", cat: "buyer"},
-    {pl: "Bestseller", ru: "Лидер продаж", cat: "buyer"},
-    {pl: "Must-have", ru: "Обязательная вещь сезона", cat: "buyer"},
-    {pl: "Vintage", ru: "Винтаж", cat: "buyer"},
-    {pl: "Pre-loved", ru: "Б/У Люкс (в отличном состоянии)", cat: "buyer"},
-    {pl: "Resell", ru: "Перепродажа", cat: "buyer"},
-    {pl: "Oversize", ru: "Оверсайз (свободный крой)", cat: "buyer"},
-    {pl: "Slim fit", ru: "Приталенный крой", cat: "buyer"},
-    {pl: "Total look", ru: "Образ в одном стиле/бренде", cat: "buyer"},
-    {pl: "Layering", ru: "Многослойность", cat: "buyer"},
-    {pl: "Casual luxury", ru: "Повседневный люкс", cat: "buyer"},
-    {pl: "Ikona stylu", ru: "Икона стиля", cat: "buyer"},
-    {pl: "Trend", ru: "Тренд / Тенденция", cat: "buyer"},
-    {pl: "Kicz", ru: "Кич / Безвкусица", cat: "buyer"},
-    {pl: "Ponadczasowy", ru: "Вне времени (классика)", cat: "buyer"},
-    {pl: "Wyrafinowany", ru: "Изысканный", cat: "buyer"},
-
-    // БАЙЕР: Уровни 23-25 (Силуэт и Детали)
-    {pl: "Fason / Krój", ru: "Фасон / Крой", cat: "buyer"},
-    {pl: "Talia", ru: "Талия", cat: "buyer"},
-    {pl: "Biodra", ru: "Бедра", cat: "buyer"},
-    {pl: "Ramiona", ru: "Плечи", cat: "buyer"},
-    {pl: "Rękaw", ru: "Рукав", cat: "buyer"},
-    {pl: "Kołnierzyk", ru: "Воротник", cat: "buyer"},
-    {pl: "Dekolt", ru: "Декольте / Вырез", cat: "buyer"},
-    {pl: "Nogawka", ru: "Штанина", cat: "buyer"},
-    {pl: "Mankiet", ru: "Манжет", cat: "buyer"},
-    {pl: "Kieszeń", ru: "Карман", cat: "buyer"},
-    {pl: "Szew", ru: "Шов", cat: "buyer"},
-    {pl: "Długość mini", ru: "Длина мини", cat: "buyer"},
-    {pl: "Długość midi", ru: "Длина миди", cat: "buyer"},
-    {pl: "Długość maxi", ru: "Длина макси", cat: "buyer"},
-    {pl: "Wzór", ru: "Узор / Принт", cat: "buyer"},
-    {pl: "Gładki", ru: "Однотонный (без узора)", cat: "buyer"},
-    {pl: "W kratkę", ru: "В клетку", cat: "buyer"},
-    {pl: "W paski", ru: "В полоску", cat: "buyer"},
-    {pl: "Kwiatowy motyw", ru: "Цветочный принт", cat: "buyer"},
-    {pl: "Zwierzęcy motyw", ru: "Животный принт (леопард и т.д.)", cat: "buyer"}
-];
+            // УРОВЕНЬ 1: Основы основ
+            {pl: "Ja", ru: "Я", cat: "base"},
+            {pl: "Ty", ru: "Ты", cat: "base"},
+            {pl: "On", ru: "Он", cat: "base"}
+            // (Сюда добавишь остальные свои слова)
+        ];
 
         const sentencesData = [
-    // БАЗА: Знакомство и вежливость
-    {pl: "Jak się masz?", ru: "Как дела?", cat: "base"},
-    {pl: "Miło cię poznać", ru: "Приятно познакомиться", cat: "base"},
-    {pl: "Jak masz na imię?", ru: "Как тебя зовут?", cat: "base"},
-    {pl: "Mam na imię Michał", ru: "Меня зовут Михал", cat: "base"},
-    {pl: "Skąd jesteś?", ru: "Откуда ты?", cat: "base"},
-    {pl: "Jestem z Polski", ru: "Я из Польши", cat: "base"},
-    {pl: "Czy mówisz po angielsku?", ru: "Ты говоришь по-английски?", cat: "base"},
-    {pl: "Mówię tylko trochę po polsku", ru: "Я только немного говорю по-польски", cat: "base"},
-    {pl: "Nie rozumiem", ru: "Я не понимаю", cat: "base"},
-    {pl: "Proszę powtórzyć wolniej", ru: "Пожалуйста, повторите медленнее", cat: "base"},
-    {pl: "Co to znaczy?", ru: "Что это значит?", cat: "base"},
-    {pl: "Jak to się mówi po polsku?", ru: "Как это говорится по-польски?", cat: "base"},
-    {pl: "Bardzo dziękuję za pomoc", ru: "Большое спасибо за помощь", cat: "base"},
-    {pl: "Nie ma za co", ru: "Не за что", cat: "base"},
-    {pl: "Przepraszam, gdzie jest toaleta?", ru: "Извините, где туалет?", cat: "base"},
+            // БАЗА: Знакомство и вежливость
+            {pl: "Jak się masz?", ru: "Как дела?", cat: "base"},
+            {pl: "Miło cię poznać", ru: "Приятно познакомиться", cat: "base"},
+            {pl: "Jak masz na imię?", ru: "Как тебя зовут?", cat: "base"},
 
-    // БАЗА: Город и ориентация
-    {pl: "Gdzie jest najbliższy sklep?", ru: "Где ближайший магазин?", cat: "base"},
-    {pl: "Szukam przystanku autobusowego", ru: "Я ищу автобусную остановку", cat: "base"},
-    {pl: "Czy to jest droga do centrum?", ru: "Это дорога в центр?", cat: "base"},
-    {pl: "Muszę kupić bilet", ru: "Мне нужно купить билет", cat: "base"},
-    {pl: "Gdzie mogę kupić kartę SIM?", ru: "Где я могу купить сим-карту?", cat: "base"},
-    {pl: "Idę prosto i skręcam w lewo", ru: "Иду прямо и поворачиваю налево", cat: "base"},
-    {pl: "To jest bardzo blisko stąd", ru: "Это очень близко отсюда", cat: "base"},
-    {pl: "Jak daleko jest do dworca?", ru: "Как далеко до вокзала?", cat: "base"},
-    {pl: "Chciałbym zamówić taksówkę", ru: "Я хотел бы заказать такси", cat: "base"},
-    {pl: "Ile kosztuje przejazd?", ru: "Сколько стоит проезд?", cat: "base"},
+            // АВТО: Покупка и состояние
+            {pl: "Klimatyzacja jest nabita i sprawna?", ru: "Кондиционер заправлен и работает?", cat: "auto"},
+            {pl: "To jest auto od handlarza czy od osoby prywatnej?", ru: "Это машина от перекупа или от частника?", cat: "auto"},
+            {pl: "Silnik pracuje równo i cicho", ru: "Двигатель работает ровно и тихо", cat: "auto"},
 
-    // БАЗА: Магазины и покупки
-    {pl: "Ile to kosztuje?", ru: "Сколько это стоит?", cat: "base"},
-    {pl: "Czy jest na to zniżka?", ru: "На это есть скидка?", cat: "base"},
-    {pl: "Czy mogę zapłacić kartą?", ru: "Я могу заплатить картой?", cat: "base"},
-    {pl: "Poproszę paragon", ru: "Пожалуйста, чек", cat: "base"},
-    {pl: "Chciałbym to przymierzyć", ru: "Я хотел бы это примерить", cat: "base"},
-    {pl: "Gdzie są przymierzalnie?", ru: "Где примерочные?", cat: "base"},
-    {pl: "To jest za drogie", ru: "Это слишком дорого", cat: "base"},
-    {pl: "Czy mają Państwo inny rozmiar?", ru: "У вас есть другой размер?", cat: "base"},
-    {pl: "Biorę to", ru: "Я это беру", cat: "base"},
-    {pl: "Poproszę reklamówkę", ru: "Пожалуйста, пакет", cat: "base"},
+            // АВТО: Сервис и ремонт
+            {pl: "Ile zajmie naprawa tego auta?", ru: "Сколько займет ремонт этой машины?", cat: "auto"},
+            {pl: "Potrzebuję faktury za części i robotę", ru: "Мне нужен счет за запчасти и работу", cat: "auto"},
+            {pl: "Ustawcie mi zbieżność kół", ru: "Сделайте мне развал-схождение", cat: "auto"},
 
-    // БАЗА: Ресторан и еда
-    {pl: "Stolik dla dwóch osób poproszę", ru: "Столик на двоих, пожалуйста", cat: "base"},
-    {pl: "Czy mogę prosić o menu?", ru: "Можно попросить меню?", cat: "base"},
-    {pl: "Chciałbym zamówić kawę z mlekiem", ru: "Я хотел бы заказать кофе с молоком", cat: "base"},
-    {pl: "Co Pan poleca?", ru: "Что вы рекомендуете?", cat: "base"},
-    {pl: "Poproszę rachunek", ru: "Пожалуйста, счет", cat: "base"},
-    {pl: "Jedzenie było pyszne", ru: "Еда была вкусной", cat: "base"},
-    {pl: "Bez cukru poproszę", ru: "Без сахара, пожалуйста", cat: "base"},
-    {pl: "Czy to danie jest ostre?", ru: "Это блюдо острое?", cat: "base"},
-    {pl: "Jestem wegetarianinem", ru: "Я вегетарианец", cat: "base"},
-    {pl: "Szklankę wody poproszę", ru: "Стакан воды, пожалуйста", cat: "base"},
+            // АВТО: Дорога и вождение
+            {pl: "Muszę wezwać lawetę, auto stanęło", ru: "Надо вызвать эвакуатор, машина встала", cat: "auto"},
+            {pl: "Ciężko wbić wsteczny bieg", ru: "Тяжело включить заднюю передачу", cat: "auto"},
+            {pl: "Wypadła mi żarówka w lewym oczku", ru: "Перегорела лампочка в левой фаре", cat: "auto"},
 
-    // БАЗА: Время и встречи
-    {pl: "Która jest godzina?", ru: "Который час?", cat: "base"},
-    {pl: "O której się spotykamy?", ru: "Во сколько мы встречаемся?", cat: "base"},
-    {pl: "Będę za dziesięć minut", ru: "Буду через десять минут", cat: "base"},
-    {pl: "Spóźnię się trochę", ru: "Я немного опоздаю", cat: "base"},
-    {pl: "Co robisz w weekend?", ru: "Что ты делаешь в выходные?", cat: "base"},
-    {pl: "Mam dzisiaj dużo pracy", ru: "У меня сегодня много работы", cat: "base"},
-    {pl: "Kiedy masz urodziny?", ru: "Когда у тебя день рождения?", cat: "base"},
-    {pl: "Zadzwoń do mnie później", ru: "Позвони мне позже", cat: "base"},
-    {pl: "Wyślę ci wiadomość", ru: "Я пришлю тебе сообщение", cat: "base"},
-    {pl: "Muszę już iść", ru: "Мне пора идти", cat: "base"},
+            // АВТО: Тюнинг и сленг
+            {pl: "Wrzucaj dwójkę i ogień!", ru: "Включай вторую и жми!", cat: "auto"},
+            {pl: "Skrzynia zgrzyta przy zmianie biegów", ru: "Коробка хрустит при переключении", cat: "auto"},
+            {pl: "Sprzedałem furę za niezłą kasę", ru: "Продал тачку за хорошие деньги", cat: "auto"},
 
-    // БАЗА: Дом и быт
-    {pl: "Gdzie są klucze?", ru: "Где ключи?", cat: "base"},
-    {pl: "Muszę posprzątać w pokoju", ru: "Мне нужно убраться в комнате", cat: "base"},
-    {pl: "Otwórz okno proszę", ru: "Открой окно, пожалуйста", cat: "base"},
-    {pl: "Idę zrobić zakupy", ru: "Я иду за покупками", cat: "base"},
-    {pl: "Zrób mi herbatę", ru: "Сделай мне чай", cat: "base"},
-    {pl: "Gdzie mieszkasz?", ru: "Где ты живешь?", cat: "base"},
-    {pl: "Mój dom jest stary", ru: "Мой дом старый", cat: "base"},
-    {pl: "Lodówka jest pusta", ru: "Холодильник пуст", cat: "base"},
-    {pl: "Włącz światło", ru: "Включи свет", cat: "base"},
-    {pl: "Idę spać", ru: "Я иду спать", cat: "base"},
+            // ФУТБОЛ: Игра и Команда
+            {pl: "On gra na czas, bo chcą utrzymać wynik", ru: "Он тянет время, потому что они хотят удержать счет", cat: "football"},
+            {pl: "Zmieńmy ustawienie na cztery-cztery-dwa", ru: "Давайте сменим расстановку на четыре-четыре-два", cat: "football"},
+            {pl: "To był czysty odbiór, sędzia nie powinien gwizdać", ru: "Это был чистый отбор, судья не должен был свистеть", cat: "football"},
 
-    // БАЗА: Здоровье
-    {pl: "Boli mnie głowa", ru: "У меня болит голова", cat: "base"},
-    {pl: "Muszę iść do lekarza", ru: "Мне нужно пойти к врачу", cat: "base"},
-    {pl: "Jestem przeziębiony", ru: "Я простужен", cat: "base"},
-    {pl: "Gdzie jest apteka całodobowa?", ru: "Где круглосуточная аптека?", cat: "base"},
-    {pl: "Potrzebuję czegoś na ból gardła", ru: "Мне нужно что-то от боли в горле", cat: "base"},
-    {pl: "Mam wysoką gorączkę", ru: "У меня высокая температура", cat: "base"},
-    {pl: "Dobrze się czuję", ru: "Я хорошо себя чувствую", cat: "base"},
-    {pl: "Chce mi się spać", ru: "Мне хочется спать", cat: "base"},
-    {pl: "Potrzebuję recepty", ru: "Мне нужен рецепт", cat: "base"},
-    {pl: "Zadzwoń po karetkę", ru: "Позвони в скорую", cat: "base"},
+            // ФУТБОЛ: Судейство и Нарушения
+            {pl: "Arbiter doliczył pięć minut do regulaminowego czasu", ru: "Арбитр добавил пять минут к основному времени", cat: "football"},
+            {pl: "On symuluje, w ogóle go nie dotknął", ru: "Он симулирует, тот вообще его не коснулся", cat: "football"},
+            {pl: "Przywilej korzyści, gramy dalej!", ru: "Отложенный фол (преимущество), играем дальше!", cat: "football"},
 
-    // БАЗА: Эмоции и мнение
-    {pl: "Bardzo się cieszę", ru: "Я очень рад", cat: "base"},
-    {pl: "To jest super!", ru: "Это супер!", cat: "base"},
-    {pl: "Nie mam pojęcia", ru: "Понятия не имею", cat: "base"},
-    {pl: "Zgadzam się z tobą", ru: "Я согласен с тобой", cat: "base"},
-    {pl: "Myślę że masz rację", ru: "Думаю, ты прав", cat: "base"},
-    {pl: "To nie jest prawda", ru: "Это неправда", cat: "base"},
-    {pl: "Szkoda czasu", ru: "Жаль времени", cat: "base"},
-    {pl: "Boję się tego", ru: "Я боюсь этого", cat: "base"},
-    {pl: "Wszystko będzie dobrze", ru: "Все будет хорошо", cat: "base"},
-    {pl: "Daj mi spokój", ru: "Оставь меня в покое", cat: "base"},
+            // ФУТБОЛ: Болельщики и Стадион
+            {pl: "Polska gola! Taka jest kibiców wola!", ru: "Польша, гол! Такова воля болельщиков! (кричалка)", cat: "football"},
+            {pl: "Idziemy po meczu na piwo pogadać o wyniku?", ru: "Пойдем после матча на пиво обсудить результат?", cat: "football"},
+            {pl: "Sektor gości jest dzisiaj wypełniony po brzegi", ru: "Гостевой сектор сегодня заполнен до краев", cat: "football"},
 
-    // БАЗА: Повседневные вопросы
-    {pl: "Co się stało?", ru: "Что случилось?", cat: "base"},
-    {pl: "O czym myślisz?", ru: "О чем ты думаешь?", cat: "base"},
-    {pl: "Gdzie byłeś wczoraj?", ru: "Где ты был вчера?", cat: "base"},
-    {pl: "Jak minął dzień?", ru: "Как прошел день?", cat: "base"},
-    {pl: "Czy masz czas jutro?", ru: "У тебя есть время завтра?", cat: "base"},
-    {pl: "Możesz mi pomóc?", ru: "Можешь мне помочь?", cat: "base"},
-    {pl: "Który dzisiaj jest?", ru: "Какое сегодня число?", cat: "base"},
-    {pl: "Jaka jest dzisiaj pogoda?", ru: "Какая сегодня погода?", cat: "base"},
-    {pl: "Chcesz wyjść na miasto?", ru: "Хочешь выйти в город?", cat: "base"},
-    {pl: "Gdzie się spotykamy?", ru: "Где мы встречаемся?", cat: "base"},
+            // ФУТБОЛ: Сленг и Аналитика
+            {pl: "Oni jadą na kontry, musimy uważać w obronie", ru: "Они выезжают на контратаках, нам нужно быть осторожными в защите", cat: "football"},
+            {pl: "Gospodarze dominują na całym boisku", ru: "Хозяева доминируют на всем поле", cat: "football"},
+            {pl: "Mamy remis, więc będzie dogrywka i karne", ru: "У нас ничья, так что будет доп. время и пенальти", cat: "football"},
 
-    // БАЗА: Социальные сети и связь
-    {pl: "Masz Instagrama?", ru: "У тебя есть Инстаграм?", cat: "base"},
-    {pl: "Wyślij mi to na WhatsApp", ru: "Пришли мне это на Вотсап", cat: "base"},
-    {pl: "Nie mam zasięgu", ru: "У меня нет связи", cat: "base"},
-    {pl: "Bateria mi pada", ru: "У меня садится батарея", cat: "base"},
-    {pl: "Daj mi swój numer telefonu", ru: "Дай мне свой номер телефона", cat: "base"},
+            // ФУТБОЛ: Новости и Трансферы
+            {pl: "Podpisał kontrakt na kolejne trzy lata", ru: "Он подписал контракт еще на три года", cat: "football"},
+            {pl: "To był najlepszy hat-trick w jego karierзе", ru: "Это был лучший хет-трик в его карьере", cat: "football"},
+            {pl: "Snajper drużyny znowu trafił do siatki", ru: "Бомбардир команды снова поразил ворота", cat: "football"},
 
-            // БАЗА: Работа и бизнес
-    {pl: "Gdzie pracujesz?", ru: "Где ты работаешь?", cat: "base"},
-    {pl: "Kim jesteś z zawodu?", ru: "Кто ты по профессии?", cat: "base"},
-    {pl: "Szukam nowej pracy", ru: "Я ищу новую работу", cat: "base"},
-    {pl: "Mam dzisiaj ważne spotkanie", ru: "У меня сегодня важная встреча", cat: "base"},
-    {pl: "Pracuję od dziewiątej do siedemnastej", ru: "Я работаю с девяти до пяти", cat: "base"},
-    {pl: "Czy możesz wysłać mi maila?", ru: "Можешь прислать мне имейл?", cat: "base"},
-    {pl: "Potrzebuję twojego podpisu", ru: "Мне нужна твоя подпись", cat: "base"},
-    {pl: "To nie należy do moich obowiązków", ru: "Это не входит в мои обязанности", cat: "base"},
-    {pl: "Zróbmy sobie przerwę na kawę", ru: "Давай сделаем перерыв на кофе", cat: "base"},
-    {pl: "Jestem na urlopie", ru: "Я в отпуске", cat: "base"},
+            // ММА: Тренировка и Зал
+            {pl: "On ma bardzo silny lewy prosty", ru: "У него очень сильный левый прямой (джеб)", cat: "mma"},
+            {pl: "Musisz częściej uciekać z parteru do stójki", ru: "Тебе нужно чаще уходить из партера в стойку", cat: "mma"},
+            {pl: "Zbijaj jego ciosy i szukaj miejsca na hak", ru: "Сбивай его удары и ищи место для апперкота", cat: "mma"},
 
-    // БАЗА: Путешествия и отель
-    {pl: "Chciałbym zarezerwować pokój", ru: "Я хотел бы забронировать номер", cat: "base"},
-    {pl: "Czy śniadanie jest wliczone w cenę?", ru: "Завтрак включен в стоимость?", cat: "base"},
-    {pl: "Poproszę hasło do Wi-Fi", ru: "Пароль от вай-фая, пожалуйста", cat: "base"},
-    {pl: "O której muszę się wymeldować?", ru: "Во сколько мне нужно выселиться?", cat: "base"},
-    {pl: "Gdzie mogę zostawić bagaż?", ru: "Где я могу оставить багаж?", cat: "base"},
-    {pl: "Potrzebuję mapy miasta", ru: "Мне нужна карта города", cat: "base"},
-    {pl: "Zgubiłem się", ru: "Я заблудился", cat: "base"},
-    {pl: "Czy ten autobus jedzie do centrum?", ru: "Этот автобус едет в центр?", cat: "base"},
-    {pl: "Gdzie jest najbliższy postój taksówek?", ru: "Где ближайшая стоянка такси?", cat: "base"},
-    {pl: "Poproszę o pomoc z walizką", ru: "Пожалуйста, помогите с чемоданом", cat: "base"},
+            // ММА: Бой и Техника
+            {pl: "On wygrywa tę rundę dzięki kontroli w parterze", ru: "Он выигрывает этот раунд благодаря контролю в партере", cat: "mma"},
+            {pl: "Nogi mu się ugięły po tym high-kicku", ru: "Ноги у него подкосились после этого хай-кика", cat: "mma"},
+            {pl: "Werdykt sędziowski był niejednogłośny", ru: "Судейский вердикт был раздельногласным", cat: "mma"},
 
-    // БАЗА: Проблемы и чрезвычайные ситуации
-    {pl: "Zgubiłem portfel", ru: "Я потерял кошелек", cat: "base"},
-    {pl: "Ukradli mi telefon", ru: "У меня украли телефон", cat: "base"},
-    {pl: "Potrzebuję pomocy", ru: "Мне нужна помощь", cat: "base"},
-    {pl: "Proszę zawołać policję", ru: "Пожалуйста, позовите полицию", cat: "base"},
-    {pl: "Nie działa mi karta", ru: "У меня не работает карта", cat: "base"},
-    {pl: "Zepsuł mi się samochód", ru: "У меня сломалась машина", cat: "base"},
-    {pl: "Gdzie jest ambasada?", ru: "Где находится посольство?", cat: "base"},
-    {pl: "Pali się!", ru: "Пожар!", cat: "base"},
-    {pl: "Uważaj!", ru: "Осторожно!", cat: "base"},
-    {pl: "Zostaw mnie!", ru: "Оставь меня!", cat: "base"},
+            // ММА: Подготовка и Турнир
+            {pl: "Czy ta walka będzie transmitowana w PPV?", ru: "Этот бой будет транслироваться по системе PPV?", cat: "mma"},
+            {pl: "On podpisał kontrakt z najlepszą organizacją w Europie", ru: "Он подписал контракт с лучшей организацией в Европе", cat: "mma"},
+            {pl: "Rewanż odbędzie się za pół roku", ru: "Реванш состоится через полгода", cat: "mma"},
 
-    // БАЗА: Быт и покупки (продвинутые)
-    {pl: "Czy mogę to zwrócić?", ru: "Я могу это вернуть?", cat: "base"},
-    {pl: "Tylko się rozglądam, dziękuję", ru: "Я только осматриваюсь, спасибо", cat: "base"},
-    {pl: "Gdzie jest kasa?", ru: "Где касса?", cat: "base"},
-    {pl: "Czy są mniejsze rozmiary?", ru: "Есть размеры поменьше?", cat: "base"},
-    {pl: "Ten kolor mi nie pasuje", ru: "Этот цвет мне не подходит", cat: "base"},
-    {pl: "Można prosić o fakturę?", ru: "Можно попросить счет-фактуру?", cat: "base"},
-    {pl: "Szukam prezentu dla przyjaciela", ru: "Я ищу подарок для друга", cat: "base"},
-    {pl: "To jest bardzo dobrej jakości", ru: "Это очень хорошего качества", cat: "base"},
-    {pl: "Zapłacę gotówką", ru: "Я заплачу наличными", cat: "base"},
-    {pl: "Można zapłacić telefonem?", ru: "Можно заплатить телефоном?", cat: "base"},
+            // ММА: Сленг и Состояние
+            {pl: "Zapiął gilotynę tak mocno, że nie było wyjścia", ru: "Закрыл гильотину так плотно, что выхода не было", cat: "mma"},
+            {pl: "On bazuje na zapasach, nie chce się bić w stójce", ru: "Он полагается на борьбу, не хочет драться в стойке", cat: "mma"},
+            {pl: "Ale kopyto! Ma niesamowitą siłę w rękach", ru: "Ну и пушка! У него невероятная сила в руках", cat: "mma"},
 
-    // БАЗА: Технологии и интернет
-    {pl: "Nie mam internetu", ru: "У меня нет интернета", cat: "base"},
-    {pl: "Muszę naładować telefon", ru: "Мне нужно зарядить телефон", cat: "base"},
-    {pl: "Czy masz ładowarkę?", ru: "У тебя есть зарядка?", cat: "base"},
-    {pl: "Zapomniałem hasła", ru: "Я забыл пароль", cat: "base"},
-    {pl: "Strona się nie ładuje", ru: "Страница не загружается", cat: "base"},
-    {pl: "Wyślij mi link do tego", ru: "Пришли мне ссылку на это", cat: "base"},
-    {pl: "Daj mi znać na Messengerze", ru: "Дай мне знать в Мессенджере", cat: "base"},
-    {pl: "Twoje zdjęcie jest super", ru: "Твое фото — супер", cat: "base"},
-    {pl: "Słabo cię słychać", ru: "Тебя плохо слышно", cat: "base"},
-    {pl: "Połączmy się przez wideo", ru: "Давай созвонимся по видео", cat: "base"},
+            // ММА: Эмоции и Финал
+            {pl: "Trener krzyczał, żeby nie stał pod siatką", ru: "Тренер кричал, чтобы тот не стоял у сетки", cat: "mma"},
+            {pl: "Wykręcił mu rękę tak, że prawie pękła", ru: "Выкрутил ему руку так, что она почти лопнула", cat: "mma"},
+            {pl: "Kolejna gala zapowiada się bardzo mocno", ru: "Следующий турнир обещает быть очень мощным", cat: "mma"},
 
-    // БАЗА: Хобби и свободное время
-    {pl: "Co lubisz robić w wolnym czasie?", ru: "Что ты любишь делать в свободное время?", cat: "base"},
-    {pl: "Lubię oglądać filmy", ru: "Я люблю смотреть фильмы", cat: "base"},
-    {pl: "Interesuję się sportem", ru: "Я интересуюсь спортом", cat: "base"},
-    {pl: "Czy grasz w gry wideo?", ru: "Ты играешь в видеоигры?", cat: "base"},
-    {pl: "Chodźmy na spacer do parku", ru: "Пойдем на прогулку в парк", cat: "base"},
-    {pl: "Czy umiesz gotować?", ru: "Ты умеешь готовить?", cat: "base"},
-    {pl: "Słucham muzyki codziennie", ru: "Я слушаю музыку каждый день", cat: "base"},
-    {pl: "Często chodzę na siłownię", ru: "Я часто хожу в спортзал", cat: "base"},
-    {pl: "Czy masz jakieś zwierzęta?", ru: "У тебя есть животные?", cat: "base"},
-    {pl: "Mój kot jest bardzo leniwy", ru: "Мой кот очень ленивый", cat: "base"},
+            // ТРАССА: Рация и Обстановка (На канале)
+            {pl: "Zrób mi trochę miejsca, muszę wyprzedzić", ru: "Дай мне немного места, мне нужно обогнать", cat: "truck"},
+            {pl: "Ale tu jest draka, stoimy w korku od godziny", ru: "Ну и завал тут, стоим в пробке уже час", cat: "truck"},
+            {pl: "Ślisko na podjeździe, uważajcie na moście", ru: "Скользко на подъеме, осторожнее на мосту", cat: "truck"},
 
-    // БАЗА: Мнения и обсуждения
-    {pl: "Co o tym sądzisz?", ru: "Что ты об этом думаешь?", cat: "base"},
-    {pl: "Moim zdaniem to błąd", ru: "По моему мнению, это ошибка", cat: "base"},
-    {pl: "Zależy od sytuacji", ru: "Зависит от ситуации", cat: "base"},
-    {pl: "Masz rację", ru: "Ты прав", cat: "base"},
-    {pl: "Nie zgadzam się", ru: "Я не согласен", cat: "base"},
-    {pl: "To brzmi ciekawie", ru: "Это звучит интересно", cat: "base"},
-    {pl: "Jest mi to obojętne", ru: "Мне все равно", cat: "base"},
-    {pl: "To nie ma sensu", ru: "Это не имеет смысла", cat: "base"},
-    {pl: "Nigdy o tym nie słyszałem", ru: "Никогда об этом не слышал", cat: "base"},
-    {pl: "Muszę to przemyśleć", ru: "Мне нужно это обдумать", cat: "base"},
+            // РАБОТА: Тахограф и Время (Паузы)
+            {pl: "Karta kierowcy nie chce wejść do czytnika", ru: "Чип-карта водителя не лезет в слот", cat: "truck"},
+            {pl: "Muszę sprawdzić wydruk z wczorajszego dnia", ru: "Мне нужно проверить распечатку за вчерашний день", cat: "truck"},
+            {pl: "Jutro rano ruszam w stronę granicy", ru: "Завтра утром выезжаю в сторону границы", cat: "truck"},
 
-    // БАЗА: Финал дня
-    {pl: "To był długi dzień", ru: "Это был длинный день", cat: "base"},
-    {pl: "Jestem wykończony", ru: "Я очень устал", cat: "base"},
-    {pl: "Chcę wrócić do domu", ru: "Я хочу вернуться домой", cat: "base"},
-    {pl: "Dziękuję za wieczór", ru: "Спасибо за вечер", cat: "base"},
-    {pl: "Do zobaczenia jutro", ru: "До встречи завтра", cat: "base"},
+            // СКЛАД: Погрузка и Разгрузка
+            {pl: "Muszę zapiąć plomby przed wyjazdem z bazy", ru: "Я должен повесить пломбы перед выездом с базы", cat: "truck"},
+            {pl: "Czekam na awizację już drugą godzinę", ru: "Жду авизацию (время разгрузки) уже второй час", cat: "truck"},
+            {pl: "Czy mogę zostać na parkingu pod firmą na pauzę?", ru: "Я могу остаться на парковке под фирмой на паузу?", cat: "truck"},
 
-        // АВТО: Покупка и состояние
-    {pl: "Ile pali ten samochód na mieście?", ru: "Какой расход у этой машины в городе?", cat: "auto"},
-    {pl: "Auto jest w stanie idealnym, igła", ru: "Машина в идеальном состоянии, просто куколка", cat: "auto"},
-    {pl: "Czy ten silnik bierze olej?", ru: "Этот двигатель ест масло?", cat: "auto"},
-    {pl: "Buda jest zdrowa, nie ma rdzy", ru: "Кузов живой, гнили нет", cat: "auto"},
-    {pl: "Zbijamy trochę z ceny?", ru: "Скинем немного цену?", cat: "auto"},
-    {pl: "Chcę sprawdzić auto na stacji diagnostycznej", ru: "Я хочу проверить машину на СТО", cat: "auto"},
-    {pl: "Opony są do wymiany, bieżnik jest słaby", ru: "Шины под замену, протектор плохой", cat: "auto"},
-    {pl: "Klimatyzacja jest nabita i sprawna?", ru: "Кондиционер заправлен и работает?", cat: "auto"},
-    {pl: "To jest auto od handlarza czy od osoby prywatnej?", ru: "Это машина от перекупа или от частника?", cat: "auto"},
-    {pl: "Silnik pracuje równo i cicho", ru: "Двигатель работает ровно и тихо", cat: "auto"},
+            // ТЕХНИКА: Поломки и Дорога
+            {pl: "Potrzebuję lawety dla ciężarówki", ru: "Мне нужен эвакуатор для грузовика", cat: "truck"},
+            {pl: "Klocki się palą, czuć spaleniznę z kół", ru: "Колодки горят, пахнет горелым от колес", cat: "truck"},
+            {pl: "Wyświetla mi się błąd silnika na czerwono", ru: "У меня горит ошибка двигателя красным цветом", cat: "truck"},
 
-    // АВТО: Сервис и ремонт
-    {pl: "Coś mi stuka w zawieszeniu z przodu", ru: "Что-то стучит в передней подвеsce", cat: "auto"},
-    {pl: "Muszę wymienić olej i wszystkie filtry", ru: "Мне нужно поменять масло и все фильтры", cat: "auto"},
-    {pl: "Hamulce piszczą przy hamowaniu", ru: "Тормоза пищат при торможении", cat: "auto"},
-    {pl: "Kiedy był wymieniany rozrząd?", ru: "Когда менялся ГРМ?", cat: "auto"},
-    {pl: "Padł mi akumulator, muszę go naładować", ru: "Сел аккум, нужно его зарядить", cat: "auto"},
-    {pl: "Auto nie chce odpalić na zimnym", ru: "Машина не заводится на холодную", cat: "auto"},
-    {pl: "Zapaliła się kontrolka check engine", ru: "Загорелся чек (ошибка двигателя)", cat: "auto"},
-    {pl: "Ile zajmie naprawa tego auta?", ru: "Сколько займет ремонт этой машины?", cat: "auto"},
-    {pl: "Potrzebuję faktury za części i robotę", ru: "Мне нужен счет за запчасти и работу", cat: "auto"},
-    {pl: "Ustawcie mi zbieżność kół", ru: "Сделайте мне развал-схождение", cat: "auto"},
+            // ГРАНИЦА: Документы и Таможня
+            {pl: "Jaka jest długa kolejka na granicy?", ru: "Какая очередь на границе?", cat: "truck"},
+            {pl: "Muszę iść do agencji celnej oddać dokumenty", ru: "Мне нужно идти в таможенное агентство отдать документы", cat: "truck"},
+            {pl: "Czekam na odprawę celną towaru", ru: "Жду таможенного оформления груза", cat: "truck"},
 
-    // АВТО: Дорога и вождение
-    {pl: "Złapałem gumę na autostradzie", ru: "У меня пробило колесо на автобане", cat: "auto"},
-    {pl: "Gdzie jest najbliższa wulkanizacja?", ru: "Где ближайший шиномонтаж?", cat: "auto"},
-    {pl: "Zabrakło mi paliwa, muszę iść na stację", ru: "У меня кончился бензин, надо идти на заправку", cat: "auto"},
-    {pl: "Prawy opór i lecimy!", ru: "Газ в пол и погнали!", cat: "auto"},
-    {pl: "Uważaj, tam stoją z suszarką!", ru: "Осторожно, там стоят с радаром!", cat: "auto"},
-    {pl: "Dostałem mandat za przekroczenie prędkości", ru: "Я получил штраф за превышение скорости", cat: "auto"},
-    {pl: "Zabrali mi prawko na trzy miesiące", ru: "У меня забрали права на три месяца", cat: "auto"},
-    {pl: "Muszę wezwać lawetę, auto stanęło", ru: "Надо вызвать эвакуатор, машина встала", cat: "auto"},
-    {pl: "Ciężko wbić wsteczny bieg", ru: "Тяжело включить заднюю передачу", cat: "auto"},
-    {pl: "Wypadła mi żarówka w lewym oczku", ru: "Перегорела лампочка в левой фаре", cat: "auto"},
+            // БАЙЕР: В бутике и поиск товара
+            {pl: "Czy ten produkt to limitowana edycja?", ru: "Этот товар — лимитированная серия?", cat: "buyer"},
+            {pl: "Mogę prosić o odłożenie tej marynarki do końca dnia?", ru: "Могу я попросить отложить этот пиджак до конца дня?", cat: "buyer"},
+            {pl: "Szukam prezentu dla bardzo wymagającego klienta", ru: "Я ищу подарок для очень требовательного клиента", cat: "buyer"},
 
-    // АВТО: Тюнинг и сленг
-    {pl: "Zrobiłem mapę i mam teraz więcej koni", ru: "Я чипанул мотор, теперь больше лошадей", cat: "auto"},
-    {pl: "Ta fura ma niezłą glebę", ru: "У этой тачки отличная заниженная посадка", cat: "auto"},
-    {pl: "Słychać turbo jak świszczy", ru: "Слышно, как свистит турбина", cat: "auto"},
-    {pl: "Założyłem przelot, teraz strzela z wydechu", ru: "Я поставил прямоток, теперь стреляет из выхлопа", cat: "auto"},
-    {pl: "Latałeś już bokiem na tym rondzie?", ru: "Уже дрифтил на этом кольце?", cat: "auto"},
-    {pl: "Felgi robią robotę, auto wygląda kozacko", ru: "Диски решают, тачка выглядит круто", cat: "auto"},
-    {pl: "Odcięcie jest przy siedmiu tysiącach", ru: "Отсечка на семи тысячах", cat: "auto"},
-    {pl: "Upalasz auto pod marketem?", ru: "Наваливаешь под маркетом?", cat: "auto"},
-    {pl: "Masz szperę w tym gruzie?", ru: "У тебя есть блокировка в этом корче?", cat: "auto"},
-    {pl: "Mój projekt jeszcze nie jest gotowy", ru: "Мой проект еще не готов", cat: "auto"},
+            // БАЙЕР: Качество, Материалы и Подлинность
+            {pl: "Szwy są idealnie równe, to na pewno oryginał", ru: "Швы идеально ровные, это точно оригинал", cat: "buyer"},
+            {pl: "Ten kolor na zdjęciu wygląda inaczej niż w rzeczywistości", ru: "Этот цвет на фото выглядит иначе, чем в реальности", cat: "buyer"},
+            {pl: "Pudełko jest lekko uszkodzone, czy mają Państwo inne?", ru: "Коробка слегка повреждена, у вас есть другая?", cat: "buyer"},
 
-    // АВТО: Общение и мелкие просьбы
-    {pl: "Pożyczysz mi kable rozruchowe?", ru: "Одолжишь провода для прикуривания?", cat: "auto"},
-    {pl: "Mógłbyś mnie pociągnąć na lince?", ru: "Мог бы ты взять меня на буксир?", cat: "auto"},
-    {pl: "Dolej płynu do spryskiwaczy", ru: "Долей омывайки", cat: "auto"},
-    {pl: "Gdzie kupię tanie części?", ru: "Где купить дешевые запчасти?", cat: "auto"},
-    {pl: "To auto to skarbonka bez dna", ru: "Эта машина — бездонная копилка (постоянно ломается)", cat: "auto"},
-    {pl: "Sprawdź ciśnienie w oponach", ru: "Проверь давление в шинах", cat: "auto"},
-    {pl: "Wyłącz te długie światła, oślepiasz mnie!", ru: "Выключи дальний, ты меня слепишь!", cat: "auto"},
-    {pl: "Wrzucaj dwójkę i ogień!", ru: "Включай вторую и жми!", cat: "auto"},
-    {pl: "Skrzynia zgrzyta przy zmianie biegów", ru: "Коробка хрустит при переключении", cat: "auto"},
-    {pl: "Sprzedałem furę za niezłą kasę", ru: "Продал тачку за хорошие деньги", cat: "auto"},
+            // БАЙЕР: Оплата, Скидки и Документы
+            {pl: "Muszę doliczyć koszty ubezpieczenia przesyłki międzynarodowej", ru: "Я должен добавить стоимость страховки международной посылки", cat: "buyer"},
+            {pl: "Klient prosi o przesłanie skanu paragonu przed wysyłką", ru: "Клиент просит прислать скан чека перед отправкой", cat: "buyer"},
+            {pl: "Płatność została odrzucona, spróbuję inną kartą", ru: "Платеж отклонен, попробую другую карту", cat: "buyer"},
 
-        // ФУТБОЛ: Игра и Команда
-    {pl: "Podaj mi piłkę, jestem na wolnej pozycji!", ru: "Пасуй мне мяч, я на свободной позиции!", cat: "football"},
-    {pl: "Musimy grać bardziej ofensywnie w drugiej połowie", ru: "Нам нужно играть более атакующе во втором тайме", cat: "football"},
-    {pl: "Uważaj na plecy, masz gościa na ogonie!", ru: "Осторожно за спиной, у тебя игрок на хвосте!", cat: "football"},
-    {pl: "To była genialna asysta, prosto na nogę", ru: "Это был гениальный ассист, прямо в ногу", cat: "football"},
-    {pl: "Bramkarz popisał się niesamowitą paradą", ru: "Вратарь отметился невероятным сейвом", cat: "football"},
-    {pl: "Kryj swojego zawodnika, nie zostawiaj go samego", ru: "Крой своего игрока, не оставляй его одного", cat: "football"},
-    {pl: "Mamy rzut rożny, wszyscy w pole karne!", ru: "У нас угловой, все в штрафную!", cat: "football"},
-    {pl: "On gra na czas, bo chcą utrzymać wynik", ru: "Он тянет время, потому что они хотят удержать счет", cat: "football"},
-    {pl: "Zmieńmy ustawienie na cztery-cztery-dwa", ru: "Давайте сменим расстановку на четыре-четыре-два", cat: "football"},
-    {pl: "To był czysty odbiór, sędzia nie powinien gwizdać", ru: "Это был чистый отбор, судья не должен был свистеть", cat: "football"},
+            // БАЙЕР: Доставка и Сервис
+            {pl: "Paczka zostanie wysłana kurierem ekspresowym jutro rano", ru: "Посылка будет отправлена экспресс-курьером завтра утром", cat: "buyer"},
+            {pl: "Prześlę numer śledzenia przesyłki zaraz po nadaniu", ru: "Я пришлю номер отслеживания сразу после отправки", cat: "buyer"},
+            {pl: "Produkt zostanie zapakowany w papier prezentowy и wstążkę", ru: "Товар будет упакован в подарочную бумагу и ленту", cat: "buyer"},
 
-    // ФУТБОЛ: Судейство и Нарушения
-    {pl: "Sędzia podjął bardzo kontrowersyjną decyzję", ru: "Судья принял очень спорное решение", cat: "football"},
-    {pl: "To był ewidentny rzut karny dla naszej drużyny", ru: "Это был очевидный пенальти для нашей команды", cat: "football"},
-    {pl: "Czy sędzia sprawdzi tę sytuację na VAR-ze?", ru: "Судья проверит эту ситуацию на ВАР-е?", cat: "football"},
-    {pl: "Dostał czerwoną kartkę i musiał zejść z boiska", ru: "Он получил красную карточку и должен был покинуть поле", cat: "football"},
-    {pl: "Był spalony, gol nie zostanie uznany", ru: "Был офсайд, гол не будет засчитан", cat: "football"},
-    {pl: "Faulował go brutalnie od tyłu", ru: "Он грубо сфолил на нем сзади", cat: "football"},
-    {pl: "Murek był za blisko przy rzucie wolnym", ru: "Стенка стояла слишком близко при штрафном", cat: "football"},
-    {pl: "Arbiter doliczył pięć minut do regulaminowego czasu", ru: "Арбитр добавил пять минут к основному времени", cat: "football"},
-    {pl: "On symuluje, w ogóle go nie dotknął", ru: "Он симулирует, тот вообще его не коснулся", cat: "football"},
-    {pl: "Przywilej korzyści, gramy dalej!", ru: "Отложенный фол (преимущество), играем дальше!", cat: "football"},
+            // БАЙЕР: Тренды и Обсуждение
+            {pl: "Szukam czegoś unikatowego, czego nie ma w sieciówkach", ru: "Я ищу что-то уникальное, чего нет в масс-маркете", cat: "buyer"},
+            {pl: "Kolekcja kapsułowa wyprzedała się w kilka minut", ru: "Капсульная коллекция распродалась за несколько минут", cat: "buyer"},
+            {pl: "To jest wyrafinowany styl dla prawdziwych koneserów", ru: "Это изысканный стиль для настоящих ценителей", cat: "buyer"}
+        ];
 
-    // ФУТБОЛ: Болельщики и Стадион
-    {pl: "O której zaczyna się dzisiejszy mecz?", ru: "Во сколько начинается сегодняшний матч?", cat: "football"},
-    {pl: "Kto twoim zdaniem wygra to spotkanie?", ru: "Кто по-твоему выиграет эту встречу?", cat: "football"},
-    {pl: "Atmosfera na stadionie jest niesamowita", ru: "Атмосфера на стадионе потрясающая", cat: "football"},
-    {pl: "Kibice przygotowali świetną oprawę na ten mecz", ru: "Болельщики подготовили отличное шоу (перфоманс) на этот матч", cat: "football"},
-    {pl: "Cała żyleta śpiewa hymn klubu", ru: "Вся фанатская трибуна поет гимн клуба", cat: "football"},
-    {pl: "Gdzie mogę kupić szalik reprezentacji Polski?", ru: "Где я могу купить шарф сборной Польши?", cat: "football"},
-    {pl: "Wszystkie bilety na derby zostały wyprzedane", ru: "Все билеты на дерби были распроданы", cat: "football"},
-    {pl: "Polska gola! Taka jest kibiców wola!", ru: "Польша, гол! Такова воля болельщиков! (кричалка)", cat: "football"},
-    {pl: "Idziemy po meczu na piwo pogadać o wyniku?", ru: "Пойдем после матча на пиво обсудить результат?", cat: "football"},
-    {pl: "Sektor gości jest dzisiaj wypełniony po brzegi", ru: "Гостевой сектор сегодня заполнен до краев", cat: "football"},
-
-    // ФУТБОЛ: Сленг и Аналитика
-    {pl: "Ale zapakował w samo okienko!", ru: "Ну и положил прямо в девятку!", cat: "football"},
-    {pl: "Puścił szmatę, to był fatalny błąd bramkarza", ru: "Пропустил 'пенку' (глупый гол), это была фатальная ошибка вратаря", cat: "football"},
-    {pl: "On jest totalnym drewnem, nie umie prosto kopnąć", ru: "Он полное 'дерево', не может прямо ударить", cat: "football"},
-    {pl: "Zagrał lagę do przodu, ale nikt nie przejął piłki", ru: "Запульнул мяч вперед (наобум), но никто не перехватил", cat: "football"},
-    {pl: "Założył mu siatę, co za upokorzenie!", ru: "Прокинул ему между ног, вот это унижение!", cat: "football"},
-    {pl: "Zamurowali bramkę и nie da się przebić", ru: "Они поставили 'автобус' (забаррикадировались), невозможно пробиться", cat: "football"},
-    {pl: "To była stuprocentowa sytuacja, jak on tego nie strzelił?", ru: "Это был стопроцентный момент, как он не забил?", cat: "football"},
-    {pl: "Oni jadą na kontry, musimy uważać w obronie", ru: "Они выезжают на контратаках, нам нужно быть осторожными в защите", cat: "football"},
-    {pl: "Gospodarze dominują na całym boisku", ru: "Хозяева доминируют на всем поле", cat: "football"},
-    {pl: "Mamy remis, więc będzie dogrywka i karne", ru: "У нас ничья, так что будет доп. время и пенальти", cat: "football"},
-
-    // ФУТБОЛ: Новости и Трансферы
-    {pl: "Ten zawodnik przechodzi do innego klubu za rekordową sumę", ru: "Этот игрок переходит в другой клуб за рекордную сумму", cat: "football"},
-    {pl: "Trener został zwolniony po serii porażek", ru: "Тренер был уволен после серии поражений", cat: "football"},
-    {pl: "On ma kontuzję i wypadł ze składu na miesiąc", ru: "У него травма, и он выбыл из состава на месяц", cat: "football"},
-    {pl: "Okienko transferowe zamyka się o północy", ru: "Трансферное окно закрывается в полночь", cat: "football"},
-    {pl: "Polska reprezentacja awansowała do finału", ru: "Польская сборная вышла в финал", cat: "football"},
-    {pl: "Kto jest liderem tabeli strzelców?", ru: "Кто лидирует в таблице бомбардиров?", cat: "football"},
-    {pl: "Mecz został odwołany z powodu ulewy", ru: "Матч был отменен из-за ливня", cat: "football"},
-    {pl: "Podpisał kontrakt na kolejne trzy lata", ru: "Он подписал контракт еще на три года", cat: "football"},
-    {pl: "To był najlepszy hat-trick w jego karierзе", ru: "Это был лучший хет-трик в его карьере", cat: "football"},
-    {pl: "Snajper drużyny znowu trafił do siatki", ru: "Бомбардир команды снова поразил ворота", cat: "football"},
-
-        // ММА: Тренировка и Зал
-    {pl: "Musisz trzymać wyżej gardę, bo dostaniesz kontrę", ru: "Тебе нужно держать защиту выше, а то получишь встречный", cat: "mma"},
-    {pl: "Skup się na pracy nóg i trzymaj dystans", ru: "Сосредоточься на работе ног и держи дистанцию", cat: "mma"},
-    {pl: "Dzisiaj robimy tylko lekkie sparingi zadaniowe", ru: "Сегодня делаем только легкие тематические спарринги", cat: "mma"},
-    {pl: "Trenerze, jak prawidłowo zapiąć ten trójkąt?", ru: "Тренер, как правильно закрыть этот треугольник?", cat: "mma"},
-    {pl: "Twoja kondycja jest słaba, musisz więcej biegać", ru: "Твоя выносливость слабая, нужно больше бегать", cat: "mma"},
-    {pl: "Nie zapomnij ochraniacza na zęby i owijek", ru: "Не забудь капу и бинты", cat: "mma"},
-    {pl: "Po treningu zawsze robimy rozciąganie i brzuch", ru: "После тренировки всегда делаем растяжку и пресс", cat: "mma"},
-    {pl: "On ma bardzo silny lewy prosty", ru: "У него очень сильный левый прямой (джеб)", cat: "mma"},
-    {pl: "Musisz częściej uciekać z parteru do stójki", ru: "Тебе нужно чаще уходить из партера в стойку", cat: "mma"},
-    {pl: "Zbijaj jego ciosy i szukaj miejsca na hak", ru: "Сбивай его удары и ищи место для апперкота", cat: "mma"},
-
-    // ММА: Бой и Техника
-    {pl: "Walka zakończyła się przez nokaut w pierwszej rundzie", ru: "Бой закончился нокаутом в первом раунде", cat: "mma"},
-    {pl: "On szuka obalenia pod siatką, musisz sprawlować", ru: "Он ищет перевод у сетки, ты должен защищаться (спраулить)", cat: "mma"},
-    {pl: "Sędzia przerwał walkę, bo zawodnik nie mógł się bronić", ru: "Судья остановил бой, так как боец не мог защищаться", cat: "mma"},
-    {pl: "To była niesamowita balacha z pleców", ru: "Это был невероятный рычаг локтя из положения снизу", cat: "mma"},
-    {pl: "Zawodnik odklepał duszenie zza pleców", ru: "Боец сдался (похлопал) после удушения сзади", cat: "mma"},
-    {pl: "On ma betonową szczękę, przyjmuje wszystko na twarz", ru: "У него железный подбородок, принимает всё на лицо", cat: "mma"},
-    {pl: "Zabrakło mu tlenu w trzeciej rundzie", ru: "У него кончилась дыхалка в третьем раунде", cat: "mma"},
-    {pl: "On wygrywa tę rundę dzięki kontroli w parterze", ru: "Он выигрывает этот раунд благодаря контролю в партере", cat: "mma"},
-    {pl: "Nogi mu się ugięły po tym high-kicku", ru: "Ноги у него подкосились после этого хай-кика", cat: "mma"},
-    {pl: "Werdykt sędziowski był niejednogłośny", ru: "Судейский вердикт был раздельногласным", cat: "mma"},
-
-    // ММА: Подготовка и Турнир
-    {pl: "Muszę zbić jeszcze pięć kilogramów do ważenia", ru: "Мне нужно согнать еще пять килограмм к взвешиванию", cat: "mma"},
-    {pl: "To będzie walka wieczoru na najbliższej gali", ru: "Это будет главный бой вечера на ближайшем турнире", cat: "mma"},
-    {pl: "On jest faworytem, ale ja postawiłem na underdoga", ru: "Он фаворит, но я поставил на аутсайдера", cat: "mma"},
-    {pl: "Zawodnik wypadł z karty walk przez kontuzję", ru: "Боец выбыл из карда из-за травмы", cat: "mma"},
-    {pl: "Mistrz będzie bronił pasa po raz czwarty", ru: "Чемпион будет защищать пояс в четвертый раз", cat: "mma"},
-    {pl: "Podczas face-to-face doszło do przepychanek", ru: "Во время дуэли взглядов дошло до толкотни", cat: "mma"},
-    {pl: "On robi świetny trash-talk przed walką", ru: "Он отлично разводит трэш-ток перед боем", cat: "mma"},
-    {pl: "Czy ta walka będzie transmitowana w PPV?", ru: "Этот бой будет транслироваться по системе PPV?", cat: "mma"},
-    {pl: "On podpisał kontrakt z najlepszą organizacją w Europie", ru: "Он подписал контракт с лучшей организацией в Европе", cat: "mma"},
-    {pl: "Rewanż odbędzie się za pół roku", ru: "Реванш состоится через полгода", cat: "mma"},
-
-    // ММА: Сленг и Состояние
-    {pl: "Dostał czysto na punkt i poszedł spać", ru: "Получил чисто в челюсть и ушел в нокаут (уснул)", cat: "mma"},
-    {pl: "Ma rozbite nogi przez te low-kicki", ru: "У него отбиты ноги из-за этих лоу-киков", cat: "mma"},
-    {pl: "To był brawler, szukał tylko urwania głowy", ru: "Это был рубака, искал только возможности оторвать голову", cat: "mma"},
-    {pl: "Siedzi na nim w dosiadzie и obija", ru: "Сидит на нем в маунте и забивает", cat: "mma"},
-    {pl: "Płynie, zaraz sędzia to przerwie", ru: "Он «плывет», сейчас судья это остановит", cat: "mma"},
-    {pl: "Ma głęboką ranę nad okiem, krew go zalewa", ru: "У него глубокая сечка над глазом, кровь его заливает", cat: "mma"},
-    {pl: "Przetoczył go i teraz jest na górze", ru: "Он его перевернул (свипнул) и теперь сверху", cat: "mma"},
-    {pl: "Zapiął gilotynę tak mocno, że nie było wyjścia", ru: "Закрыл гильотину так плотно, что выхода не было", cat: "mma"},
-    {pl: "On bazuje na zapasach, nie chce się bić w stójce", ru: "Он полагается на борьбу, не хочет драться в стойке", cat: "mma"},
-    {pl: "Ale kopyto! Ma niesamowitą siłę w rękach", ru: "Ну и пушка! У него невероятная сила в руках", cat: "mma"},
-
-    // ММА: Эмоции и Финал
-    {pl: "To była prawdziwa wojna w klatce", ru: "Это была настоящая война в клетке", cat: "mma"},
-    {pl: "Wygrał zasłużenie, zdominował każdą rundę", ru: "Выиграл заслуженно, доминировал в каждом раунде", cat: "mma"},
-    {pl: "Szkoda, że tak szybko się to skończyło", ru: "Жаль, что это так быстро закончилось", cat: "mma"},
-    {pl: "Po walce panowie podali sobie ręce", ru: "После боя мужчины пожали друг другу руки", cat: "mma"},
-    {pl: "Kibice wygwizdali werdykt sędziów", ru: "Болельщики освистали судейский вердикт", cat: "mma"},
-    {pl: "To był debiut marzeń dla młodego zawodnika", ru: "Это был дебют мечты для молодого бойца", cat: "mma"},
-    {pl: "Muszę podleczyć kontuzje i wrócić na matę", ru: "Мне нужно подлечить травмы и вернуться на маты", cat: "mma"},
-    {pl: "Trener krzyczał, żeby nie stał pod siatką", ru: "Тренер кричал, чтобы тот не стоял у сетки", cat: "mma"},
-    {pl: "Wykręcił mu rękę tak, że prawie pękła", ru: "Выкрутил ему руку так, что она почти лопнула", cat: "mma"},
-    {pl: "Kolejna gala zapowiada się bardzo mocno", ru: "Следующий турнир обещает быть очень мощным", cat: "mma"},
-
-        // ТРАССА: Рация и Обстановка (На канале)
-    {pl: "Mobilki, jak tam ścieżka na Poznań?", ru: "Коллеги, как там дорожка на Познань?", cat: "truck"},
-    {pl: "Czysto kolego, aż do samych bramek", ru: "Чисто, дружище, до самых терминалов оплаты", cat: "truck"},
-    {pl: "Uważaj, miśki stoją z suszarką na siedemnastym kilometrze", ru: "Осторожно, полиция стоит с радаром на 17-м километре", cat: "truck"},
-    {pl: "Krokodyle ściągają na wagę na parkingu", ru: "Транспортники (ITD) тянут на весы на парковке", cat: "truck"},
-    {pl: "Dzięki za info, szerokości i przyczepności!", ru: "Спасибо за инфу, шершавой дорожки! (пожелание)", cat: "truck"},
-    {pl: "Bajo, do następnego razu na kanale!", ru: "Удачи, до следующего раза в эфире!", cat: "truck"},
-    {pl: "Kolego, lewe oczko ci nie świeci w naczepie", ru: "Дружище, у тебя левый габарит на прицепе не горит", cat: "truck"},
-    {pl: "Zrób mi trochę miejsca, muszę wyprzedzić", ru: "Дай мне немного места, мне нужно обогнать", cat: "truck"},
-    {pl: "Ale tu jest draka, stoimy w korku od godziny", ru: "Ну и завал тут, стоим в пробке уже час", cat: "truck"},
-    {pl: "Ślisko na podjeździe, uważajcie na moście", ru: "Скользко на подъеме, осторожнее на мосту", cat: "truck"},
-
-    // РАБОТА: Тахограф и Время (Паузы)
-    {pl: "Muszę zaraz stawać, kończy mi się czas jazdy", ru: "Мне пора становиться, кончается время вождения", cat: "truck"},
-    {pl: "Kręcę teraz pauzę jedenastkę na tym parkingu", ru: "Кручу сейчас 11-часовую паузу на этой парковке", cat: "truck"},
-    {pl: "Zrobiłem wpis manualny do tachografu", ru: "Я сделал ручной ввод в тахограф", cat: "truck"},
-    {pl: "Spedytor znowu dzwoni и pyta o termin dostawy", ru: "Логист снова звонит и спрашивает про время доставки", cat: "truck"},
-    {pl: "Nie mam już minut, muszę wykręcić dziewiątkę", ru: "У меня нет минут, должен отстоять «девятку» (паузу)", cat: "truck"},
-    {pl: "Mam przekroczenie czasu pracy przez ten korek", ru: "У меня перекрут рабочего времени из-за этой пробки", cat: "truck"},
-    {pl: "Szukam wolnego miejsca na weekend na autostradzie", ru: "Ищу свободное место на 45-ку (выходные) на автобане", cat: "truck"},
-    {pl: "Karta kierowcy nie chce wejść do czytnika", ru: "Чип-карта водителя не лезет в слот", cat: "truck"},
-    {pl: "Muszę sprawdzić wydruk z wczorajszego dnia", ru: "Мне нужно проверить распечатку за вчерашний день", cat: "truck"},
-    {pl: "Jutro rano ruszam w stronę granicy", ru: "Завтра утром выезжаю в сторону границы", cat: "truck"},
-
-    // СКЛАД: Погрузка и Разгрузка
-    {pl: "Dzień dobry, mam załadunek do Niemiec", ru: "Добрый день, у меня загрузка на Германию", cat: "truck"},
-    {pl: "Gdzie mam się podstawić pod rampę?", ru: "Куда мне стать под рампу?", cat: "truck"},
-    {pl: "Muszę otworzyć boki, bo ładują towar wózkiem", ru: "Мне нужно открыть бока, так как грузят карой (погрузчиком)", cat: "truck"},
-    {pl: "Czy muszę ściągać deski do tego załadunku?", ru: "Мне нужно снимать доски (обрешетку) для этой загрузки?", cat: "truck"},
-    {pl: "Poproszę o podstemplowanie dokumentów CMR", ru: "Пожалуйста, проставьте штампы в ЦМР", cat: "truck"},
-    {pl: "Towar nie jest dobrze zabezpieczony pasami", ru: "Груз плохо закреплен ремнями", cat: "truck"},
-    {pl: "Ile palet wchodzi na ten zestaw?", ru: "Сколько палет входит в эту сцепку?", cat: "truck"},
-    {pl: "Muszę zapiąć plomby przed wyjazdem z bazy", ru: "Я должен повесить пломбы перед выездом с базы", cat: "truck"},
-    {pl: "Czekam na awizację już drugą godzinę", ru: "Жду авизацию (время разгрузки) уже второй час", cat: "truck"},
-    {pl: "Czy mogę zostać na parkingu pod firmą na pauzę?", ru: "Я могу остаться на парковке под фирмой на паузу?", cat: "truck"},
-
-    // ТЕХНИКА: Поломки и Дорога
-    {pl: "Złapałem kapcia w naczepie, muszę dzwonić po serwis", ru: "Я пробил колесо на прицепе, нужно звонить в сервис", cat: "truck"},
-    {pl: "Ucieka mi powietrze z układu pneumatycznego", ru: "У меня уходит воздух из пневмосистемы", cat: "truck"},
-    {pl: "Webasto nie grzeje, zamarznę w nocy w kabinie", ru: "Автономка не греет, замерзну ночью в кабине", cat: "truck"},
-    {pl: "Muszę dolać AdBlue, bo zaraz odetnie mi moc", ru: "Надо залить мочевину, а то скоро пропадет тяга", cat: "truck"},
-    {pl: "Ciągnik ma awarię, stoję na awaryjnym pasie", ru: "Тягач сломался, стою на обочине (аварийной полосе)", cat: "truck"},
-    {pl: "Zamarzło paliwo w przewodach, nie mogę odpalić", ru: "Замерзла солярка в трубках, не могу завестись", cat: "truck"},
-    {pl: "Retarder słabo trzyma na zjazdach w górach", ru: "Ретардер плохо держит на спусках в горах", cat: "truck"},
-    {pl: "Potrzebuję lawety dla ciężarówki", ru: "Мне нужен эвакуатор для грузовика", cat: "truck"},
-    {pl: "Klocki się palą, czuć spaleniznę z kół", ru: "Колодки горят, пахнет горелым от колес", cat: "truck"},
-    {pl: "Wyświetla mi się błąd silnika na czerwono", ru: "У меня горит ошибка двигателя красным цветом", cat: "truck"},
-
-    // ГРАНИЦА: Документы и Таможня
-    {pl: "Jaka jest długa kolejka na granicy?", ru: "Какая очередь на границе?", cat: "truck"},
-    {pl: "Muszę iść do agencji celnej oddać dokumenty", ru: "Мне нужно идти в таможенное агентство отдать документы", cat: "truck"},
-    {pl: "Czekam na odprawę celną towaru", ru: "Жду таможенного оформления груза", cat: "truck"},
-    {pl: "Gdzie jest urząd celny w tym mieście?", ru: "Где находится таможня в этом городе?", cat: "truck"},
-    {pl: "Mój numer referencyjny jest niepoprawny", ru: "Мой номер референции неверный", cat: "truck"},
-    {pl: "Straż graniczna sprawdza moją kabinę", ru: "Пограничники проверяют мою кабину", cat: "truck"},
-    {pl: "Mam tranzyt przez Szwajcarię", ru: "У меня транзит через Швейцарию", cat: "truck"},
-    {pl: "Gdzie są toalety и prysznice dla kierowców?", ru: "Где туалеты и души для водителей?", cat: "truck"},
-    {pl: "Czy tu można płacić kartą paliwową?", ru: "Тут можно платить топливной картой?", cat: "truck"},
-    {pl: "Muszę zatankować do pełna przed wjazdem na autostradę", ru: "Мне нужно заправиться до полного перед выездом на автобан", cat: "truck"},
-
-        // БАЙЕР: В бутике и поиск товара
-    {pl: "Dzień dobry, czy mają Państwo najnowszą kolekcję marki Gucci?", ru: "Добрый день, у вас есть новейшая коллекция бренда Гуччи?", cat: "buyer"},
-    {pl: "Szukam klasycznej torebki na ramię w kolorze beżowym", ru: "Я ищу классическую сумку на плечо в бежевом цвете", cat: "buyer"},
-    {pl: "Czy ten model jest dostępny w butiku stacjonarnym?", ru: "Эта модель доступна в физическом бутике?", cat: "buyer"},
-    {pl: "Chciałbym zarezerwować termin na wizytę w Państwa showroomie", ru: "Я хотел бы забронировать время для визита в ваш шоурум", cat: "buyer"},
-    {pl: "Czy można sprawdzić dostępność tego rozmiaru w innych miastach?", ru: "Можно проверить наличие этого размера в других городах?", cat: "buyer"},
-    {pl: "Jaki jest czas oczekiwania na ten model z listy oczekujących?", ru: "Сколько ждать эту модель из листа ожидания?", cat: "buyer"},
-    {pl: "Chciałbym przymierzyć te sneakersy w rozmiarze czterdzieści dwa", ru: "Я хотел бы примерить эти кроссовки в 42-м размере", cat: "buyer"},
-    {pl: "Czy ten produkt to limitowana edycja?", ru: "Этот товар — лимитированная серия?", cat: "buyer"},
-    {pl: "Mogę prosić o odłożenie tej marynarki do końca dnia?", ru: "Могу я попросить отложить этот пиджак до конца дня?", cat: "buyer"},
-    {pl: "Szukam prezentu dla bardzo wymagającego klienta", ru: "Я ищу подарок для очень требовательного клиента", cat: "buyer"},
-
-    // БАЙЕР: Качество, Материалы и Подлинность
-    {pl: "Czy do tego produktu dołączony jest certyfikat autentyczności?", ru: "К этому товару прилагается сертификат подлинности?", cat: "buyer"},
-    {pl: "Z jakiego materiału jest wykonana podszewka tej torebki?", ru: "Из какого материала сделана подкладка этой сумки?", cat: "buyer"},
-    {pl: "To jest skóra naturalna czy materiał syntetyczny?", ru: "Это натуральная кожа или синтетический материал?", cat: "buyer"},
-    {pl: "Wykończenie jest ręcznie robione, co widać po detalach", ru: "Отделка ручной работы, что видно по деталям", cat: "buyer"},
-    {pl: "Ten jedwab jest bardzo delikatny, muszę uważać przy pakowaniu", ru: "Этот шелк очень нежный, нужно быть осторожным при упаковке", cat: "buyer"},
-    {pl: "Czy te buty są wygodne do codziennego chodzenia?", ru: "Эта обувь удобна для повседневной ходьбы?", cat: "buyer"},
-    {pl: "Proszę sprawdzić, czy na materiale nie ma żadnych zaciągnięć", ru: "Пожалуйста, проверьте, нет ли на ткани зацепок", cat: "buyer"},
-    {pl: "Szwy są idealnie równe, to na pewno oryginał", ru: "Швы идеально ровные, это точно оригинал", cat: "buyer"},
-    {pl: "Ten kolor na zdjęciu wygląda inaczej niż w rzeczywistości", ru: "Этот цвет на фото выглядит иначе, чем в реальности", cat: "buyer"},
-    {pl: "Pudełko jest lekko uszkodzone, czy mają Państwo inne?", ru: "Коробка слегка повреждена, у вас есть другая?", cat: "buyer"},
-
-    // БАЙЕР: Оплата, Скидки и Документы
-    {pl: "Czy przysługuje mi rabat przy zakupie kilku sztuk?", ru: "Полагается ли мне скидка при покупке нескольких штук?", cat: "buyer"},
-    {pl: "Poproszę o wystawienie faktury VAT na firmę", ru: "Пожалуйста, выпишите счет-фактуру (VAT инвойс) на фирму", cat: "buyer"},
-    {pl: "Chciałbym skorzystać z procedury Tax Free dla turystów", ru: "Я хотел бы воспользоваться процедурой Tax Free для туристов", cat: "buyer"},
-    {pl: "Czy mogę zapłacić dwiema różnymi kartami płatniczymi?", ru: "Могу ли я заплатить двумя разными платежными картами?", cat: "buyer"},
-    {pl: "Jaka jest Państwa polityka zwrotów dla produktów luksusowych?", ru: "Какова ваша политика возврата для люксовых товаров?", cat: "buyer"},
-    {pl: "Czy cena zawiera już wszystkie podatki?", ru: "Цена уже включает все налоги?", cat: "buyer"},
-    {pl: "Pobieram prowizję w wysokości dziesięciu procent od zakupu", ru: "Я беру комиссию в размере десяти процентов от покупки", cat: "buyer"},
-    {pl: "Muszę doliczyć koszty ubezpieczenia przesyłki międzynarodowej", ru: "Я должен добавить стоимость страховки международной посылки", cat: "buyer"},
-    {pl: "Klient prosi o przesłanie skanu paragonu przed wysyłką", ru: "Клиент просит прислать скан чека перед отправкой", cat: "buyer"},
-    {pl: "Płatność została odrzucona, spróbuję inną kartą", ru: "Платеж отклонен, попробую другую карту", cat: "buyer"},
-
-    // БАЙЕР: Доставка и Сервис
-    {pl: "Paczka zostanie wysłana kurierem ekspresowym jutro rano", ru: "Посылка будет отправлена экспресс-курьером завтра утром", cat: "buyer"},
-    {pl: "Prześlę numer śledzenia przesyłki zaraz po nadaniu", ru: "Я пришлю номер отслеживания сразу после отправки", cat: "buyer"},
-    {pl: "Produkt zostanie zapakowany w papier prezentowy и wstążkę", ru: "Товар будет упакован в подарочную бумагу и ленту", cat: "buyer"},
-    {pl: "Czy oferują Państwo dostawę prosto do hotelu?", ru: "Вы предлагаете доставку прямо в отель?", cat: "buyer"},
-    {pl: "Muszę sprawdzić cło dla wysyłki poza Unię Europejską", ru: "Мне нужно проверить пошлину для отправки за пределы Евросоюза", cat: "buyer"},
-    {pl: "Towar jest ubezpieczony na pełną kwotę zakupu", ru: "Товар застрахован на полную сумму покупки", cat: "buyer"},
-    {pl: "Proszę o staranne zapakowanie, żeby nic się nie pogniotło", ru: "Пожалуйста, упакуйте тщательно, чтобы ничего не помялось", cat: "buyer"},
-    {pl: "Dostawa zajmie od trzech do pięciu dni roboczych", ru: "Доставка займет от трех до пяти рабочих дней", cat: "buyer"},
-    {pl: "Klient jest zachwycony jakością obsługi w tym butiku", ru: "Клиент в восторге от качества обслуживания в этом бутике", cat: "buyer"},
-    {pl: "Czy w zestawie jest worek przeciwkurzowy?", ru: "В комплекте есть пыльник?", cat: "buyer"},
-
-    // БАЙЕР: Тренды и Обсуждение
-    {pl: "Ten model to totalny must-have tego sezonu", ru: "Эта модель — полный маст-хэв этого сезона", cat: "buyer"},
-    {pl: "Projektant postawił w tej kolekcji na minimalizm", ru: "Дизайнер сделал ставку в этой коллекции на минимализм", cat: "buyer"},
-    {pl: "Trend na oversize nadal utrzymuje się w Europie", ru: "Тренд на оверсайз всё еще сохраняется в Европе", cat: "buyer"},
-    {pl: "Te buty idealnie pasują do Twojej stylizacji", ru: " Эти туфли идеально подходят к твоему образу", cat: "buyer"},
-    {pl: "To jest klasyczny model, który nigdy nie wyjdzie z mody", ru: "Это классическая модель, которая никогда не выйдет из моды", cat: "buyer"},
-    {pl: "Czekamy na kolejny drop, który będzie za tydzień", ru: "Ждем следующий дроп, который будет через неделю", cat: "buyer"},
-    {pl: "Ten brand zyskuje teraz dużą popularność wśród gwiazd", ru: "Этот бренд сейчас набирает большую популярность среди звезд", cat: "buyer"},
-    {pl: "Szukam czegoś unikatowego, czego nie ma w sieciówkach", ru: "Я ищу что-то уникальное, чего нет в масс-маркете", cat: "buyer"},
-    {pl: "Kolekcja kapsułowa wyprzedała się w kilka minut", ru: "Капсульная коллекция распродалась за несколько минут", cat: "buyer"},
-    {pl: "To jest wyrafinowany styl dla prawdziwych koneserów", ru: "Это изысканный стиль для настоящих ценителей", cat: "buyer"}
-];
-
-       // --- ПОЛНОСТЬЮ ИСПРАВЛЕННАЯ ЛОГИКА v4.5 (ФИНАЛ) ---
-
-        const userName = localStorage.getItem('pl_user_name') || 'Панама';
-        let currentMode = 'classic'; 
-        let currentIndex = 0; 
-        let activeDeck = [];    // Пул для СЛОВ
-        let activePhrases = []; // Пул для ФРАЗ
-
-        let stats = JSON.parse(localStorage.getItem('pl_stats')) || { xp: 0, words: 0, mistakes: [] };
+        // --- СОСТОЯНИЕ И ЛОГИКА ---
+        let stats = JSON.parse(localStorage.getItem('pl_stats_v2')) || { xp: 0, words: 0, phrases: 0 };
+        let mistakesDb = JSON.parse(localStorage.getItem('pl_mistakes_v2')) || [];
+        let currentLevel = parseInt(localStorage.getItem('pl_level')) || 0;
         let selectedCats = JSON.parse(localStorage.getItem('pl_selected_cats')) || [];
+        
+        let levelLives = 2; 
+        let activeDeck = [];      // Сюда грузим СЛОВА
+        let activePhrases = [];   // Сюда грузим ФРАЗЫ (Фикс 1)
+        let currentQueue = [];
+        let currentMode = 'classic';
+        let isWaiting = false;
+        let selectedPhraseWords = [];
         let nextActionFn = null;
 
-        // Настройка Supabase (твои данные подставятся автоматически, если ключ на месте)
-        const sb = supabase.createClient('https://vzoiavyidskvsmiafswy.supabase.co', 'YOUR_KEY_HERE');
+        tg.ready(); tg.expand();
 
         function shuffle(a) { return [...a].sort(() => Math.random() - 0.5); }
 
-        function initApp() {
-            selectedCats.forEach(c => {
-                const el = document.getElementById('cat-' + c);
-                if(el) el.checked = true;
-            });
-            applyMixer(); 
-            updateStatsUI();
+        function renderLives() {
+            document.getElementById('lives-display').innerText = "❤️".repeat(levelLives) + "🤍".repeat(Math.max(0, 2 - levelLives));
         }
 
-        // МИКСЕР: Решает проблему "слова во фразах"
+        // --- МИКСЕР ДАННЫХ ---
         function applyMixer() {
-            selectedCats = [];
-            ['auto', 'football', 'mma', 'truck', 'buyer'].forEach(cat => {
-                if(document.getElementById('cat-' + cat)?.checked) selectedCats.push(cat);
-            });
-            localStorage.setItem('pl_selected_cats', JSON.stringify(selectedCats));
-            
-            // 1. Готовим СЛОВА
-            const baseWords = dictionary.filter(w => w.cat === 'base');
-            const intWords = dictionary.filter(w => selectedCats.includes(w.cat));
-            activeDeck = selectedCats.length === 0 ? shuffle(baseWords) : shuffle([...baseWords.slice(0,300), ...intWords]);
-
-            // 2. Готовим ФРАЗЫ (Теперь тут будут только фразы из sentencesData)
-            const basePhrases = sentencesData.filter(s => s.cat === 'base');
-            const intPhrases = sentencesData.filter(s => selectedCats.includes(s.cat));
-            activePhrases = selectedCats.length === 0 ? shuffle(basePhrases) : shuffle([...basePhrases.slice(0,50), ...intPhrases]);
-            
-            setMode('classic');
-        }
-
-        function setMode(mode) {
-            currentMode = mode;
-            currentIndex = 0;
-            document.getElementById('interests-panel').style.display = mode === 'interests' ? 'flex' : 'none';
-            document.getElementById('play-zone').style.display = mode === 'interests' ? 'none' : 'flex';
-            
-            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById('btn-' + mode)?.classList.add('active');
-
-            if(mode !== 'interests') startLevel();
+            try {
+                selectedCats = [];
+                ['auto', 'football', 'mma', 'truck', 'buyer'].forEach(cat => {
+                    if(document.getElementById('cat-' + cat)?.checked) selectedCats.push(cat);
+                });
+                localStorage.setItem('pl_selected_cats', JSON.stringify(selectedCats));
+                
+                // Фильтруем СЛОВА
+                const baseWords = dictionary.filter(w => w.cat === 'base');
+                const interestWords = dictionary.filter(w => selectedCats.includes(w.cat));
+                activeDeck = selectedCats.length === 0 ? shuffle(baseWords) : shuffle([...shuffle(baseWords).slice(0, 500), ...interestWords]);
+                
+                // Фильтруем ФРАЗЫ (Решение проблемы "Слова во фразах")
+                const basePhrases = sentencesData.filter(s => s.cat === 'base');
+                const interestPhrases = sentencesData.filter(s => selectedCats.includes(s.cat));
+                activePhrases = selectedCats.length === 0 ? shuffle(basePhrases) : shuffle([...shuffle(basePhrases).slice(0, 50), ...interestPhrases]);
+                
+                setMode('classic');
+            } catch (e) {
+                console.error("Ошибка в applyMixer:", e);
+            }
         }
 
         function startLevel() {
-            currentIndex = 0;
+            levelLives = 2; 
+            renderLives();
+            const isExam = (currentLevel + 1) % 10 === 0;
+            
+            // Выбираем правильный источник данных (Фикс 1)
+            let sourceArray = currentMode === 'phrases' ? activePhrases : activeDeck;
+            if (!sourceArray || sourceArray.length === 0) sourceArray = activeDeck; // подстраховка
+            
+            if (isExam) {
+                currentQueue = shuffle([...sourceArray]).slice(0, 20);
+            } else {
+                currentQueue = shuffle([...sourceArray]).slice(0, 10);
+            }
+            
+            if(currentQueue.length === 0) currentQueue = shuffle([...activeDeck]).slice(0, 10);
             nextQuestion();
         }
 
         function nextQuestion() {
-            let q;
-            // Выбираем источник данных
-            if (currentMode === 'mistakes') {
-                if (stats.mistakes.length === 0) {
-                    showMsg("Ошибок нет!", "Всё выучено!", () => setMode('classic'), true);
-                    return;
-                }
-                q = stats.mistakes[currentIndex % stats.mistakes.length];
-            } else if (currentMode === 'phrases') {
-                q = activePhrases[currentIndex]; // Источник ФРАЗ
-            } else {
-                q = activeDeck[currentIndex]; // Источник СЛОВ
-            }
-
-            if (!q || currentIndex >= 20) {
-                const win = currentMode === 'mistakes' ? true : currentIndex >= 15;
-                showMsg(win ? "Уровень пройден!" : "Попробуй еще!", win ? "+50 XP" : "Нужно 15 верных", () => setMode('classic'), win);
-                if(win) { stats.xp += 50; updateStatsUI(); }
+            if (currentQueue.length === 0) {
+                currentLevel++; saveStats();
+                showMsg("Победа!", "Уровень пройден!", startLevel, true);
                 return;
             }
-            renderQuestion(q);
+            isWaiting = false;
+            document.getElementById('correct-hint').style.display = 'none';
+            const cur = currentQueue[0];
+            
+            if (currentMode === 'phrases') renderPhrasesMode(cur); 
+            else renderWordsMode(cur);
+            
+            updateHeader();
         }
 
-        function renderQuestion(q) {
-            const card = document.getElementById('word-card');
-            const grid = document.getElementById('options-grid');
-            card.innerHTML = `<div style="font-size:0.9rem; color:var(--text-muted); margin-bottom:10px;">Как переводится?</div>
-                              <div style="font-size:1.6rem; font-weight:800; color:var(--accent); text-align:center; padding:0 10px;">${q.pl}</div>`;
+        function renderWordsMode(cur) {
+            document.getElementById('phrase-builder-ui').style.display = 'none';
+            document.getElementById('options-container').style.display = 'flex';
+            document.getElementById('word').innerText = currentMode === 'audio' ? '🎧' : cur.pl;
+            speakText(cur.pl);
             
-            const options = generateOptions(q);
-            grid.innerHTML = '';
-            options.forEach(opt => {
-                const btn = document.createElement('div');
-                btn.className = 'option-btn';
-                btn.innerText = opt;
-                btn.onclick = () => handleAnswer(opt === q.ru, btn);
-                grid.appendChild(btn);
+            const container = document.getElementById('options-container'); 
+            container.innerHTML = '';
+            
+            let pool = dictionary.filter(w => w.ru !== cur.ru).map(w => w.ru);
+            let distractors = shuffle(pool).slice(0, 2);
+            let opts = shuffle([cur.ru, ...distractors]);
+            
+            opts.forEach(o => {
+                const b = document.createElement('button'); b.className = 'option-btn'; b.innerText = o;
+                b.onclick = () => { if(isWaiting) return; checkWordAnswer(b, o, cur.ru, cur); };
+                container.appendChild(b);
             });
         }
 
-        // РЕШЕНИЕ проблемы с надписью "Ошибка"
-        function generateOptions(correctObj) {
-            let pool = dictionary.map(d => d.ru); // Всегда берем из общего словаря
-            let filtered = pool.filter(ru => ru !== correctObj.ru);
-            let shuffledPool = shuffle(filtered);
-            return shuffle([correctObj.ru, shuffledPool[0] || "Tak", shuffledPool[1] || "Nie"]);
+        function renderPhrasesMode(cur) {
+            document.getElementById('options-container').style.display = 'none';
+            document.getElementById('phrase-builder-ui').style.display = 'flex';
+            const slots = document.getElementById('slots-container'); 
+            const tiles = document.getElementById('tiles-container');
+            slots.innerHTML = ''; tiles.innerHTML = ''; selectedPhraseWords = [];
+            
+            document.getElementById('word').innerText = cur.ru;
+            const correctWords = cur.pl.split(' ');
+            
+            // Ложные варианты из слов, чтобы запутать (это правильно)
+            const traps = shuffle(dictionary).slice(0, 4).map(x => x.pl);
+            const pool = shuffle([...correctWords, ...traps]);
+            
+            pool.forEach(w => {
+                const t = document.createElement('div'); t.className = 'tile'; t.innerText = w;
+                t.onclick = () => {
+                    if(t.classList.contains('used')) return;
+                    t.classList.add('used'); speakText(w);
+                    const s = document.createElement('div'); s.className = 'tile placed'; s.innerText = w;
+                    s.onclick = () => { s.remove(); t.classList.remove('used'); selectedPhraseWords = selectedPhraseWords.filter(x => x !== w); };
+                    slots.appendChild(s); selectedPhraseWords.push(w);
+                };
+                tiles.appendChild(t);
+            });
         }
 
-        function handleAnswer(isCorrect, btn) {
-            if (isCorrect) {
-                btn.style.borderColor = 'var(--correct)';
-                btn.style.backgroundColor = 'rgba(16, 185, 129, 0.1)';
-                stats.words++;
-                stats.xp += 5;
+        function handleMistake(curObj) {
+            levelLives--;
+            renderLives();
+            addMistake(curObj);
+            
+            if (levelLives <= 0) {
+                isWaiting = true;
+                setTimeout(() => {
+                    showMsg("Ой-ой!", "Жизни кончились. Давай сначала?", startLevel, false);
+                }, 600);
             } else {
-                btn.style.borderColor = 'var(--error)';
-                btn.style.backgroundColor = 'rgba(255, 59, 48, 0.1)';
-                let q = (currentMode === 'phrases') ? activePhrases[currentIndex] : activeDeck[currentIndex];
-                if(!stats.mistakes.find(m => m.pl === q.pl)) stats.mistakes.push(q);
+                currentQueue.push(currentQueue.shift());
+                setTimeout(nextQuestion, 1200);
             }
-            updateStatsUI();
-            setTimeout(() => { currentIndex++; nextQuestion(); }, 600);
         }
 
-        // РЕШЕНИЕ визуального бага вкладки Статистика
+        function checkSentence() {
+            const cur = currentQueue[0];
+            if (selectedPhraseWords.join(' ') === cur.pl) {
+                stats.xp += 5; stats.phrases++; currentQueue.shift(); saveStats(); setTimeout(nextQuestion, 400);
+            } else {
+                const hint = document.getElementById('correct-hint');
+                hint.innerText = "Правильно: " + cur.pl; hint.style.display = 'block';
+                handleMistake(cur);
+            }
+        }
+
+        function checkWordAnswer(btn, sel, target, curObj) {
+            isWaiting = true;
+            if (sel === target) {
+                btn.classList.add('is-correct'); stats.xp += 1; stats.words++; currentQueue.shift();
+                saveStats(); setTimeout(nextQuestion, 400);
+            } else {
+                btn.classList.add('is-wrong');
+                handleMistake(curObj);
+            }
+        }
+
+        // --- СИСТЕМНЫЕ ФУНКЦИИ ---
+        function setMode(mode) {
+            document.getElementById('interests-panel').style.display = mode === 'interests' ? 'flex' : 'none';
+            document.getElementById('play-zone').style.display = mode === 'interests' ? 'none' : 'flex';
+            
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            const btn = document.getElementById('btn-' + (mode === 'interests' ? 'interests' : mode));
+            if(btn) btn.classList.add('active');
+            
+            if (mode !== 'interests') { currentMode = mode; startLevel(); }
+        }
+
         function switchTab(tab) {
             document.getElementById('game-container').style.display = tab === 'play' ? 'flex' : 'none';
             document.getElementById('stats-page').style.display = tab === 'stats' ? 'flex' : 'none';
             
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.getElementById('tab-' + tab)?.classList.add('active');
+            // Фикс 2: Подсветка кнопок вкладок
+            document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
+            const activeTabBtn = document.getElementById('tab-' + tab);
+            if(activeTabBtn) activeTabBtn.classList.add('active');
 
-            if (tab === 'stats') { 
-                updateStatsUI(); 
-                syncWithCloud().then(fetchLeaderboard); 
-            }
+            if (tab === 'stats') { updateStatsUI(); syncWithCloud().then(fetchLeaderboard); }
+            else { setMode('classic'); }
         }
 
-        function updateStatsUI() {
-            document.getElementById('stat-xp').innerText = stats.xp;
-            document.getElementById('stat-words').innerText = stats.words;
-            document.getElementById('stat-mistakes').innerText = stats.mistakes.length;
-            document.getElementById('user-name-display').innerText = userName;
+        function addMistake(item) {
+            if (!mistakesDb.some(m => m.pl === item.pl)) { mistakesDb.push(item); updateStatsUI(); }
+        }
+
+        function openMistakes() {
+            document.getElementById('game-container').style.display = 'none';
+            document.getElementById('mistakes-screen').style.display = 'flex';
+            currentQueue = shuffle([...mistakesDb]); 
+            renderMistakeQuestion();
+        }
+
+        function renderMistakeQuestion() {
+            if (currentQueue.length === 0) { closeMistakes(); return; }
+            const cur = currentQueue[0];
+            document.getElementById('m-word').innerText = cur.pl;
+            const container = document.getElementById('m-options-container'); 
+            container.innerHTML = '';
             
-            const lvl = Math.floor(stats.xp / 500) + 1;
-            const prog = ((stats.xp % 500) / 500) * 100;
-            document.getElementById('user-level').innerText = "Уровень " + lvl;
-            document.getElementById('progress-fill').style.width = prog + "%";
-            localStorage.setItem('pl_stats', JSON.stringify(stats));
+            // Фикс 3: Реальные слова вместо "Ошибка 1"
+            let pool = dictionary.filter(w => w.ru !== cur.ru).map(w => w.ru);
+            let opts = shuffle([cur.ru, ...shuffle(pool).slice(0, 2)]);
+            
+            opts.forEach(o => {
+                const b = document.createElement('button'); b.className = 'option-btn'; b.innerText = o;
+                b.onclick = () => { 
+                    if(o === cur.ru) { 
+                        mistakesDb = mistakesDb.filter(m => m.pl !== cur.pl); 
+                        currentQueue.shift(); 
+                        renderMistakeQuestion(); 
+                    } else {
+                        b.classList.add('is-wrong'); // Визуально пометим ошибку
+                    }
+                };
+                container.appendChild(b);
+            });
+            updateStatsUI();
         }
 
+        function closeMistakes() { 
+            document.getElementById('mistakes-screen').style.display = 'none'; 
+            document.getElementById('game-container').style.display = 'flex'; 
+            updateStatsUI(); 
+        }
+        
+        function saveStats() { 
+            localStorage.setItem('pl_level', currentLevel); 
+            localStorage.setItem('pl_stats_v2', JSON.stringify(stats)); 
+            localStorage.setItem('pl_mistakes_v2', JSON.stringify(mistakesDb)); 
+            updateStatsUI(); 
+            syncWithCloud(); 
+        }
+        
+        function updateStatsUI() {
+            document.getElementById('st-xp').innerText = stats.xp + ' XP';
+            document.getElementById('st-level').innerText = currentLevel + 1;
+            document.getElementById('st-words').innerText = stats.words;
+            document.getElementById('st-phrases').innerText = stats.phrases;
+            document.getElementById('fab-count').innerText = mistakesDb.length;
+            document.getElementById('fab-mistakes').style.display = mistakesDb.length > 0 ? 'flex' : 'none';
+        }
+        
+        function updateHeader() { const isExam = (currentLevel + 1) % 10 === 0; document.getElementById('stats-header').innerText = isExam ? "ЭКЗАМЕН" : `УРОВЕНЬ ${currentLevel + 1}`; }
+        function speakCurrent() { speakText(currentQueue[0]?.pl || ""); }
+        function speakMistake() { speakText(document.getElementById('m-word').innerText); }
+        function speakText(t) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = 'pl-PL'; window.speechSynthesis.speak(u); }
+        function resetProgress() { if(confirm("Сбросить всё?")) { localStorage.clear(); location.reload(); } }
+        
+        async function syncWithCloud() { try { await sb.from('leaderboard').upsert({ username: userName, xp: stats.xp, score: stats.words, level: currentLevel + 1 }, { onConflict: 'username' }); } catch (e) {} }
+        async function fetchLeaderboard() { const { data } = await sb.from('leaderboard').select('*').order('xp', { ascending: false }).limit(10); document.getElementById('leaderboard-list').innerHTML = (data || []).map((u, i) => `<div class="leader-row"><span>${i+1}. ${u.username}</span><span>${u.xp} XP</span></div>`).join(''); }
+        
         function showMsg(t, d, action, isWin) { 
             document.getElementById('play-zone').style.display = 'none'; 
             const m = document.getElementById('message-screen'); 
             m.style.display = 'flex'; 
-            document.getElementById('msg-title').innerText = t;
-            const img = document.getElementById('msg-cat-img');
-            if(img) img.src = isWin ? 'good.png' : 'bad.png'; 
+            document.getElementById('msg-title').innerText = t; 
+            document.getElementById('msg-cat-img').src = isWin ? 'good.png' : 'bad.png'; 
             nextActionFn = action; 
         }
-
+        
         function handleMessageClick() { 
             document.getElementById('message-screen').style.display = 'none'; 
-            if(nextActionFn) nextActionFn();
+            document.getElementById('play-zone').style.display = 'flex'; 
+            if (nextActionFn) nextActionFn(); 
         }
 
-        window.onload = initApp;
-
-        async function syncWithCloud() { try { await sb.from('leaderboard').upsert({ username: userName, xp: stats.xp, score: stats.words, level: Math.floor(stats.xp / 500) + 1 }, { onConflict: 'username' }); } catch (e) {} }
-        async function fetchLeaderboard() { const { data } = await sb.from('leaderboard').select('*').order('xp', { ascending: false }).limit(10); document.getElementById('leaderboard-list').innerHTML = (data || []).map((u, i) => `<div class="leader-row"><span>${i+1}. ${u.username}</span><span>${u.xp} XP</span></div>`).join(''); }
-        function resetProgress() { if(confirm("Сбросить всё?")) { localStorage.clear(); location.reload(); } }
+        // --- ИНИЦИАЛИЗАЦИЯ ---
+        applyMixer(); updateStatsUI();
     </script>
 </body>
 </html>
