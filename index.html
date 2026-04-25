@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Panamket Pro v4.2</title>
+    <title>Panamket Pro v4.3</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
@@ -36,8 +36,8 @@
         .mode-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
         .is-pressed { box-shadow: inset 0 0 0 3px #FFFFFF !important; transform: scale(0.96); transition: 0.1s; }
-        .is-correct { border-color: var(--correct) !important; background: rgba(16, 185, 129, 0.2) !important; }
-        .is-wrong { border-color: var(--error) !important; background: rgba(255, 59, 48, 0.2) !important; animation: shake 0.3s; }
+        .is-correct { border-color: var(--correct) !important; background: rgba(16, 185, 129, 0.2) !important; color: var(--correct) !important; }
+        .is-wrong { border-color: var(--error) !important; background: rgba(255, 59, 48, 0.2) !important; color: var(--error) !important; animation: shake 0.3s; }
 
         .header-info { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-shrink: 0; }
         .stats-label { font-size: 0.7rem; color: var(--text-muted); font-weight: bold; }
@@ -54,7 +54,7 @@
         .sentence-slots { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; min-height: 45px; margin-bottom: 15px; padding: 10px; border-bottom: 1px dashed #1E293B; }
         .tile { background: var(--btn-bg); border: 1px solid #334155; padding: 10px 14px; border-radius: 12px; font-size: 0.95rem; font-weight: 600; cursor: pointer; }
         .tile.used { opacity: 0.15; pointer-events: none; }
-        .tile.placed { background: var(--accent); color: white; }
+        .tile.placed { background: var(--accent); border-color: var(--accent); color: white; }
         .tile.placeholder { background: transparent !important; border: 2px dashed rgba(255,255,255,0.15) !important; min-width: 60px; color: transparent; pointer-events: none; }
 
         .correct-hint-box { display: none; margin-bottom: 10px; padding: 12px; background: rgba(16, 185, 129, 0.15); border: 1px solid var(--correct); border-radius: 12px; color: var(--correct); font-weight: 700; font-size: 0.9rem; }
@@ -97,7 +97,7 @@
         <div id="play-zone" style="width: 100%; display: flex; flex-direction: column;">
             <div class="header-info">
                 <div class="stats-label" id="stats-header">УРОВЕНЬ 1</div>
-                <div class="lives" id="lives">🤍🤍</div>
+                <div class="lives" id="lives-display">❤️❤️</div>
             </div>
             
             <div class="word-card">
@@ -149,7 +149,7 @@
     <div id="message-screen">
         <img id="msg-cat-img" src="good.png" class="msg-cat">
         <h2 id="msg-title"></h2>
-        <button class="action-btn" style="width:80%" onclick="handleMessageClick()">Продолжить</button>
+        <button class="action-btn" id="msg-btn" style="width:80%" onclick="handleMessageClick()">Продолжить</button>
     </div>
 
     <div class="fab-mistakes" id="fab-mistakes" onclick="openMistakes()">🔥 (<span id="fab-count">0</span>)</div>
@@ -164,6 +164,7 @@
         // --- БАЗА ДАННЫХ ---
         const dictionary = [
             {pl:"Chleb",ru:"Хлеб",cat:"base"},{pl:"Mleko",ru:"Молоко",cat:"base"},{pl:"Woda",ru:"Вода",cat:"base"},{pl:"Dom",ru:"Дом",cat:"base"},{pl:"Praca",ru:"Работа",cat:"base"},
+            {pl:"Pieniądze",ru:"Деньги",cat:"base"},{pl:"Sklep",ru:"Магазин",cat:"base"},{pl:"Miasto",ru:"Город",cat:"base"},{pl:"Ulica",ru:"Улица",cat:"base"},{pl:"Samochód",ru:"Машина",cat:"base"},
             {pl:"Bolid",ru:"Болид",cat:"auto"},{pl:"Grip",ru:"Зацеп",cat:"auto"},{pl:"Szykana",ru:"Шикана",cat:"auto"},
             {pl:"Nokaut",ru:"Нокаут",cat:"mma"},{pl:"Garda",ru:"Защита",cat:"mma"},{pl:"Klincz",ru:"Клинч",cat:"mma"}
         ];
@@ -180,6 +181,7 @@
         let currentLevel = parseInt(localStorage.getItem('pl_level')) || 0;
         let selectedCats = JSON.parse(localStorage.getItem('pl_selected_cats')) || [];
         
+        let levelLives = 2; // Текущие жизни на уровень
         let activeDeck = [];
         let currentQueue = [];
         let currentMode = 'classic';
@@ -189,6 +191,10 @@
 
         tg.ready(); tg.expand();
 
+        function renderLives() {
+            document.getElementById('lives-display').innerText = "❤️".repeat(levelLives) + "🤍".repeat(2 - levelLives);
+        }
+
         // --- ЛОГИКА МИКСЕРА ---
         function applyMixer() {
             selectedCats = [];
@@ -196,29 +202,27 @@
             if(document.getElementById('cat-mma').checked) selectedCats.push('mma');
             localStorage.setItem('pl_selected_cats', JSON.stringify(selectedCats));
             
-            // Пересобираем колоду
             const baseWords = dictionary.filter(w => w.cat === 'base');
             const interestWords = dictionary.filter(w => selectedCats.includes(w.cat));
             
             if (selectedCats.length === 0) {
                 activeDeck = shuffle([...baseWords]);
             } else {
-                // 50/50 логика
                 const half = Math.floor(baseWords.length / 2);
                 activeDeck = shuffle([...baseWords.slice(0, half), ...interestWords]);
             }
             
-            setMode('classic'); // Возвращаемся в игру
+            setMode('classic');
         }
 
         function startLevel() {
+            levelLives = 2; // СБРОС ЖИЗНЕЙ ПРИ СТАРТЕ
+            renderLives();
             const isExam = (currentLevel + 1) % 10 === 0;
             
             if (isExam) {
-                // ЭКЗАМЕН: 20 случайных слов из всей активной колоды
                 currentQueue = shuffle([...activeDeck]).slice(0, 20);
             } else {
-                // ОБЫЧНЫЙ: 10 слов
                 const startIdx = (currentLevel % 10) * 10;
                 currentQueue = shuffle([...activeDeck]).slice(0, 10);
             }
@@ -227,7 +231,6 @@
             nextQuestion();
         }
 
-        // --- ИГРОВОЙ ПРОЦЕСС ---
         function nextQuestion() {
             if (currentQueue.length === 0) {
                 currentLevel++; saveStats();
@@ -237,9 +240,7 @@
             isWaiting = false;
             document.getElementById('correct-hint').style.display = 'none';
             const cur = currentQueue[0];
-
-            if (currentMode === 'phrases') renderPhrasesMode(cur);
-            else renderWordsMode(cur);
+            if (currentMode === 'phrases') renderPhrasesMode(cur); else renderWordsMode(cur);
             updateHeader();
         }
 
@@ -247,14 +248,10 @@
             document.getElementById('phrase-builder-ui').style.display = 'none';
             document.getElementById('options-container').style.display = 'flex';
             document.getElementById('word').innerText = currentMode === 'audio' ? '🎧' : cur.pl;
-            
-            // АВТООЗВУЧКА
             speakText(cur.pl);
-
             const container = document.getElementById('options-container'); container.innerHTML = '';
             let distractors = shuffle(activeDeck.filter(w => w.pl !== cur.pl)).slice(0, 2).map(x => x.ru);
             let opts = shuffle([cur.ru, ...distractors]);
-            
             opts.forEach(o => {
                 const b = document.createElement('button'); b.className = 'option-btn'; b.innerText = o;
                 b.onclick = () => { if(isWaiting) return; checkWordAnswer(b, o, cur.ru, cur); };
@@ -265,16 +262,12 @@
         function renderPhrasesMode(cur) {
             document.getElementById('options-container').style.display = 'none';
             document.getElementById('phrase-builder-ui').style.display = 'flex';
-            const slots = document.getElementById('slots-container');
-            const tiles = document.getElementById('tiles-container');
+            const slots = document.getElementById('slots-container'); const tiles = document.getElementById('tiles-container');
             slots.innerHTML = ''; tiles.innerHTML = ''; selectedPhraseWords = [];
             document.getElementById('word').innerText = cur.ru;
-
             const correctWords = cur.pl.split(' ');
-            // ЛОВУШКА: +4 лишних слова
             const traps = shuffle(activeDeck).slice(0, 4).map(x => x.pl);
             const pool = shuffle([...correctWords, ...traps]);
-
             pool.forEach(w => {
                 const t = document.createElement('div'); t.className = 'tile'; t.innerText = w;
                 t.onclick = () => {
@@ -288,6 +281,22 @@
             });
         }
 
+        function handleMistake(curObj) {
+            levelLives--;
+            renderLives();
+            addMistake(curObj);
+            
+            if (levelLives <= 0) {
+                isWaiting = true;
+                setTimeout(() => {
+                    showMsg("Ой-ой!", "Жизни кончились. Давай сначала?", startLevel, false);
+                }, 600);
+            } else {
+                currentQueue.push(currentQueue.shift());
+                setTimeout(nextQuestion, 1200);
+            }
+        }
+
         function checkSentence() {
             const cur = currentQueue[0];
             if (selectedPhraseWords.join(' ') === cur.pl) {
@@ -295,8 +304,7 @@
             } else {
                 const hint = document.getElementById('correct-hint');
                 hint.innerText = "Правильно: " + cur.pl; hint.style.display = 'block';
-                addMistake(cur); currentQueue.push(currentQueue.shift());
-                setTimeout(nextQuestion, 2000);
+                handleMistake(cur);
             }
         }
 
@@ -306,9 +314,8 @@
                 btn.classList.add('is-correct'); stats.xp += 1; stats.words++; currentQueue.shift();
                 saveStats(); setTimeout(nextQuestion, 400);
             } else {
-                btn.classList.add('is-wrong'); addMistake(curObj);
-                currentQueue.push(currentQueue.shift());
-                setTimeout(nextQuestion, 1000);
+                btn.classList.add('is-wrong');
+                handleMistake(curObj);
             }
         }
 
@@ -363,16 +370,27 @@
         }
         function updateHeader() { const isExam = (currentLevel + 1) % 10 === 0; document.getElementById('stats-header').innerText = isExam ? "ЭКЗАМЕН" : `УРОВЕНЬ ${currentLevel + 1}`; }
         function speakCurrent() { speakText(currentQueue[0]?.pl || ""); }
-        function speakMistake() { speakText(document.getElementById('m-word').innerText); }
         function speakText(t) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = 'pl-PL'; window.speechSynthesis.speak(u); }
         function shuffle(a) { return a.sort(() => Math.random() - 0.5); }
         function resetProgress() { if(confirm("Сбросить всё?")) { localStorage.clear(); location.reload(); } }
         async function syncWithCloud() { try { await sb.from('leaderboard').upsert({ username: userName, xp: stats.xp, score: stats.words, level: currentLevel + 1 }, { onConflict: 'username' }); } catch (e) {} }
         async function fetchLeaderboard() { const { data } = await sb.from('leaderboard').select('*').order('xp', { ascending: false }).limit(10); document.getElementById('leaderboard-list').innerHTML = (data || []).map((u, i) => `<div class="leader-row"><span>${i+1}. ${u.username}</span><span>${u.xp} XP</span></div>`).join(''); }
-        function showMsg(t, d, action, isWin) { document.getElementById('play-zone').style.display = 'none'; const m = document.getElementById('message-screen'); m.style.display = 'flex'; document.getElementById('msg-title').innerText = t; nextActionFn = action; }
-        function handleMessageClick() { document.getElementById('message-screen').style.display = 'none'; document.getElementById('play-zone').style.display = 'flex'; if (nextActionFn) nextActionFn(); }
+        
+        function showMsg(t, d, action, isWin) { 
+            document.getElementById('play-zone').style.display = 'none'; 
+            const m = document.getElementById('message-screen'); 
+            m.style.display = 'flex'; 
+            document.getElementById('msg-title').innerText = t; 
+            document.getElementById('msg-cat-img').src = isWin ? 'good.png' : 'bad.png'; 
+            nextActionFn = action; 
+        }
+        
+        function handleMessageClick() { 
+            document.getElementById('message-screen').style.display = 'none'; 
+            document.getElementById('play-zone').style.display = 'flex'; 
+            if (nextActionFn) nextActionFn(); 
+        }
 
-        // ИНИЦИАЛИЗАЦИЯ
         applyMixer(); updateStatsUI();
     </script>
 </body>
