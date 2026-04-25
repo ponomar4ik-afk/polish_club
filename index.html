@@ -22,7 +22,7 @@
         }
 
         .tabs { display: flex; width: 100%; background: #0F172A; border-bottom: 1px solid #1E293B; position: fixed; top: 0; z-index: 100; }
-        .tab { flex: 1; padding: 18px 0; text-align: center; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; text-transform: uppercase; transition: 0.2s;}
+        .tab { flex: 1; padding: 18px 0; text-align: center; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); cursor: pointer; border-bottom: 3px solid transparent; text-transform: uppercase; }
         .tab.active { color: var(--text-main); border-bottom: 3px solid var(--accent); }
 
         .container { 
@@ -32,7 +32,7 @@
         }
         
         .mode-tabs { display: flex; width: 100%; gap: 6px; margin-bottom: 15px; flex-shrink: 0; }
-        .mode-btn { flex: 1; background: var(--btn-bg); color: var(--text-muted); border: 1px solid #1E293B; padding: 12px 2px; border-radius: 12px; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.2s;}
+        .mode-btn { flex: 1; background: var(--btn-bg); color: var(--text-muted); border: 1px solid #1E293B; padding: 12px 2px; border-radius: 12px; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; cursor: pointer; }
         .mode-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
         .is-pressed { box-shadow: inset 0 0 0 3px #FFFFFF !important; transform: scale(0.96); transition: 0.1s; }
@@ -44,7 +44,7 @@
         .lives { color: var(--error); font-size: 1.1rem; }
 
         .word-card { background: var(--card-bg); padding: 25px 20px; border-radius: 24px; border: 1px solid #1E293B; margin-bottom: 15px; min-height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; }
-        .word-card h1 { margin: 0; font-size: 1.7rem; font-weight: 700; text-align: center;}
+        .word-card h1 { margin: 0; font-size: 1.7rem; font-weight: 700; }
         .speaker-icon { margin-top: 10px; font-size: 1.2rem; cursor: pointer; background: #1E293B; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 
         #interests-panel { display: none; flex-direction: column; width: 100%; }
@@ -126,7 +126,7 @@
                 <div class="interest-item"><input type="checkbox" id="cat-mma"><label style="margin-left:10px" for="cat-mma">🥊 Единоборства</label></div>
                 <div class="interest-item"><input type="checkbox" id="cat-football"><label style="margin-left:10px" for="cat-football">⚽️ Футбол</label></div>
             </div>
-            <button class="action-btn" style="margin-top:20px" onclick="applyMixer()">Сохранить и Начать</button>
+            <button class="action-btn" style="margin-top:20px" onclick="applyMixerAndStart()">Сохранить и Начать</button>
         </div>
     </div>
 
@@ -2764,15 +2764,15 @@
     {pl: "Kolekcja kapsułowa wyprzedała się w kilka minut", ru: "Капсульная коллекция распродалась за несколько минут", cat: "buyer"},
     {pl: "To jest wyrafinowany styl dla prawdziwych koneserów", ru: "Это изысканный стиль для настоящих ценителей", cat: "buyer"}
 ];
-        // --- СОСТОЯНИЕ И ЛОГИКА ---
+        // --- СОСТОЯНИЕ ---
         let stats = JSON.parse(localStorage.getItem('pl_stats_v2')) || { xp: 0, words: 0, phrases: 0 };
         let mistakesDb = JSON.parse(localStorage.getItem('pl_mistakes_v2')) || [];
         let currentLevel = parseInt(localStorage.getItem('pl_level')) || 0;
         let selectedCats = JSON.parse(localStorage.getItem('pl_selected_cats')) || [];
         
-        let levelLives = 2; 
-        let activeDeck = [];      // Сюда грузим СЛОВА
-        let activePhrases = [];   // Сюда грузим ФРАЗЫ (Фикс 1)
+        let levelLives = 2;
+        let activeDeck = [];
+        let activePhrases = [];
         let currentQueue = [];
         let currentMode = 'classic';
         let isWaiting = false;
@@ -2781,45 +2781,69 @@
 
         tg.ready(); tg.expand();
 
-        function shuffle(a) { return [...a].sort(() => Math.random() - 0.5); }
-
         function renderLives() {
             document.getElementById('lives-display').innerText = "❤️".repeat(levelLives) + "🤍".repeat(Math.max(0, 2 - levelLives));
         }
 
-        // --- МИКСЕР ДАННЫХ ---
+        // --- ИНИЦИАЛИЗАЦИЯ И МИКСЕР ---
+        function initApp() {
+            // Восстанавливаем галочки при запуске
+            selectedCats.forEach(cat => {
+                let checkbox = document.getElementById('cat-' + cat);
+                if (checkbox) checkbox.checked = true;
+            });
+            applyMixer(); 
+            updateStatsUI();
+        }
+
         function applyMixer() {
             try {
                 selectedCats = [];
                 ['auto', 'football', 'mma', 'truck', 'buyer'].forEach(cat => {
                     if(document.getElementById('cat-' + cat)?.checked) selectedCats.push(cat);
                 });
+                
                 localStorage.setItem('pl_selected_cats', JSON.stringify(selectedCats));
                 
-                // Фильтруем СЛОВА
                 const baseWords = dictionary.filter(w => w.cat === 'base');
                 const interestWords = dictionary.filter(w => selectedCats.includes(w.cat));
-                activeDeck = selectedCats.length === 0 ? shuffle(baseWords) : shuffle([...shuffle(baseWords).slice(0, 500), ...interestWords]);
                 
-                // Фильтруем ФРАЗЫ (Решение проблемы "Слова во фразах")
+                // ЧЕТКОЕ ПРАВИЛО: Если не выбрано - только база. Если выбрано - 500 база + сленг
+                if (selectedCats.length === 0) {
+                    activeDeck = shuffle([...baseWords]);
+                } else {
+                    const halfBase = shuffle([...baseWords]).slice(0, 500);
+                    activeDeck = shuffle([...halfBase, ...interestWords]);
+                }
+
+                // Фильтруем фразы
                 const basePhrases = sentencesData.filter(s => s.cat === 'base');
                 const interestPhrases = sentencesData.filter(s => selectedCats.includes(s.cat));
-                activePhrases = selectedCats.length === 0 ? shuffle(basePhrases) : shuffle([...shuffle(basePhrases).slice(0, 50), ...interestPhrases]);
                 
-                setMode('classic');
+                if (selectedCats.length === 0) {
+                    activePhrases = shuffle([...basePhrases]);
+                } else {
+                    const halfBasePhrases = shuffle([...basePhrases]).slice(0, 50);
+                    activePhrases = shuffle([...halfBasePhrases, ...interestPhrases]);
+                }
             } catch (e) {
                 console.error("Ошибка в applyMixer:", e);
             }
         }
 
+        // Вызывается по кнопке "Сохранить и начать"
+        function applyMixerAndStart() {
+            applyMixer();
+            setMode('classic');
+        }
+
         function startLevel() {
-            levelLives = 2; 
+            levelLives = 2; // СБРОС ЖИЗНЕЙ ПРИ СТАРТЕ
             renderLives();
             const isExam = (currentLevel + 1) % 10 === 0;
             
-            // Выбираем правильный источник данных (Фикс 1)
             let sourceArray = currentMode === 'phrases' ? activePhrases : activeDeck;
-            if (!sourceArray || sourceArray.length === 0) sourceArray = activeDeck; // подстраховка
+            if (!sourceArray || sourceArray.length === 0) sourceArray = activeDeck;
             
             if (isExam) {
                 currentQueue = shuffle([...sourceArray]).slice(0, 20);
@@ -2840,10 +2864,7 @@
             isWaiting = false;
             document.getElementById('correct-hint').style.display = 'none';
             const cur = currentQueue[0];
-            
-            if (currentMode === 'phrases') renderPhrasesMode(cur); 
-            else renderWordsMode(cur);
-            
+            if (currentMode === 'phrases') renderPhrasesMode(cur); else renderWordsMode(cur);
             updateHeader();
         }
 
@@ -2852,11 +2873,13 @@
             document.getElementById('options-container').style.display = 'flex';
             document.getElementById('word').innerText = currentMode === 'audio' ? '🎧' : cur.pl;
             speakText(cur.pl);
+            const container = document.getElementById('options-container'); container.innerHTML = '';
             
-            const container = document.getElementById('options-container'); 
-            container.innerHTML = '';
+            // ВАЖНО: берем обманки ТОЛЬКО ИЗ АКТИВНОЙ КОЛОДЫ (чтобы сленг не выпадал в базе)
+            let pool = activeDeck.filter(w => w.ru !== cur.ru).map(w => w.ru);
+            // Защита, если активная колода вдруг меньше 2 слов (во время тестов)
+            if(pool.length < 2) pool = dictionary.filter(w => w.cat === 'base').map(w => w.ru);
             
-            let pool = dictionary.filter(w => w.ru !== cur.ru).map(w => w.ru);
             let distractors = shuffle(pool).slice(0, 2);
             let opts = shuffle([cur.ru, ...distractors]);
             
@@ -2870,15 +2893,17 @@
         function renderPhrasesMode(cur) {
             document.getElementById('options-container').style.display = 'none';
             document.getElementById('phrase-builder-ui').style.display = 'flex';
-            const slots = document.getElementById('slots-container'); 
-            const tiles = document.getElementById('tiles-container');
+            const slots = document.getElementById('slots-container'); const tiles = document.getElementById('tiles-container');
             slots.innerHTML = ''; tiles.innerHTML = ''; selectedPhraseWords = [];
-            
             document.getElementById('word').innerText = cur.ru;
+            
             const correctWords = cur.pl.split(' ');
             
-            // Ложные варианты из слов, чтобы запутать (это правильно)
-            const traps = shuffle(dictionary).slice(0, 4).map(x => x.pl);
+            // Ложные слова берем из активной колоды, а не всей базы
+            let trapsPool = shuffle(activeDeck).map(x => x.pl);
+            if(trapsPool.length < 4) trapsPool = shuffle(dictionary.filter(w => w.cat === 'base')).map(x => x.pl);
+            
+            const traps = trapsPool.slice(0, 4);
             const pool = shuffle([...correctWords, ...traps]);
             
             pool.forEach(w => {
@@ -2936,7 +2961,6 @@
         function setMode(mode) {
             document.getElementById('interests-panel').style.display = mode === 'interests' ? 'flex' : 'none';
             document.getElementById('play-zone').style.display = mode === 'interests' ? 'none' : 'flex';
-            
             document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
             const btn = document.getElementById('btn-' + (mode === 'interests' ? 'interests' : mode));
             if(btn) btn.classList.add('active');
@@ -2948,7 +2972,7 @@
             document.getElementById('game-container').style.display = tab === 'play' ? 'flex' : 'none';
             document.getElementById('stats-page').style.display = tab === 'stats' ? 'flex' : 'none';
             
-            // Фикс 2: Подсветка кнопок вкладок
+            // Визуальное переключение вкладок
             document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
             const activeTabBtn = document.getElementById('tab-' + tab);
             if(activeTabBtn) activeTabBtn.classList.add('active');
@@ -2964,19 +2988,19 @@
         function openMistakes() {
             document.getElementById('game-container').style.display = 'none';
             document.getElementById('mistakes-screen').style.display = 'flex';
-            currentQueue = shuffle([...mistakesDb]); 
-            renderMistakeQuestion();
+            currentQueue = shuffle([...mistakesDb]); renderMistakeQuestion();
         }
 
         function renderMistakeQuestion() {
             if (currentQueue.length === 0) { closeMistakes(); return; }
             const cur = currentQueue[0];
             document.getElementById('m-word').innerText = cur.pl;
-            const container = document.getElementById('m-options-container'); 
-            container.innerHTML = '';
+            const container = document.getElementById('m-options-container'); container.innerHTML = '';
             
-            // Фикс 3: Реальные слова вместо "Ошибка 1"
-            let pool = dictionary.filter(w => w.ru !== cur.ru).map(w => w.ru);
+            // Варианты ошибок тянем только из текущей колоды (БЕЗ НАДПИСИ ОШИБКА 1/2)
+            let pool = activeDeck.filter(w => w.ru !== cur.ru).map(w => w.ru);
+            if(pool.length < 2) pool = dictionary.filter(w => w.cat === 'base').map(w => w.ru);
+            
             let opts = shuffle([cur.ru, ...shuffle(pool).slice(0, 2)]);
             
             opts.forEach(o => {
@@ -2987,7 +3011,7 @@
                         currentQueue.shift(); 
                         renderMistakeQuestion(); 
                     } else {
-                        b.classList.add('is-wrong'); // Визуально пометим ошибку
+                        b.classList.add('is-wrong');
                     }
                 };
                 container.appendChild(b);
@@ -2995,19 +3019,8 @@
             updateStatsUI();
         }
 
-        function closeMistakes() { 
-            document.getElementById('mistakes-screen').style.display = 'none'; 
-            document.getElementById('game-container').style.display = 'flex'; 
-            updateStatsUI(); 
-        }
-        
-        function saveStats() { 
-            localStorage.setItem('pl_level', currentLevel); 
-            localStorage.setItem('pl_stats_v2', JSON.stringify(stats)); 
-            localStorage.setItem('pl_mistakes_v2', JSON.stringify(mistakesDb)); 
-            updateStatsUI(); 
-            syncWithCloud(); 
-        }
+        function closeMistakes() { document.getElementById('mistakes-screen').style.display = 'none'; document.getElementById('game-container').style.display = 'flex'; updateStatsUI(); }
+        function saveStats() { localStorage.setItem('pl_level', currentLevel); localStorage.setItem('pl_stats_v2', JSON.stringify(stats)); localStorage.setItem('pl_mistakes_v2', JSON.stringify(mistakesDb)); updateStatsUI(); syncWithCloud(); }
         
         function updateStatsUI() {
             document.getElementById('st-xp').innerText = stats.xp + ' XP';
@@ -3022,6 +3035,7 @@
         function speakCurrent() { speakText(currentQueue[0]?.pl || ""); }
         function speakMistake() { speakText(document.getElementById('m-word').innerText); }
         function speakText(t) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = 'pl-PL'; window.speechSynthesis.speak(u); }
+        function shuffle(a) { return [...a].sort(() => Math.random() - 0.5); }
         function resetProgress() { if(confirm("Сбросить всё?")) { localStorage.clear(); location.reload(); } }
         
         async function syncWithCloud() { try { await sb.from('leaderboard').upsert({ username: userName, xp: stats.xp, score: stats.words, level: currentLevel + 1 }, { onConflict: 'username' }); } catch (e) {} }
@@ -3042,8 +3056,8 @@
             if (nextActionFn) nextActionFn(); 
         }
 
-        // --- ИНИЦИАЛИЗАЦИЯ ---
-        applyMixer(); updateStatsUI();
+        // Вызываем инициализацию, которая и галочки расставит, и массивы сформирует
+        initApp();
     </script>
 </body>
 </html>
