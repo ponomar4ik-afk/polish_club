@@ -2807,40 +2807,30 @@ const dictionary = [
             if (mode !== 'interests') startLevel();
         }
 
-        function startLevel() {
+function startLevel() {
             levelLives = 2; 
             renderLives();
             const isExam = (currentLevel + 1) % 10 === 0;
-            const itemsNeeded = isExam ? 20 : 10; // Сколько карточек нужно
+            const itemsNeeded = isExam ? 20 : 10;
             
+            // Берем ВСЕ доступные слова (база + выбранные интересы)
             const isPhrases = currentMode === 'phrases';
+            const fullPool = isPhrases ? 
+                [...sentencesData.filter(s => s.cat === 'base'), ...sentencesData.filter(s => selectedCats.includes(s.cat))] :
+                [...dictionary.filter(w => w.cat === 'base'), ...dictionary.filter(w => selectedCats.includes(w.cat))];
+
+            // Берем слова последовательно по всей базе, чтобы была прогрессия сложности
+            const startIdx = currentLevel * (isExam ? 15 : 8);
+            let levelItems = fullPool.slice(startIdx, startIdx + itemsNeeded);
             
-            // Выбираем откуда черпать (слова или фразы)
-            const fullBase = isPhrases ? sentencesData.filter(s => s.cat === 'base') : dictionary.filter(w => w.cat === 'base');
-            const fullInt = isPhrases ? sentencesData.filter(s => selectedCats.includes(s.cat)) : dictionary.filter(w => selectedCats.includes(w.cat));
-            
-            // Если есть интересы, берем 8 базы + 2 сленга (на экзамене 16+4)
-            const baseCount = fullInt.length > 0 ? (isExam ? 16 : 8) : itemsNeeded;
-            const intCount = itemsNeeded - baseCount;
-            
-            // БЕРЕМ БАЗУ СТРОГО ПО ПОРЯДКУ (Формула: Уровень * Количество)
-            const startIdx = currentLevel * baseCount;
-            let levelBase = fullBase.slice(startIdx, startIdx + baseCount);
-            
-            // Бесконечная игра: если прошел ВСЮ базу, выдаем случайные для повторения
-            if (levelBase.length < baseCount) {
-                levelBase = shuffle([...fullBase]).slice(0, baseCount);
+            // Если база закончилась, берем рандомные из всей доступной кучи
+            if (levelItems.length < itemsNeeded) {
+                levelItems = shuffle([...fullPool]).slice(0, itemsNeeded);
             }
             
-            // Сленг всегда подмешиваем случайно, чтобы удивлять
-            const levelInt = shuffle([...fullInt]).slice(0, intCount);
-            
-            // Сливаем базу и сленг, и перемешиваем ТОЛЬКО ЭТУ десятку для игры
-            currentQueue = shuffle([...levelBase, ...levelInt]);
-            
+            currentQueue = shuffle([...levelItems]);
             nextQuestion();
         }
-
         function nextQuestion() {
             if (!currentQueue.length) { currentLevel++; saveStats(); showMsg("Победа!", "Уровень пройден!", startLevel, true); return; }
             isWaiting = false; document.getElementById('correct-hint').style.display = 'none';
@@ -2852,16 +2842,22 @@ const dictionary = [
         function renderWordsMode(cur) {
             document.getElementById('phrase-builder-ui').style.display = 'none';
             const container = document.getElementById('options-container');
-            container.style.display = 'flex'; container.innerHTML = '';
+            container.style.display = 'flex';
+            container.innerHTML = '';
+            
             document.getElementById('word').innerText = currentMode === 'audio' ? '🎧' : cur.pl;
             if (currentMode === 'audio' || currentLevel < 15) speakText(cur.pl);
             
-            let pool = activeDeck.filter(w => w.ru !== cur.ru).map(w => w.ru);
-            if (pool.length < 2) pool = dictionary.filter(w => w.cat === 'base').map(w => w.ru);
-            let opts = shuffle([cur.ru, ...shuffle(pool).slice(0, 2)]);
+            // ГЕНИАЛЬНЫЙ ФИКС: Берем обманки из ВСЕГО словаря (всех 2000 слов!)
+            // Теперь темы не будут "подсказывать" ответ
+            let pool = dictionary.filter(w => w.ru !== cur.ru).map(w => w.ru);
+            let distractors = shuffle(pool).slice(0, 3); // Берем 3 обманки (итого 4 кнопки)
+            let opts = shuffle([cur.ru, ...distractors]);
             
             opts.forEach(o => {
-                const b = document.createElement('button'); b.className = 'option-btn'; b.innerText = o;
+                const b = document.createElement('button');
+                b.className = 'option-btn';
+                b.innerText = o;
                 b.onclick = () => { if(!isWaiting) checkWordAnswer(b, o, cur.ru, cur); };
                 container.appendChild(b);
             });
