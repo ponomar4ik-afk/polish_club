@@ -3059,22 +3059,47 @@ function startLevel() {
             const isExam = (currentLevel + 1) % 10 === 0;
             const itemsNeeded = isExam ? 20 : 10;
             
-            // Берем ВСЕ доступные слова (база + выбранные интересы)
             const isPhrases = currentMode === 'phrases';
-            const fullPool = isPhrases ? 
-                [...sentencesData.filter(s => s.cat === 'base'), ...sentencesData.filter(s => selectedCats.includes(s.cat))] :
-                [...dictionary.filter(w => w.cat === 'base'), ...dictionary.filter(w => selectedCats.includes(w.cat))];
-
-            // Берем слова последовательно по всей базе, чтобы была прогрессия сложности
-            const startIdx = currentLevel * (isExam ? 15 : 8);
-            let levelItems = fullPool.slice(startIdx, startIdx + itemsNeeded);
+            const fullBase = isPhrases ? sentencesData.filter(s => s.cat === 'base') : dictionary.filter(w => w.cat === 'base');
+            const fullInt = isPhrases ? sentencesData.filter(s => selectedCats.includes(s.cat)) : dictionary.filter(w => selectedCats.includes(w.cat));
             
-            // Если база закончилась, берем рандомные из всей доступной кучи
-            if (levelItems.length < itemsNeeded) {
-                levelItems = shuffle([...fullPool]).slice(0, itemsNeeded);
+            const baseCount = fullInt.length > 0 ? (isExam ? 16 : 8) : itemsNeeded;
+            const intCount = itemsNeeded - baseCount;
+            
+            const startIdx = currentLevel * (isExam ? 15 : 8);
+            let levelBase = fullBase.slice(startIdx, startIdx + baseCount);
+            
+            if (levelBase.length < baseCount) {
+                levelBase = shuffle([...fullBase]).slice(0, baseCount);
             }
             
-            currentQueue = shuffle([...levelItems]);
+            // ФИКС: При выборе интересов исключаем те слова, которые уже попали в levelBase
+            const availableInt = fullInt.filter(item => !levelBase.some(baseItem => baseItem.pl === item.pl));
+            const levelInt = shuffle([...availableInt]).slice(0, intCount);
+            
+            // Итоговая сборка уровня
+            let combined = [...levelBase, ...levelInt];
+
+            // ФИНАЛЬНАЯ ПРОВЕРКА: Если вдруг в данных есть полные дубликаты, убираем их
+            const uniqueLevelItems = [];
+            const seen = new Set();
+            for (const item of combined) {
+                if (!seen.has(item.pl)) {
+                    seen.add(item.pl);
+                    uniqueLevelItems.push(item);
+                }
+            }
+
+            // Если после чистки слов стало меньше, чем нужно (из-за дублей), добираем рандомными
+            while (uniqueLevelItems.length < itemsNeeded) {
+                let randomItem = fullBase[Math.floor(Math.random() * fullBase.length)];
+                if (!seen.has(randomItem.pl)) {
+                    seen.add(randomItem.pl);
+                    uniqueLevelItems.push(randomItem);
+                }
+            }
+            
+            currentQueue = shuffle(uniqueLevelItems);
             nextQuestion();
         }
         function nextQuestion() {
